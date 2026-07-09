@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  // Apply the saved theme immediately, before the page renders, so it
+  // carries over between pages and there's no flash of the wrong theme.
+  (function () {
+    var stored = localStorage.getItem('theme');
+    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ai Workflows</title>
+<link rel="icon" type="image/png" href="./images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --text: #0d0d0d;
+    --muted: #6f6f6f;
+    --muted-2: #8a8a8a;
+    --card: #efefee;
+    --black-pill: #111111;
+    --max-width: 900px;
+    --radius-lg: 28px;
+    --radius-md: 20px;
+    --radius-pill: 999px;
+  }
+
+  [data-theme="dark"]{
+    --bg: #000;
+    --text: #f3f3f1;
+    --muted: #a8a8a8;
+    --muted-2: #8c8c8c;
+    --card: #1a1a1a;
+    --black-pill: #f3f3f1;
+  }
+
+  [data-theme="dark"] .book-call{ color:#0d0d0d; }
+  [data-theme="dark"] .badge{ color:#0d0d0d; }
+  [data-theme="dark"] .theme-toggle{ background:#222; }
+  [data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
+  [data-theme="dark"] .article-image{ background: #A2978C; }
+  [data-theme="dark"] .code-block{ background:#111; }
+
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease, color .25s ease;
+  }
+
+  .container{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .badge{
+    background: var(--black-pill);
+    color: var(--bg);
+    font-weight:700;
+    font-size: 14px;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .theme-toggle{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:none;
+    background:#f1f1ef;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background .2s ease;
+  }
+  .theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; }
+  .theme-toggle .icon-sun{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
+
+  .book-call{
+    background: var(--black-pill);
+    color: var(--bg);
+    border:none;
+    font-family:inherit;
+    font-weight:600;
+    font-size: 14px;
+    padding: 13px 22px;
+    border-radius: var(--radius-pill);
+    cursor:pointer;
+    white-space:nowrap;
+    display:inline-block;
+    text-decoration:none;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 28px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding-top: 56px;
+  }
+
+  .hero h1{
+    font-size: clamp(32px, calc(8.667vw - 20px), 58px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0;
+    max-width: none;
+  }
+
+  /* ---------- ARTICLE HERO ---------- */
+  .article-image{
+    margin-top: 40px;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    border-radius: var(--radius-lg);
+    background: #A2978C;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position: relative;
+  }
+  .article-image img{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+  .stat-grid-detailed{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .stat-card-detailed{
+    background: var(--card);
+    border-radius: 22px;
+    padding: 28px 26px;
+    display:flex;
+    align-items:center;
+    gap: 20px;
+  }
+  .stat-number-detailed{
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .stat-content-detailed{
+    display:flex;
+    flex-direction:column;
+    gap: 4px;
+  }
+  .stat-title-detailed{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .stat-desc-detailed{
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .stat-formula-detailed{
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- ARTICLE BODY ---------- */
+  .article-body{
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+  .article-body h1{
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 56px 0 26px;
+  }
+  .article-body h1:first-child{ margin-top: 0; }
+  .article-body p{
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .article-body ul, .article-body ol{
+    margin: 0 0 64px;
+    padding-left: 32px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  .article-body li{ margin-bottom: 10px; }
+  .article-body li b{ color: var(--text); }
+  .article-body img{
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 32px auto;
+    border-radius: 14px;
+  }
+
+  .code-block{
+    background: var(--card);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 24px 28px;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 20px 0 28px;
+    white-space: pre;
+  }
+
+  /* ---------- CLOSING STATEMENT ---------- */
+  .closing{
+    padding: 20px 0 90px;
+  }
+  .closing h2{
+    font-size: clamp(56px, calc(33.333vw - 144px), 132px);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding: 28px 0 40px;
+    display:flex;
+    gap: 28px;
+    font-size: 16px;
+    color: var(--muted-2);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px){
+    .article-image{ aspect-ratio: 16/9; min-height: 0; }
+  }
+  @media (max-width: 600px){
+    .container{ padding: 0 20px; }
+    .closing{ padding: 90px 0 60px; }
+    footer{ flex-direction:column; gap: 6px; }
+    .code-block{ font-size: 11px; padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+      <a class="book-call" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Driving Engineering Velocity: Automation and AI-Native Workflows</h1>
+    <div class="article-image">
+      <img src="./images/Productbot.png" alt="Product Bot" />
+    </div>
+  </section>
+
+  <section class="article-body">
+    <h1>Executive Summary</h1>
+    <div class="stat-grid-detailed">
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">+27%</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Reclaimed Engineering Focus</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> The percentage of time reclaimed each week from meetings.</div>
+            <div class="stat-formula-detailed"><b>Metric: </b> ((Avg Time meetings Post - Avg Time in team meetings Pre) / Avg Time in team meetings Pre) * 100</div>
+          </div>
+        </div>
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">-76%</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Administrative Overhead</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> The reduction in non-development tracking tasks (manual issue creation, labelling, sizing, and updates).</div>
+            <div class="stat-formula-detailed"><b>Metric: </b> ((Avg Admin time Post - Avg Admin time Pre) / Avg Admin time Pre) * 100 </div>
+          </div>
+        </div>
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">£20K</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Monthly Business ROI</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> Cost savings of engineering time, improved hygiene and reporting vs increased cost from tokens (no additional cost incurred, include in existing plan).</div>
+            <div class="stat-formula-detailed"><b>Metric: </b> (Hours saved * Avg Engineer hourly cost (24 Engineers)) - Additional token cost </div>
+          </div>
+        </div>        
+      </div>
+
+    <ul>
+      <li><b>Role:</b> Product Lead</li>
+      <li><b>The Challenge:</b> In high-velocity engineering environments, engineers want to write code, not manage project management tools and write update reports. Because keeping up with tickets felt like a chore, our project board in Linear suffered from severe data degradation. Tickets were often just titles with no descriptions, sizes, priorities and unmapped dependencies. This made it impossible to see true progress, caused major scope creep, and forced us into long, painful meetings just to figure out what everyone was doing.</li>
+      <li><b>The Strategy:</b> Instead of forcing engineers to change, I connected Slack, Notion, and Linear together using simple automations, workflows and agents. ProductBot as I affectionately named it automated ticket creation and ran triage from Slack chats, turned PRDs into structured projects with descriptions, milestones, scopes and issues with timelines. It also let engineers use their favorite Agents directly within the workflow to create and review PRs.</li>
+    </ul>
+
+    <h1>Problem Statement</h1>
+    <p>Productivity tracking tools are only as reliable as the data fed into them. When engineers view ticket management as an administrative chore, data quality quickly degrades, creating operational bottlenecks. The objective was to automate the pipeline from product scoping through to live sprint tracking, reporting and release. All while leveraging the team's existing conversational environments without imposing new tools, writing custom code, or requiring rigid behavioral changes from developers.</p>
+    <ul>
+      <li><b>The Scoping Bottleneck:</b> Translating a product strategy document into a production-ready backlog traditionally required hours of manual ticket writing, epic structuring, and alignment syncs to map out execution phases.</li>
+      <li><b>Degraded Board Hygiene:</b> Sprint boards drifted from reality, frequently filled with low-context issues lacking descriptions, sizes, or explicit technical requirements. No one besides the individual engineer really knew what a task involved, how long it would take, or what its dependencies were.</li>
+      <li><b>Context-Switching Drag:</b> When boards lag behind production reality, stakeholders naturally resort to direct-messaging team leaders for status updates. A seemingly harmless, two-minute "Hey, where are we on this feature?" levies a heavy hidden tax: it breaks a developer's cognitive flow, forcing a context-switch that can cost upwards of twenty minutes of deep-work momentum to recover.</li>
+      <li><b>Compounded Alignment Meetings:</b> Because project tracking was incomplete, team meetings consistently overran alloted time to extract project status verbally, breaking engineering focus and introducing administrative overhead.</li>
+    </ul>
+
+    <h1> No-Code Orchestration</h1>
+    <p>Instead of developing and maintaining proprietary middleware, the entire ecosystem was connected using native application features, built-in agents, and Slack's Workflow Builder. This approach eliminated technical debt and maintenance overhead while achieving seamless tool interoperability.</p>
+    <pre class="code-block">
+[ Notion: High-Context PRD ] ──> [ Linear Agent ]
+                                        │
+                                        ▼
+                         [ Automated Project Mapping ]
+                         ├── Structural Milestones & Stages
+                         └── Pre-filled Technical Backlog
+                                        │
+                                        ▼
+                         [ Synchronous Review & Sign-off ]
+                                        │
+                    ┌───────────────────┴───────────────────┐
+                    ▼                                       ▼
+      [ Slack Context Harvesting ]            [ Developer Work Environments ]
+      ├── No-Code Workflow Listener           ├── IDE Level: Cursor / Claude /...
+      └── Asynchronous Queries                └── Conversational: Slack / ProductBot</pre>
+
+    <h1>Conversational Workflows</h1>
+    <p>Conversational workflows were handled by 'ProductBot', a Slack native Workflow I created. When a user posts an issue or request in an authorised channel, the workflow intercepts the message and calls upon the specific Agent to complete the task be it creating a new ticket, updating an existing one or providing updates or key information.</p>
+
+    <img src="./images/Productbot-dark.png" alt="Product-Bot conversational workflow">
+
+    <h1>The PRD-to-Project Pipeline</h1>
+    <p>The pipeline relies strictly on an "accuracy in, accuracy out" principle. A PRD skill I prepared allowed myself and others across the product function to standardise and optimise Product Requirement Documents (PRDs) for Agents to interpret instead of wasting time manually doing this work over days or weeks:</p>
+    <ul>
+      <li><b>Ingestion and Reasoning:</b> Once a highly scoped, comprehensive PRD was finalised, it was fed into Linear. The Agent parsed the functional requirements, UX flows, and technical criteria outlined in the text.</li>
+      <li><b>Automated Blueprinting:</b> The Agent automatically constructed the master project architecture within Linear, mapping out execution stages, milestones, and pre-filling technical task backlogs with complete contextual descriptions.</li>
+      <li><b>Targeted Alignment Syncs:</b> Rather than losing hours to manual ticket drafting, the product and engineering teams held brief, focused review sessions to audit the pre-populated backlog, adjust scope parameters if needed and directly sign off on execution.</li>
+    </ul>
+
+    <h1>Workplace Guidance</h1>
+    <p>At the core of how this system worked was the implementation of strict Workplace Guidance (set of many skills) that governed how the Agent reasoned through tasks. This provided an explicit operational playbook, enforcing administrative consistency:</p>
+    <ul>
+      <li><b>Sizing & Estimation</b> Rules for baseline effort allocation, ensuring the Agent sized tasks consistently according to team capacity definitions rather than guessing randomly.</li>
+      <li><b>Context Routing & Assignment:</b> A map of the company’s internal team structure, instructing the Agent exactly which engineering sub-teams or individuals owned specific components or domains.</li>
+      <li><b>Prioritisation:</b> Established definitive logic to separate P0 through P4 tickets based on system severity, business impact, and blocking dependencies.</li>
+      <li><b>Upstream Optimisation:</b> Mandated precise, highly standardized ticket formatting schemas. By enforcing exact code-context blocks and expected behaviors within the ticket text, these tasks were optimized to be instantly parsed and executed by downstream coding agents (like Cursor) for seamless pull-request drafting.</li>
+      <li><b>Deterministic Escalation:</b> Defined strict boundaries for what the AI could handle autonomously versus what required immediate human intervention, including exact routing logic for who to tag (e.g., Tech Lead, Product Lead, or Director of Engineering) when an issue escalated.</li>
+    </ul>
+
+    <h1>Overcoming Adoption Skepticism</h1>
+    <p>Initial developer sentiment towards ProductBot was met with passivity. To prevent friction I avoided a top-down mandate. Instead I encouraged people in my team to try it out and made it my own preferred way of working so they could see it work in practice. Once one developer tried it, he became a big advocate alongside me which accelerated the adoption and made product bot into an everyday workspace tool that made work easier and improved output.</p>
+
+    <h1>Business Outcomes</h1>
+    <ul>
+      <li><b>Reduction in Administrative Overhead:</b> Automatically processing ticket creation, and labeling from conversational logs reduced the administrative burden on engineers, reclaiming valuable development hours.</li>
+      <li><b>Hours Saved on Project Scoping Cycles:</b> By letting Agents parse clear, well-structured Notion PRDs to generate complete milestone structures and pre-filled issues, the operational friction of backlog initialisation was eliminated. Project scoping shifted from a multi-hour manual task to a concise, high-leverage alignment and sign-off review.</li>
+      <li><b>Ticket Standardisation:</b> The introduction of strict workplace guidance eliminated inconsistent, title-only tasks. Agent generated issues contained clear descriptions and structural formatting optimised for downstream coding automation.</li>
+      <li><b>Elimination of the "Question Tax":</b> By turning Linear into an ironclad, real-time reflection of production reality more communication shifted to a passive, self-serve asynchronous model, preserving massive deep-work windows for the engineering team.</li>
+      <li><b>Precise Tracking:</b> Eliminating manual data-entry gaps ensured that the Linear board accurately reflected production states. Automated tracking gave stakeholders and executive teams real-time visibility into shipping timelines, eliminating frequent manual status check-ins.</li>
+    </ul>
+
+    <h1>Key Takeaways</h1>
+    <ul>
+      <li><b>Guardrails Make the System:</b> AI automation without structural guardrails results in fragmented data. The success of a workspace integration relies entirely on the clarity of the operational playbook provided to the Agent. High-quality input boundaries dictate high-quality data outputs.</li>
+      <li><b>Automate the data trail, don't police the people:</b> Developers don't hate project management; they hate the administrative tax that comes with it. By pulling data organically from the tools they already use (like Slack and GitHub), the Linear board stayed accurate without me having to constantly ping people for updates. This eliminated those painful 'quick status check' DMs that break developer flow.</li>
+      <li><b>Orchestration Over Engineering:</b> True product impact is about maximizing leverage. Building complex, custom code wrappers introduces high maintenance overhead. Orchestrating native, platform-level APIs and existing no-code automation layers delivers the same high-impact business outcomes with near-zero technical debt.</li>
+    </ul>
+
+  </section>
+
+  <section class="closing">
+    <h2>Velocity without<br>compromise.</h2>
+  </section>
+
+  <footer>
+    <span><b>2026</b></span>
+  </footer>
+
+</div>
+
+<script>
+  // Theme was already applied in <head> (from localStorage, or system
+  // preference if nothing's saved yet).
+  const root = document.documentElement;
+
+  // Theme toggle
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  });
+</script>
+
+</body>
+</html>

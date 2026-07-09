@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  // Apply the saved theme immediately, before the page renders, so it
+  // carries over between pages and there's no flash of the wrong theme.
+  (function () {
+    var stored = localStorage.getItem('theme');
+    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SuperApp - Case Study</title>
+<link rel="icon" type="image/png" href="./images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --text: #0d0d0d;
+    --muted: #6f6f6f;
+    --muted-2: #8a8a8a;
+    --card: #efefee;
+    --black-pill: #111111;
+    --max-width: 900px;
+    --radius-lg: 28px;
+    --radius-md: 20px;
+    --radius-pill: 999px;
+  }
+
+  [data-theme="dark"]{
+    --bg: #000;
+    --text: #f3f3f1;
+    --muted: #a8a8a8;
+    --muted-2: #8c8c8c;
+    --card: #1a1a1a;
+    --black-pill: #f3f3f1;
+  }
+
+  [data-theme="dark"] .book-call{ color:#0d0d0d; }
+  [data-theme="dark"] .badge{ color:#0d0d0d; }
+  [data-theme="dark"] .theme-toggle{ background:#222; }
+  [data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
+  [data-theme="dark"] .article-image{ background: #FFE6E8; }
+  [data-theme="dark"] .code-block{ background:#111; }
+
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease, color .25s ease;
+  }
+
+  .container{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .badge{
+    background: var(--black-pill);
+    color: var(--bg);
+    font-weight:700;
+    font-size: 14px;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .theme-toggle{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:none;
+    background:#f1f1ef;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background .2s ease;
+  }
+  .theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; }
+  .theme-toggle .icon-sun{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
+
+  .book-call{
+    background: var(--black-pill);
+    color: var(--bg);
+    border:none;
+    font-family:inherit;
+    font-weight:600;
+    font-size: 14px;
+    padding: 13px 22px;
+    border-radius: var(--radius-pill);
+    cursor:pointer;
+    white-space:nowrap;
+    display:inline-block;
+    text-decoration:none;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 28px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding-top: 56px;
+  }
+
+  .hero h1{
+    font-size: clamp(32px, calc(8.667vw - 20px), 58px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0;
+    max-width: none;
+  }
+
+  /* ---------- ARTICLE HERO ---------- */
+  .article-image{
+    margin-top: 40px;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    border-radius: var(--radius-lg);
+    background: #FFE6E8;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position: relative;
+  }
+  .article-image img{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+  .stat-grid-detailed{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .stat-card-detailed{
+    background: var(--card);
+    border-radius: 22px;
+    padding: 28px 26px;
+    display:flex;
+    align-items:center;
+    gap: 20px;
+  }
+  .stat-number-detailed{
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .stat-content-detailed{
+    display:flex;
+    flex-direction:column;
+    gap: 4px;
+  }
+  .stat-title-detailed{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .stat-desc-detailed{
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .stat-formula-detailed{
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- ARTICLE BODY ---------- */
+  .article-body{
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+  .article-body h1{
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 56px 0 26px;
+  }
+  .article-body h1:first-child{ margin-top: 0; }
+  .article-body h3{
+    font-size: 16px;
+    font-weight: 800;
+    margin: 32px 0 12px;
+  }
+  .article-body p{
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .article-body ul, .article-body ol{
+    margin: 0 0 64px;
+    padding-left: 32px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  .article-body li{ margin-bottom: 10px; }
+  .article-body li b{ color: var(--text); }
+  .article-body img{
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 32px auto;
+    border-radius: 14px;
+  }
+
+  .code-block{
+    background: var(--card);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 24px 28px;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 20px 0 28px;
+    white-space: pre;
+  }
+
+  /* ---------- CLOSING STATEMENT ---------- */
+  .closing{
+    padding: 20px 0 90px;
+  }
+  .closing h2{
+    font-size: clamp(56px, calc(33.333vw - 144px), 132px);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding: 28px 0 40px;
+    display:flex;
+    gap: 28px;
+    font-size: 16px;
+    color: var(--muted-2);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px){
+    .article-image{ aspect-ratio: 16/9; }
+  }
+  @media (max-width: 600px){
+    .container{ padding: 0 20px; }
+    .closing{ padding: 90px 0 60px; }
+    footer{ flex-direction:column; gap: 6px; }
+    .code-block{ font-size: 11px; padding: 18px; }
+    .stat-card-detailed{ flex-direction:column; align-items:flex-start; gap: 14px; padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+      <a class="book-call" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Modernising a Global Crypto Web App: Unwinding 10 Years of Technical Debt & Executing a Zero-Loss Migration</h1>
+    <div class="article-image">
+      <img src="./images/Blockchain.png" alt="SuperApp Modernisation Case Study" />
+    </div>
+  </section>
+
+  <section class="article-body">
+    <h1>Executive Summary</h1>
+    <div class="stat-grid-detailed">
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">28X</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Faster App Performance</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> The improvement in average page load time after migration.</div>
+            <div class="stat-formula-detailed"><b>Metric:</b> (Avg Pre optimisation load times / Avg Post optimisation load times)</div>
+          </div>
+        </div>
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">-17%</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Price Indexing Costs</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> The reduction in monthly costs for asset data and price indexing.</div>
+            <div class="stat-formula-detailed"><b>Metric:</b> ((Infra cost Pre - Avg infra cost Post) / Avg infra cost Pre) * 100</div>
+          </div>
+        </div>
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">+7%</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Trading Conversion Lift</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> The increase in the share of visiting users who completed a trade.The percentage growth in the conversion rate of visiting users who completed a trade, comparing post-launch to pre-launch baselines</div>
+            <div class="stat-formula-detailed"><b>Metric:</b> ((Conversion rate Post - Conversion rate Pre) / Conversion rate Pre) * 100</div>
+          </div>
+        </div>
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">£1.2M</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Additional Quarterly Trading Volume</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> The increase in quarterly trading volume directly attributed to the new web features, adjusted for baseline market growth trends.</div>
+            <div class="stat-formula-detailed"><b>Metric:</b> Δ Quarterly Volume App - Δ Quarterly Volume Market Benchmark</div>
+          </div>
+        </div>
+      </div>
+
+    <ul>
+      <li><b>The Challenge:</b> A decade of undocumented, patchwork code left the flagship web wallet tethered to legacy account standards, suffering from severe performance degradation (20s+ load times), and structurally blocked from modern revenue channels. Decommissioning the application outright wasn't an option: doing so without a migration path risked permanently locking a significant cohort of users out of their self-custodial funds.</li>
+      <li><b>The Strategy:</b> As Product Lead, I steered a lean engineering squad (1 EM, 1 Staff Engineer, 1 Mid-Level Engineer) as we conducted a ground-up rewrite of the web app from vanilla JavaScript to a modern React/TypeScript architecture. To protect user assets, we engineered an automated, background account migration pipeline and executed a data-monitored, phased rollout to eliminate platform dependency with zero user friction.</li>
+    </ul>
+
+    <h1>Problem Statement</h1>
+    <p>For over ten years, consecutive engineering teams expanded the core web wallet using legacy primitives. While the mobile app successfully transitioned to modern standards, the web platform remained trapped in technical debt. Because a massive, highly active segment of the user base strictly preferred web over mobile, simply sunsetting the web app would have permanently cut users off from their self-custodial funds, an unacceptable operational and reputational risk. This legacy debt created a critical fracture across three key operational areas:</p>
+    <ul>
+      <li><b>Decoupled & Fragmented UX:</b> Web and mobile diverged into completely separate product experiences. This split the user base, created brand inconsistency, and doubled cross-platform engineering overhead as teams maintained two entirely different codebases.</li>
+      <li><b>Severe Performance Decay:</b> Legacy, unoptimised data-fetching layers caused debilitating front-end rendering stutter. Wallet load times frequently exceeded 20 seconds, directly driving user frustration and drop-off.</li>
+      <li><b>Lost Market Opportunity:</b> The brittle legacy architecture could not support modern revenue verticals such as custodial earning programs or detailed asset discovery. This effectively starved the business of top-line growth during critical market windows.</li>
+    </ul>
+
+    <img src="./images/Blockchain-old.webp" alt="Product-Bot conversational workflow">
+
+    <h1>1. Technical Discovery & Cross-Team Scoping</h1>
+    <p>Before touching a single line of code, we had to map a highly fragmented, undocumented legacy system. Operating blind or making assumptions about a decade of historical infrastructure wasn't an option. We structured discovery and audited systematically to de-risk the rewrite and establish our product baseline across three critical workstreams:</p>
+    <ul>
+      <li><b>Mobile Parity Mapping:</b> Conducted a comprehensive gap analysis to map the feature delta between the legacy web app and the modern mobile platform. This created our definitive product requirement roadmap to guarantee true cross-platform parity.</li>
+      <li><b>Legacy Architecture & Ownership Mapping:</b> Broke down the technical scope into explicit work packages with clear ownership lines. We mapped every upstream dependency, ensuring strict structural alignment with the Backend and SRE (Site Reliability Engineering) teams.</li>
+      <li><b>Regulatory Impact Assessment:</b> Partnered with Legal and Marketing early to map all UK Financial Promotions (FinProm) requirements against our proposed UI changes. This ensured the modernisation would fully comply with FCA guidelines around cryptocurrency asset promotions prior to deployment.</li>
+    </ul>
+
+    <h1>2. Moving to React, TypeScript & Modern State Management</h1>
+    <p>The legacy application was built entirely on unoptimised, raw vanilla JavaScript. Together with my team, we designed a migration strategy centered on modern framework efficiency: React, TypeScript, and optimised API orchestration.</p>
+
+    <pre class="code-block">[Legacy Vanilla JS] -------------&gt; [React + TypeScript Architecture]
+- Linear, un-cached data requests    - Asynchronous parallel data fetching &amp; caching
+- UI stutters &amp; blocking thread      - Component-driven virtual DOM for fluid rendering
+- 20-second page load times          - Sub-second page load times &amp; instant state updates
+- Fragile runtime behavior           - Strict compile-time validation to eliminate runtime exceptions</pre>
+
+    <ul>
+      <li><b>Boosting Performance:</b> Vanilla JS required manual DOM manipulation and sequential data-fetching calls that blocked the browser's main thread. Shifting to React introduced a component-driven framework with optimised, asynchronous parallel data fetching, ensuring the UI rendered fluidly while fetching balances in the background.</li>
+      <li><b>Type-Safety & System Stability:</b> By implementing TypeScript, we established strict compile-time validation for handling complex payloads. This cut client-side runtime exceptions to near-zero and prevented architectural regression during rapid feature additions.</li>
+    </ul>
+
+    <h1>3. The Migration Pipeline</h1>
+    <p>To safely transition users across application versions, we implemented a cookie-based routing mechanism to manage traffic allocation. While technically mutable on the client side, this lightweight approach successfully mitigated asset migration risks; the small subset of users who manually cleared cookies were simply routed safely to an environment corresponding to their new cookie value.</p>
+    <pre class="code-block">               [User Authenticates]
+                        |
+        +---------------+---------------+
+        |                               |
+  [Session Dice Roll]          [Background Service Checks]
+   (Random Value: 1-100)        - Flags legacy account versions
+        |                       - Invisibly updates DB schema to
+  (Forwarded to New App)          Unified Universal Wallet Standard
+        |                               |
+  [Monitored Rollout (5%)]     [Deprecated V3 Legacy Architecture]
+        |
+  (Fail-safe Option)
+  [Explicit Downgrade Path]</pre>
+
+    <ol>
+      <li><b>User Authentication & Routing:</b> To tightly control deployment risk, users were assigned a randomised session value between 1 and 100. Initially, only traffic falling into the 1–5 range (a 5% cohort) was routed to the new application. We closely monitored this cohort's behaviors using an Amplitude dashboard, benchmarking performance against the legacy app to give stakeholders absolute visibility before scaling traffic.</li>
+      <li><b>Upgrading Accounts:</b> When a user authenticated into the new application, a silent background job checked their account version flag. If it detected a legacy account (Type 1 or Type 2), the system automatically migrated their wallet metadata and derivation tracking schemas on the backend to support the Unified Universal Wallet Standard invisibly. This allowed the new client to seamlessly parse legacy payloads and established a clean deprecation path for the V3 architecture.</li>
+      <li><b>Risk Mitigation & Closed-Loop Feedback:</b> If a user encountered a critical edge case or preferred the legacy layout, we provided an explicit, single-click downgrade path back to V3. Upon downgrading, users were presented with a brief, contextual feedback form (covering missing features, bugs, or UX preferences). This structured qualitative data was funneled directly into weekly product prioritisation loops.</li>
+    </ol>
+
+    <h1>4. Team Execution</h1>
+    <p>Operating with a hyper-lean team required high communication density and clear, un-compromised operational standards:</p>
+    <ul>
+      <li><b>Ruthless Prioritisation:</b> I managed weekly sprints with a squad of four. We eliminated bureaucratic drag by focusing entirely on core, non-negotiable transactional functionality (Send, Receive, Buy, Sell) required to unlock subsequent rollout tiers.</li>
+      <li><b>The Documentation Mandate:</b> To ensure the organisation would never have to reverse-engineer this logic again, every single pipeline, API boundary, and architectural choice was meticulously documented with explicit owner listings.</li>
+      <li><b>Continuous Feedback:</b> We deployed early internal betas across the company. I ran weekly testing sessions with both technical and non-technical internal teams using dedicated, staging back-office funded accounts (covering both custodial and non-custodial archetypes). When public users flagged edge cases, I paired directly with the Customer Support team to manage outreach, bucket feedback, and prioritise fixes.</li>
+    </ul>
+
+    <h1>Business Outcomes</h1>
+    <p>The modernisation of the web wallet yielded immediate, compounding dividends across top-line revenue, user retention, and infrastructure efficiency.</p>
+
+    <h3>Revenue & Conversion Optimisation</h3>
+    <ul>
+      <li><b>Trading Increase:</b> The jump from a 20-second load time to a sub-second fluid experience and updated UX directly translated into user trust. Conversion into trading rates among web users increased by approximately 7% relative tobefore, scaling transactional revenue proportionally.</li>
+      <li><b>Trend Agility:</b> By capitalizing on immediate market trends, we isolated trending assets in the new pricing service, built out categorization, and spun up memecoin trading into its own dedicated app section. This feature required minimal development time and unlocked an additional ~$400K in monthly transaction volume from high-velocity traders.</li>
+      <li><b>Custodial Earning Activation:</b> Shifting to the V4 architecture allowed us to introduce Custodial Earning products to the web user base for the first time among a traditionally self-custody-heavy user segment.</li>
+    </ul>
+
+    <h3>Operational & Infrastructure Efficiency</h3>
+    <ul>
+      <li><b>-17% Data Vendor Costs:</b> Following a pricing data vendor review and close collaboration with the Business Development team to renegotiate contracts and modernise the asset discovery service, we slashed infrastructure data overhead by 17%. This unified pricing service was cross-adopted by the mobile engineering teams, standardising the company's data layer.</li>
+      <li><b>Full Legacy Deprecation:</b> By migrating the historical user base to the new unified account standard, we safely deprecated the undocumented V3 service, entirely eliminating its maintenance overhead and security risk profile.</li>
+    </ul>
+
+    <img src="./images/hero4.avif" alt="Man looking at wallet">
+
+    <h1>Lessons in Risk Management</h1>
+    <p>I learned a hard lesson in risk management during our Phase 2 rollout. Despite strong initial data, executive pressure pushed us to accelerate traffic to 20% before the initial user feedback had been fully actioned, causing a temporary spike in support tickets. I led the immediate rollback to 10%, and fixed the root cause before resuming. This taught me that 'moving fast' without operational guardrails is false speed.</p>
+
+    <h1>Key Takeaways</h1>
+    <ul>
+      <li><b>De-risking is a Product Responsibility:</b> When dealing with non-custodial crypto assets, product management cannot just focus on features. Building explicit downgrade paths and invisible background migrations proved that technical product leadership is about mitigating existential downside while driving upside.</li>
+      <li><b>High-Density, Small Teams Win:</b> A hyper-focused, closely aligned squad of three engineers and one PM out-shipped years of disconnected patchwork by ruthlessly prioritising documentation, constant alignment loops, and hard metrics.</li>
+      <li><b>Cross-Functional Advocacy Matters:</b> Successfully navigating complex regulatory landscapes requires more than just legal signoff. It demands proactive partnership with Legal and Marketing to find solutions that satisfy compliance without sacrificing user experience. Pushing back on unnecessary friction while maintaining transparency built trust across teams and with regulators.</li>
+    </ul>
+
+  </section>
+
+  <section class="closing">
+    <h2>Velocity without<br>compromise.</h2>
+  </section>
+
+  <footer>
+    <span><b>2026</b></span>
+  </footer>
+
+</div>
+
+<script>
+  // Theme was already applied in <head> (from localStorage, or system
+  // preference if nothing's saved yet).
+  const root = document.documentElement;
+
+  // Theme toggle
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  });
+</script>
+
+</body>
+</html>

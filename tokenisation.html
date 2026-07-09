@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  // Apply the saved theme immediately, before the page renders, so it
+  // carries over between pages and there's no flash of the wrong theme.
+  (function () {
+    var stored = localStorage.getItem('theme');
+    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tokenisation</title>
+<link rel="icon" type="image/png" href="./images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --text: #0d0d0d;
+    --muted: #6f6f6f;
+    --muted-2: #8a8a8a;
+    --card: #efefee;
+    --black-pill: #111111;
+    --max-width: 900px;
+    --radius-lg: 28px;
+    --radius-md: 20px;
+    --radius-pill: 999px;
+  }
+
+  [data-theme="dark"]{
+    --bg: #000;
+    --text: #f3f3f1;
+    --muted: #a8a8a8;
+    --muted-2: #8c8c8c;
+    --card: #1a1a1a;
+    --black-pill: #f3f3f1;
+  }
+
+  [data-theme="dark"] .book-call{ color:#0d0d0d; }
+  [data-theme="dark"] .badge{ color:#0d0d0d; }
+  [data-theme="dark"] .theme-toggle{ background:#222; }
+  [data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
+  [data-theme="dark"] .article-image{ background: #B4A1D5; }
+  [data-theme="dark"] .code-block{ background:#111; }
+
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease, color .25s ease;
+  }
+
+  .container{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .badge{
+    background: var(--black-pill);
+    color: var(--bg);
+    font-weight:700;
+    font-size: 14px;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .theme-toggle{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:none;
+    background:#f1f1ef;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background .2s ease;
+  }
+  .theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; }
+  .theme-toggle .icon-sun{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
+
+  .book-call{
+    background: var(--black-pill);
+    color: var(--bg);
+    border:none;
+    font-family:inherit;
+    font-weight:600;
+    font-size: 14px;
+    padding: 13px 22px;
+    border-radius: var(--radius-pill);
+    cursor:pointer;
+    white-space:nowrap;
+    display:inline-block;
+    text-decoration:none;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 28px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding-top: 56px;
+  }
+
+  .hero h1{
+    font-size: clamp(32px, calc(8.667vw - 20px), 58px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0;
+    max-width: none;
+  }
+
+  /* ---------- ARTICLE HERO ---------- */
+  .article-image{
+    margin-top: 40px;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    border-radius: var(--radius-lg);
+    background: #B4A1D5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position: relative;
+  }
+  .article-image img{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+  .stat-grid-detailed{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .stat-card-detailed{
+    background: var(--card);
+    border-radius: 22px;
+    padding: 28px 26px;
+    display:flex;
+    align-items:center;
+    gap: 20px;
+  }
+  .stat-number-detailed{
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .stat-content-detailed{
+    display:flex;
+    flex-direction:column;
+    gap: 4px;
+  }
+  .stat-title-detailed{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .stat-desc-detailed{
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .stat-formula-detailed{
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- ARTICLE BODY ---------- */
+  .article-body{
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+  .article-body h1{
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 56px 0 26px;
+  }
+  .article-body h1:first-child{ margin-top: 0; }
+  .article-body p{
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .article-body ul, .article-body ol{
+    margin: 0 0 64px;
+    padding-left: 32px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  .article-body li{ margin-bottom: 10px; }
+  .article-body li b{ color: var(--text); }
+  .article-body img{
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 32px auto;
+    border-radius: 14px;
+  }
+
+  .code-block{
+    background: var(--card);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 24px 28px;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 20px 0 28px;
+    white-space: pre;
+  }
+
+  /* ---------- CLOSING STATEMENT ---------- */
+  .closing{
+    padding: 20px 0 90px;
+  }
+  .closing h2{
+    font-size: clamp(56px, calc(33.333vw - 144px), 132px);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding: 28px 0 40px;
+    display:flex;
+    gap: 28px;
+    font-size: 16px;
+    color: var(--muted-2);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px){
+    .article-image{ aspect-ratio: 16/9; min-height: 0; }
+  }
+  @media (max-width: 600px){
+    .container{ padding: 0 20px; }
+    .closing{ padding: 90px 0 60px; }
+    footer{ flex-direction:column; gap: 6px; }
+    .code-block{ font-size: 11px; padding: 18px; }
+    .stat-card-detailed{ flex-direction:column; align-items:flex-start; gap: 14px; padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+      <a class="book-call" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>RWA Tokenisation: Bringing Commodities On-Chain</h1>
+    <div class="article-image">
+      <img src="./images/U308.png" alt="Uranium tokenisation case study" />
+    </div>
+  </section>
+
+  <section class="article-body">
+    <h1>Executive Summary</h1>
+    <div class="stat-grid-detailed">
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">$14M</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Total-Value-Locked (TVL)</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> Total-Value-Locked (TVL) accumulated across the tokenised commodity pools (xU3O8, VNXAU, RARE) on Etherlink.</div>
+          </div>
+        </div>
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">75K+</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Onchain Transfers</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> On-Chain Transfers recorded across the asset suite.</div>
+          </div>
+        </div>
+        <div class="stat-card-detailed">
+          <div class="stat-number-detailed">3.1K+</div>
+          <div class="stat-content-detailed">
+            <div class="stat-title-detailed">Active Holders</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> Active Holders across unique wallet addresses</div>
+          </div>
+        </div>
+      </div>
+
+    <p>In response to global macroeconomic energy shocks and accelerating AI-driven power demands, Uranium.io launched as an industry-first MVP to prove market demand for tokenised Uranium on-chain. The project unlocked retail access to a traditionally high-barrier asset class while serving as a high-velocity user acquisition funnel for Etherlink (a Tezos EVM Layer 2 rollup).<br>Following a successful proof-of-concept, the infrastructure scaled horizontally into Metals.io, expanding the platform's footprint across a broad suite of macro-narrative commodities, including Gold, Cobalt, Nickel, Palladium, and a specialised Rare Earth basket.</p>
+
+    <h1>Problem Statement</h1>
+    <p>Historically, there was no simple way to speculate on uranium pricing within the crypto ecosystem. Traditional commodity trading is plagued by prohibitive frictions: physical uranium trading requires a strict minimum lot size of 50,000 pounds, demanding an investment of approximately $4.2 million per position ($84/lb at time of writing). This multi-million dollar capital gate, combined with complex, opaque OTC onboarding structures, made the asset fairly hostile to retail investors and mid-market allocators alike.</p>
+
+    <h1>Market Discovery and Validation</h1>
+    <p>Rather than relying on traditional consumer user testing or localised interviews, product validation was driven by an aggressive macroeconomic thesis. Real-World Assets (RWAs) in crypto were expanding exponentially, and our evaluation focused strictly on tracking macroscopic capital demand signals. The strategic bet was simple: marrying an outperforming macro asset with fractionalised on-chain infrastructure would instantly unlock a high-conviction pipeline of digital asset allocators seeking direct commodity exposure without traditional operational or capital friction. Uranium was intentionally selected to anchor the MVP based on two converging market factors:</p>
+    <ul>
+      <li><b>Macroeconomic Outperformance:</b> Driven by global energy supply constraints and surging AI data center power requirements, spot uranium was aggressively outperforming the S&P 500 index.</li>
+      <li><b>Asymmetric Access Barriers:</b> Despite high market demand, traditional market access was locked behind a strict $4.2M OTC minimum lot size.</li>
+    </ul>
+
+    <img src="./images/rwaxyz.png" alt="rwaxyz data">
+
+    <h1>Physical vs Synthetic</h1>
+    <p>During the initial design phase it was explored wether we should launch as a synthetic derivative tracking the price index (like perpetuals or synthetic pool tokens) or a 100% physically backed asset? It was eventually decided to go for a fully backed, transparently audited physical model for three structural reasons:</p>
+    <ul>
+      <li><b>Elimination of Funding Rate Volatility:</b> Synthetics rely on continuous funding rate payments or premium/discount arbitrage pools to maintain their peg. For a highly niche, illiquid spot commodity like uranium, a synthetic model would have exposed retail users to predatory funding fees during structural market expansions.</li>
+      <li><b>Capturing Institutional Allocators:</b> Mid-market funds and institutional macro allocators do not want counterparty smart-contract or liquidation risk associated with derivative pools. They demand direct, beneficial legal ownership of the underlying commodity.</li>
+      <li><b>Solvency & Audit Anchoring:</b> By choosing a 100% physically backed token mapped to physical inventory held in trusted vaults (e.g., Cameco), we eliminated delta risk for the platform and anchored user trust in verified, audited real-world reserves.</li>
+    </ul>
+
+    <h1>Architecture & Operations</h1> 
+    <pre class="code-block">[ TOKENS TRADED ON-CHAIN ] ──► Etherlink L2 EVM Rollup (xU3O8, VNXAU, RARE)
+                                     │
+                                     ▼
+[ COMPLIANCE / LEGAL ENGINE ] ──► Issuers: VNX (Gold) | Noemon Tech (Rare Earths)
+                                     │
+                                     ▼
+[ REAL-WORLD VALUE ANCHOR ] ──► Independent Vaulting & Tier-1 Custody Hubs:
+                                ├── Gold: AAA Vaults (Liechtenstein) [Insured]
+                                ├── Uranium: Cameco Facilities [Insured]
+                                └── Strategic Metals: Logistics Vaults (Frankfurt) [Insured]</pre>
+
+    <h1>Physical Storage, Logistics, & Supply Chain</h1>
+    <p>As the tokenised assets were phyiscally backed 1:1 there was no user miniting process, any new tokens would only be issued by the project once new inventory was aquired and sent to be stored with our regulated partners:</p>
+    <ul>
+      <li><b>Cameco & Curzon:</b> Physical uranium ore concentrate (U308 or "yellowcake") backing the xU3O8 token was physically warehoused in highly secure, heavily regulated industrial storage facilities operated by Cameco. Commodity powerhouse Curzon Uranium which has transacted over $1 billion in physical uranium since its inception acted as the OTC broker supplying the physical U308.</li>
+      <li><b>Strategic & Tech Metals Storage:</b> The physical assets backing the platform's broader mineral offerings were centralised across two separate secure European hubs: allocated gold was stored in secure, AAA-rated vaults in Liechtenstein, while strategic high-tech metals were isolated in secure logistics vaults in Frankfurt.</li>
+    </ul>
+
+    <h1>Issuance & Tokenisation</h1>
+    <p>Because the platform acts strictly as an infrastructure layer, the underlying physical assets were not exposed to platform operational risk. Insurance and risk safeguarding were tied directly to the specific legal jurisdictions and institutional partners holding the physical raw materials.</p>
+    <ul>
+      <li><b>VNX (Gold Issuance):</b> A European digital asset platform that acted as the legal issuer for the gold portion of the platform (VNXAU). VNX guaranteed that each token corresponded directly to a specific, allocated physical gold bar under strict regulatory standards.</li>
+      <li><b>Noemon Tech (Structured Baskets):</b> An asset manager that structured and issued the platform's proprietary RARE token. Noemon handled the complex index-weighting and compliance architecture for the strategic metals basket, managing financial exposure to critical high-tech elements like hafnium, rhenium, indium, and neodymium oxide.</li>
+      <li><b>Archax (Institutional Custody Wrapper):</b> An FCA-regulated digital asset exchange and broker that Responsible for tokenisation, trustee account setup, and RWA administration and custody via Cameco as U3O8 custodian.</li>
+    </ul>
+
+    <h1>Contract Deployment</h1>
+    <p> The ERC-20 token contract based on OpenZepplin's ERC1967Proxy.sol contract was deployed on Etherlink. This contract for the xU308 toekn represented beneficial ownership / fractional shares of the pre-held physical inventory.</p>
+
+    <h1>The Spot Price Oracle</h1>
+    <p>Uranium does not trade on an open real-time centralised order book, prices rely on periodic, static prints from price reporting agencies like Numerco. To facilitate trading and borrowing, a proprietary model-derived price feed oracle was created:</p>
+    <ul>
+      <li><b>Data Sources:</b> The oracle ingested intraday spot data from Numerco and combined it with correlated market proxies (including uranium mining equities, energy ETFs, and indirectly correlated commodities such as natural gas and crude)</li>
+      <li><b>On-Chain:</b> The oracle published a fair-value estimate of the xU308 spot benchmark between official prints, refreshing every 60 seconds on-chain to provide a continuous price reference.</li>
+    </ul>
+
+    <img src="./images/Uranium-oracle.png" alt="x402 whitepaper">
+    
+    <h1>Decentralised Trading & KYC</h1>
+    <p>To maximise trading and lower the barrier to entry, the platform decoupled speculative trading from physical asset interaction:</p>
+    <ul>
+      <li><b>Permissionless Speculation:</b> Retail and institutional users looking purely to trade, hedge, or speculate on the price of assets did not require KYC/AML onboarding. They only needed to connect an EVM-compatible wallet (such as MetaMask) supporting the Etherlink network to interact with our front end trading UI or any other protocol with access to a supprted Liquidity Pool.</li>
+      <li><b>Issuance and Redemption:</b> Full identity verification, corporate onboarding and KYC/AML checks were enforced only for users seeking to deposit physical assets onto the platform to be tokenised, or those initiating physical settlement.</li>
+    </ul>
+
+    <h1>Physical Redemption</h1>
+    <p>While financial exposure remained entirely permissionless on-chain, physical redemption was restricted to a manual, highly gated out-of-band request. To satisfy this request and adhere with strict international nuclear asset regulations, an applicant had to satisfy rigorous prerequisites:</p>
+    <ul>
+      <li><b>Compliance:</b> Successful completion of the localised KYC/AML, corporate onboarding, and financial appropriateness checks.</li>
+      <li><b>Regulatory Eligibility:</b> The applicant must be a licensed industrial end-user, utility, or approved commodity trader with valid regulatory authorisation to handle nuclear materials.</li>
+      <li><b>Vault Infrastructure:</b> The applicant must hold an active, verified account at an approved, licensed conversion or warehousing facility (e.g., Cameco) capable of receiving hazardous material transfers.</li>
+      <li><b>Commercial Minimums:</b> Deliveries were subject to commercial minimum delivery sizes (multi-ton lots), ensuring that fractional retail positions could only exit by selling their tokens.</li>
+    </ul>
+
+    <h1>Exchanges & Liquidity</h1>
+    <p>To attract external capital without fragmenting the underlying asset across other chains, we partnered with Li.Fi for the liquidity pools and cross chain trading. By embedding EVM-to-EVM cross-chain routing users could swap USDC from external networks seamlessly into the native Etherlink xU3O8 pools. Additionally, in co-ordination with BD teams the project worked directly with centralised exchanges to get xU3O8 listed for active trading.</p>
+
+    <h1>Business Outcomes</h1>
+    <ul>
+      <li><b>The First Uranium Oracle:</b> We launched launch the world's first live, model-derived on-chain oracle for U308 spot pricing.</li>
+      <li><b>Ecosystem Velocity:</b> Delivered an operational growth funnel for Etherlink, capturing cross-chain EVM liquidity via bridge integrations and keeping the asset anchored to the home chain to drive TVL.</li>
+      <li><b>Unlocking Capital Efficiency:</b> Integrated the token primitives into secondary DeFi money markets on Etherlink, allowing users to utilise xU3O8 as an on-chain collateral asset to borrow USDC via protocols like Oku, unlocking liquidity without forcing a taxable sale of the underlying asset exposure.</li>
+      <li><b>Modular Infrastructure Reusability:</b> Scaled horizontally from a single-asset MVP (Uranium.io) to a multi-asset commodity platform (Metals.io). When market narratives shifted, the platform rapidly deployed supported pools for Gold, Cobalt, Nickel, Palladium, and a specialised Rare Earth metal basket without rewriting the core compliance or tokenisation engines.</li>
+      <li><b>TradFi Capital:</b> In a strategic move to capture mainstream institutional capital and expand beyond crypto-native rails, registration filings were filed with the SEC for a Metals.io Uranium ETF. This ongoing regulatory initialisation represents a major pivot toward wrapping on-chain commodity supply chains into legacy TradFi exchange vehicles.</li>
+    </ul>
+
+    <h1>Key Takeaways</h1>
+    <ul>
+      <li><b>The Liquidity-Exclusivity Trap:</b> Keeping these commodity assets exclusive to Etherlink effectively served the ecosystem goal of driving native L2 TVL, but it capped the absolute growth ceiling of the product. In hindsight cross-chain issuance could have tapped into deeper user numbers and liquidity on Ethereum, potentially 5x-ing absolute TVL, though at the expense of Etherlink exclusivity.</li>
+      <li><b>Modular Scalability:</b> Designing compliance, onboarding, and custody rails as independent, modular components allows a Web3 platform to switch or add underlying asset classes (from uranium to rare earth metals) seamlessly in response to shifting macroeconomic trends.</li>
+    </ul>
+
+  </section>
+
+  <section class="closing">
+    <h2>Velocity without<br>compromise.</h2>
+  </section>
+
+  <footer>
+    <span><b>2026</b></span>
+  </footer>
+
+</div>
+
+<script>
+  // Theme was already applied in <head> (from localStorage, or system
+  // preference if nothing's saved yet).
+  const root = document.documentElement;
+
+  // Theme toggle
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  });
+</script>
+
+</body>
+</html>

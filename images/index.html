@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fractional Product Leader</title>
+<link rel="icon" type="image/png" href="./images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --text: #0d0d0d;
+    --muted: #6f6f6f;
+    --muted-2: #8a8a8a;
+    --card: #efefee;
+    --card-border: #e7e7e5;
+    --black-pill: #111111;
+    --green: #2fbf6f;
+    --green-text: #0d3a1f;
+    --placeholder-bg: #ece8e1;
+    --placeholder-border: #d8d2c6;
+    --placeholder-text: #9b9486;
+    --max-width: 900px;
+    --radius-lg: 28px;
+    --radius-md: 20px;
+    --radius-pill: 999px;
+  }
+
+  [data-theme="dark"]{
+    --bg: #000;
+    --text: #f3f3f1;
+    --muted: #a8a8a8;
+    --muted-2: #8c8c8c;
+    --card: #1a1a1a;
+    --card-border: #262626;
+    --black-pill: #f3f3f1;
+    --placeholder-bg: #1c1a17;
+    --placeholder-border: #2c2924;
+    --placeholder-text: #6f695c;
+  }
+
+  [data-theme="dark"] .book-call{ color:#0d0d0d; }
+  [data-theme="dark"] .badge{ color:#0d0d0d; }
+  [data-theme="dark"] .theme-toggle{ background:#222; }
+  [data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
+
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease, color .25s ease;
+  }
+
+  .container{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 28px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  .badge{
+    background: var(--black-pill);
+    color: var(--bg);
+    font-weight:700;
+    font-size: 14px;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .theme-toggle{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:none;
+    background:#f1f1ef;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background .2s ease;
+  }
+  .theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; }
+  .theme-toggle .icon-sun{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
+  .book-call{
+    background: var(--black-pill);
+    color: var(--bg);
+    border:none;
+    font-family:inherit;
+    font-weight:600;
+    font-size: 14px;
+    padding: 13px 22px;
+    border-radius: var(--radius-pill);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding-top: 56px;
+  }
+  .hero h1{
+    font-size: clamp(32px, calc(8.667vw - 20px), 58px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-align: center;
+    max-width: none;
+  }
+  .hero p.intro{
+    color: var(--muted);
+    font-size: 16px;
+    text-align: center;
+    line-height: 1.3;
+    max-width: 420px;
+    margin: 22px 0 0;
+  }
+
+  .hero-image{
+    margin-top: 40px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, #e7d8cf 0%, #fffcf8 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position: relative;
+  }
+  [data-theme="dark"] .hero-image{
+    background: linear-gradient(180deg, #2F2A26 0%, #57534C 100%);
+  }
+  .hero-image img{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+  .placeholder-label{
+    color: var(--placeholder-text);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- SECTION SPACING ---------- */
+  section.block{
+    padding-top: 110px;
+  }
+  section.block h2{
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 800;
+    margin: 0 0 36px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- WHY WORK WITH ME ---------- */
+  .why-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .why-card{
+    background: var(--card);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .why-card h3{
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+  .why-card p{
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  /* ---------- CASE STUDIES ---------- */
+  .case-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .case-preview{
+    display:flex;
+    align-items:center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    background: var(--case-bg, var(--card));
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--case-text, var(--text));
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .case-preview:hover{
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  .case-preview-image{
+    flex: 1 1 50%;
+    aspect-ratio: 1 / 1;
+    overflow:hidden;
+    position: relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .case-preview-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .case-preview-content{
+    flex: 1 1 50%;
+  }
+  .case-preview-content h3{
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin: 0;
+  }
+  @media (max-width: 600px){
+    .case-preview{
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .case-preview-image,
+    .case-preview-content{
+      flex: none;
+      width: 100%;
+    }
+  }
+
+  /* ---------- SERVICES ---------- */
+  .services-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+  .services-cards{
+    display:flex;
+    flex-direction:column;
+    gap: 18px;
+  }
+  .service-card{
+    background: var(--card);
+    border-radius: var(--radius-md);
+    padding: 26px 28px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .service-card .title-row{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .service-card h3{
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .pill-tag{
+    background: var(--green);
+    color: var(--green-text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+  }
+  .service-card p{
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.3;
+    margin: 0;
+  }
+  .services-image{
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .services-cards{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .services-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ---------- CLOSING STATEMENT ---------- */
+  .closing{
+    padding: 130px 0 90px;
+  }
+  .closing h2{
+    font-size: clamp(56px, calc(33.333vw - 144px), 132px);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding: 28px 0 40px;
+    display:flex;
+    gap: 28px;
+    font-size: 13px;
+    color: var(--muted-2);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px){
+    .why-grid{ grid-template-columns: repeat(2, 1fr); }
+    .case-grid{ grid-template-columns: 1fr; }
+    .services-grid{ grid-template-columns: 1fr; }
+    .services-image{ aspect-ratio: 16/10; }
+  }
+  @media (max-width: 600px){
+    .container{ padding: 0 20px; }
+    .why-grid{ grid-template-columns: 1fr; }
+    section.block{ padding-top: 80px; }
+    .closing{ padding: 90px 0 60px; }
+    footer{ flex-direction:column; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="badge">0-21</div>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+      <button class="book-call">Book a call</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Move fast & Ship excellence.<br>Deliver clarity, structure and product success.</h1>
+    <p class="intro">Hey, I'm Franklyn. I'm a product leader and ex-founder with 13+ years of experience scaling Web3 and fintech startups. I bridge the gap between strategic direction and technical execution to unblock roadmaps, accelerate time-to-market, and drive results in weeks, not months.</p>
+    <div class="hero-image">
+      <img src="./images/hero-dark.png" alt="Product mockup" />
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>How I Deliver Value</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <h3>Velocity Without Compromise</h3>
+        <p>I implement focused, time-bound frameworks to trim the noise, align stakeholders, and get high-quality products to market fast.</p>
+      </div>
+      <div class="why-card">
+        <h3>Tech & Business Fluency</h3>
+        <p>My background bridges technical execution and business strategy, ensuring engineering teams get clear, buildable direction immediately.</p>
+      </div>
+      <div class="why-card">
+        <h3>Ecosystem Alignment</h3>
+        <p>I coordinate across founders, core engineering, regulatory legal teams, and external integration partners to drive execution.</p>
+      </div>
+      <div class="why-card">
+        <h3>High-Stakes Experience</h3>
+        <p>I de-risk complex product lifecycles, from launching new products to leading high-risk, large-scale user migrations and refactors.</p>
+      </div>
+      <div class="why-card">
+        <h3>Data-Driven Optimisation</h3>
+        <p>I design optimised pipelines, technical funnels, and data-backed product strategies that measurably lift core performance & conversion.</p>
+      </div>
+      <div class="why-card">
+        <h3>Instant Onboarding & ROI</h3>
+        <p>I step directly into your environment as a plug-and-play leader, immediately identifying critical engineering bottlenecks to unblock your team.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Case Studies</h2>
+    <div class="case-grid">
+      <a class="case-preview" href="./ai.html" style="--case-bg:#A2978C; --case-text:#3a1622;">
+        <div class="case-preview-image">
+          <img id="themeImage" src="./images/Productbot.png" alt="Product Bot" />
+        </div>
+        <div class="case-preview-content">
+          <h3>Driving Engineering Velocity: Automation and AI-Native Workflows</h3>
+        </div>
+      </a>
+      <a class="case-preview" href="./superapp.html" style="--case-bg:#FFE6E8; --case-text:#522420;">
+        <div class="case-preview-image">
+          <img id="themeImage" src="./images/Blockchain.png" alt="Blockchain Logo" />
+        </div>
+        <div class="case-preview-content">
+          <h3>Modernising a Global Crypto App: 10 Years of Debt to Zero-Loss Migration</h3>
+        </div>
+      </a>
+      <a class="case-preview" href="./tokenisation.html" style="--case-bg:#B4A1D5; --case-text:#3c1a40;">
+        <div class="case-preview-image">
+          <img id="themeImage" src="./images/U308.png" alt="xU308 Tokens" />
+        </div>
+        <div class="case-preview-content">
+          <h3>RWA Tokenisation: Bringing Commodities On-Chain</h3>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Services</h2>
+    <div class="services-grid">
+      <div class="services-cards">
+        <div class="service-card">
+          <div class="title-row">
+            <h3>Fractional Product Leadership</h3>
+            <span class="pill-tag">Open</span>
+          </div>
+          <p>Ongoing roadmap oversight, weekly sprint leadership, and direct founder advisory embedded into your team on a part-time retainer basis. Ideal for venture-backed start-ups to scale engineering pipelines without the overhead of a full-time executive hire. Limited concurrent client slots.</p>
+        </div>
+        <div class="service-card">
+          <div class="title-row">
+            <h3>Product Audits & Health Checks</h3>
+          </div>
+          <p>A clinical, objective diagnostic of your current product operations, backlog mechanics, and cross-functional pipelines. I dive deep into your architecture to pinpoint exact technical friction points and deliver a prioritized 30-60-90 day remediation playbook.</p>
+        </div>
+        <div class="service-card">
+          <div class="title-row">
+            <h3>PM Mentoring & Team Upskilling</h3>
+          </div>
+          <p>Direct 1-on-1 coaching designed to scale your existing product managers. I embed framework discipline, technical scoping execution, and "bilingual" developer communication strategies directly into your team's daily workflows to level up your internal talent.</p>
+        </div>
+      </div>
+      <div class="services-image">
+        <img src="https://images.unsplash.com/photo-1511376979163-f804dff7ad7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session" />
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <h2>Velocity without<br>compromise.</h2>
+  </section>
+
+  <footer>
+    <span><b>© 2026</b></span>
+  </footer>
+
+</div>
+
+<script>
+  // Initialize theme from system preference
+  const root = document.documentElement;
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light');
+
+  // Theme toggle
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  });
+
+    // Update image based on theme
+  function updateThemeImage(theme) {
+    const themeImage = document.getElementById('themeImage');
+    if (themeImage) {
+      themeImage.src = theme === 'dark' ? './images/hero-dark.png' : './images/hero-light.png';
+    }
+  }
+
+</script>
+
+</body>
+</html>

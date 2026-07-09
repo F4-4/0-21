@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  // Apply the saved theme immediately, before the page renders, so it
+  // carries over between pages and there's no flash of the wrong theme.
+  (function () {
+    var stored = localStorage.getItem('theme');
+    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Crypto PM</title>
+<link rel="icon" type="image/png" href="./images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --text: #0d0d0d;
+    --muted: #6f6f6f;
+    --muted-2: #8a8a8a;
+    --card: #efefee;
+    --black-pill: #111111;
+    --max-width: 900px;
+    --radius-lg: 28px;
+    --radius-md: 20px;
+    --radius-pill: 999px;
+  }
+
+  [data-theme="dark"]{
+    --bg: #000;
+    --text: #f3f3f1;
+    --muted: #a8a8a8;
+    --muted-2: #8c8c8c;
+    --card: #1a1a1a;
+    --black-pill: #f3f3f1;
+  }
+
+  [data-theme="dark"] .book-call{ color:#0d0d0d; }
+  [data-theme="dark"] .badge{ color:#0d0d0d; }
+  [data-theme="dark"] .theme-toggle{ background:#222; }
+  [data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
+
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease, color .25s ease;
+  }
+
+  .container{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .badge{
+    background: var(--black-pill);
+    color: var(--bg);
+    font-weight:700;
+    font-size: 14px;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .theme-toggle{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:none;
+    background:#f1f1ef;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background .2s ease;
+  }
+  .theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; }
+  .theme-toggle .icon-sun{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
+
+  .book-call{
+    background: var(--black-pill);
+    color: var(--bg);
+    border:none;
+    font-family:inherit;
+    font-weight:600;
+    font-size: 14px;
+    padding: 13px 22px;
+    border-radius: var(--radius-pill);
+    cursor:pointer;
+    white-space:nowrap;
+    display:inline-block;
+    text-decoration:none;
+  }
+
+  /* Extra theme tokens used only on this page, on top of the
+     shared ones above */
+  :root{
+    --card-border: #e7e7e5;
+    --green: #2fbf6f;
+    --green-text: #0d3a1f;
+    --placeholder-bg: #ece8e1;
+    --placeholder-border: #d8d2c6;
+  }
+
+  [data-theme="dark"]{
+    --card-border: #262626;
+    --placeholder-bg: #1c1a17;
+    --placeholder-border: #2c2924;
+  }
+
+  /* This page's <body> needs overflow-x hidden (the hero photos
+     bleed past the edge); shared base only sets margin/padding. */
+  html, body{ overflow-x: hidden; }
+
+  /* This page's theme toggle gets a lift on hover; other pages don't. */
+  .theme-toggle{
+    transition: background .2s ease, transform .2s ease;
+  }
+  .theme-toggle:hover{
+    transform: translateY(-2px);
+  }
+
+  /* This page's Book a call button also lifts on hover. */
+  .book-call{
+    transition: transform .2s ease;
+  }
+  .book-call:hover{
+    transform: translateY(-2px);
+  }
+
+  /* This page's header is fixed/overlaying, so .container needs
+     extra top padding to clear it (28px top padding + 46px badge
+     height) — the base .container rule above has none. */
+  .container{
+    padding-top: 74px;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 28px 0 0;
+    transition: background .25s ease;
+  }
+  .header-inner{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    min-height: clamp(720px, 94vh, 960px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0px 0px;
+    overflow: visible;
+    /* Offset the fixed header's visual weight so the content optically
+       centers in the viewport rather than the header pushing it down. */
+
+  }
+  .hero-photos{
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero-photo{
+    position: absolute;
+    pointer-events: auto;
+    will-change: transform;
+    transform: translateY(var(--parallax-y, 0px));
+  }
+  .hero-photo-inner{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 28px;
+    background-color: var(--placeholder-bg);
+    border: 1px solid var(--placeholder-border);
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.06);
+    overflow: hidden;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale3d(var(--tilt-scale, 1), var(--tilt-scale, 1), 1);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.6s ease;
+  }
+  /* While the cursor is actively moving over the card it still eases toward
+     each new angle (just a bit quicker than the reset below) instead of
+     snapping straight to the cursor — that's what gives it a smooth,
+     slightly-trailing feel rather than an instant, jittery follow. */
+  .hero-photo-inner.tilting{
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.6s ease;
+  }
+  .hero-photo-inner:hover,
+  .hero-photo-inner.tilting{
+    box-shadow: 0 28px 64px rgba(0,0,0,0.22);
+  }
+  .hero-photo-glow{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: var(--glow-opacity, 0);
+    transition: opacity 0.5s ease;
+    background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(255,255,255,0.55), rgba(255,255,255,0) 60%);
+    mix-blend-mode: overlay;
+  }
+  /* Each photo is offset by a FIXED pixel amount from the hero-content's
+     centre line (calc(50% - Npx)) rather than a %/vw size, matched to the
+     exact positions in the design mockup. That means they stay put at a
+     constant size while the page is wide, and only start sliding
+     off-screen / shrinking once the viewport narrows down near the
+     breakpoints where the rest of the page also starts reflowing.
+     They intentionally overlap the text in places — .hero-photos sits at
+     a lower z-index than .hero-content, so the text always stays
+     legible on top, and it's fine for the two to visually overlap/stack
+     as the parallax shifts them on scroll. Swap the background-image
+     urls below for your real photos whenever you're ready. */
+  .hero-photo-1{ left: calc(50% - 750px); top: 110px;  width: 300px; height: 420px; }
+  .hero-photo-2{ left: calc(50% - 100px);  top: -124px; width: 400px; height: 320px; }
+  .hero-photo-3{ right: calc(50% - 750px); top: 143px;  width: 300px; height: 353px; }
+  .hero-photo-4{ left: calc(50% - 650px); top: 560px; width: 300px; height: 300px; }
+  .hero-photo-5{ right: calc(50% - 687px); top: 450px; width: 300px; height: 450px; }
+  .hero-photo-1 .hero-photo-inner{ background-image: url('./images/hero1.avif'); }
+  .hero-photo-2 .hero-photo-inner{ background-image: url('./images/hero2.avif'); }
+  .hero-photo-3 .hero-photo-inner{ background-image: url('./images/hero3.avif'); }
+  .hero-photo-4 .hero-photo-inner{ background-image: url('./images/hero4.avif'); }
+  .hero-photo-5 .hero-photo-inner{ background-image: url('./images/hero5.avif'); }
+
+  .hero-content{
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .hero h1{
+    font-size: clamp(34px, calc(9.2vw - 20px), 58px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .hero p.intro{
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.3;
+    max-width: 460px;
+    margin: 22px 0 0;
+  }
+  .hero-cta{
+    margin-top: 30px;
+  }
+  .hero-cta-row{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    margin-top: 30px;
+  }
+  .hero-cta-row .book-call{
+    margin-top: 0;
+  }
+  .linkedin-btn{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    flex-shrink:0;
+  }
+  .linkedin-btn svg{ width:20px; height:20px; fill: var(--text); }
+  .linkedin-btn:hover{
+    background: var(--card-border);
+    transform: translateY(-2px);
+  }
+
+  /* ---------- SECTION SPACING ---------- */
+  section.block{
+    position: relative;
+    z-index: 2;
+    padding-top: 100px;
+  }
+  section.block h2{
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 800;
+    margin: 0 0 36px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- WHY WORK WITH ME ---------- */
+  .why-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .why-card{
+    background: var(--card);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .why-card h3{
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+  .why-card p{
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  /* ---------- CASE STUDIES ---------- */
+  .case-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .case-preview{
+    display:flex;
+    align-items:center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    background: var(--case-bg, var(--card));
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--case-text, var(--text));
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .case-preview:hover{
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  .case-preview-image{
+    flex: 1 1 50%;
+    aspect-ratio: 1 / 1;
+    overflow:hidden;
+    position: relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .case-preview-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .case-preview-content{
+    flex: 1 1 50%;
+  }
+  .case-preview-content h3{
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin: 0;
+  }
+  @media (max-width: 600px){
+    .case-preview{
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .case-preview-image,
+    .case-preview-content{
+      flex: none;
+      width: 100%;
+    }
+  }
+
+  /* ---------- SERVICES ---------- */
+  .services-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+  .services-cards{
+    display:flex;
+    flex-direction:column;
+    gap: 18px;
+  }
+  .service-card{
+    background: var(--card);
+    border-radius: var(--radius-md);
+    padding: 26px 28px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .service-card .title-row{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .service-card h3{
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .pill-tag{
+    background: var(--green);
+    color: var(--green-text);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+  .service-card p{
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.3;
+    margin: 0;
+  }
+  .services-image{
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .services-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ---------- CLOSING STATEMENT ---------- */
+  .closing{
+    position: relative;
+    z-index: 2;
+    padding: 130px 0 90px;
+  }
+  .closing h2{
+    font-size: clamp(56px, calc(33.333vw - 144px), 132px);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    position: relative;
+    z-index: 2;
+    padding: 28px 0 40px;
+    display:flex;
+    gap: 28px;
+    font-size: 13px;
+    color: var(--muted-2);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px){
+    .why-grid{ grid-template-columns: repeat(2, 1fr); }
+    .case-grid{ grid-template-columns: 1fr; }
+    .services-grid{ grid-template-columns: 1fr; }
+    .services-image{ aspect-ratio: 16/10; }
+  }
+  @media (max-width: 600px){
+    .container{ padding: 74px 20px 0; }
+    .header-inner{ padding: 0 20px; }
+    .why-grid{ grid-template-columns: 1fr; }
+    section.block{ padding-top: 80px; }
+    .closing{ padding: 90px 0 60px; }
+    footer{ flex-direction:column; gap: 6px; }
+
+    .hero{ min-height: auto; margin-top: 0; padding: 36px 20px 64px; flex-direction: column; }
+    .hero-content{ order: 1; max-width: 100%; }
+    .hero-photos{
+      position: static;
+      inset: auto;
+      order: 2;
+      width: 100%;
+      pointer-events: auto;
+      margin-top: 32px;
+    }
+    .hero-photo-1,
+    .hero-photo-3,
+    .hero-photo-4,
+    .hero-photo-5{ display: none; }
+    .hero-photo-2{
+      position: static;
+      left: auto; right: auto; top: auto;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 300 / 250;
+      transform: none !important;
+    }
+  }
+
+  /* ---------- CURSOR TRAIL ---------- */
+  #cursor-trail-container{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+  }
+  .trail-img{
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity, filter;
+  }
+  .trail-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: inherit;
+  }
+
+  /* ---------- TESTIMONIAL ---------- */
+  .testimonial-section{
+    padding: 80px 0 20px;
+  }
+  .testimonial-card{
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 32px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .testimonial-body{
+    font-size: clamp(16px, 2.2vw, 16px);
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+  .testimonial-author{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .testimonial-avatar{
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--placeholder-bg);
+    border: 2px solid var(--card-border);
+    flex-shrink: 0;
+    display: block;
+  }
+  .testimonial-meta{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .testimonial-name{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .testimonial-role{
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  @media (max-width: 600px){
+    .testimonial-card{ padding: 36px 28px; }
+    .testimonial-body{ font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="header-inner">
+    <div class="badge">0-21</div>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+      <a class="book-call" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
+    </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-photos">
+      <div class="hero-photo hero-photo-1" data-speed="0.10"><div class="hero-photo-inner"><div class="hero-photo-glow"></div></div></div>
+      <div class="hero-photo hero-photo-2" data-speed="0.24"><div class="hero-photo-inner"><div class="hero-photo-glow"></div></div></div>
+      <div class="hero-photo hero-photo-3" data-speed="0.16"><div class="hero-photo-inner"><div class="hero-photo-glow"></div></div></div>
+      <div class="hero-photo hero-photo-4" data-speed="0.20"><div class="hero-photo-inner"><div class="hero-photo-glow"></div></div></div>
+      <div class="hero-photo hero-photo-5" data-speed="0.13"><div class="hero-photo-inner"><div class="hero-photo-glow"></div></div></div>
+    </div>
+    <div class="hero-content">
+      <h1>Move fast & Ship excellence.<br>Deliver clarity, structure and product success.</h1>
+      <p class="intro">Hey, I'm Franklyn 👋. The crypto product manager an ex-founder with 13+ years of experience helping scale Web3 and fintech startups. I bridge the gap between strategic direction and technical execution to unblock roadmaps, accelerate time-to-market, and <b>drive results in weeks, not months.</b></p>
+      <div class="hero-cta-row">
+        <a class="book-call hero-cta" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
+        <a class="linkedin-btn" href="https://www.linkedin.com/in/franklyn402/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.59 0 4.27 2.36 4.27 5.44v6.3zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>How I Deliver Value</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <h3>Velocity Without Compromise</h3>
+        <p>I implement focused, time-bound frameworks to trim the noise, align stakeholders, and get high-quality products to market fast.</p>
+      </div>
+      <div class="why-card">
+        <h3>Tech & Business Fluency</h3>
+        <p>My background bridges technical execution and business strategy, ensuring engineering teams get clear, buildable direction immediately.</p>
+      </div>
+      <div class="why-card">
+        <h3>Ecosystem Alignment</h3>
+        <p>I coordinate across founders, core engineering, regulatory legal teams, and external integration partners to drive execution.</p>
+      </div>
+      <div class="why-card">
+        <h3>High-Stakes Experience</h3>
+        <p>I de-risk complex product lifecycles, from launching new products to leading high-risk, large-scale user migrations and refactors.</p>
+      </div>
+      <div class="why-card">
+        <h3>Data-Driven Optimisation</h3>
+        <p>I design optimised pipelines, technical funnels, and data-backed product strategies that measurably lift core performance & conversion.</p>
+      </div>
+      <div class="why-card">
+        <h3>Instant Onboarding & ROI</h3>
+        <p>I step into your environment as a plug-and-play leader, immediately identifying critical bottlenecks to unblock your team.</p>
+      </div>
+    </div>
+  </section>
+
+    <section class="testimonial-section">
+    <div class="testimonial-card">
+      <p class="testimonial-body">Franklyn delivered a strong performance, demonstrating deep product knowledge, sharp market awareness, and ownership of the roadmap. Their ability to anticipate market shifts and translate insights into concrete product direction materially strengthened product trajectory. They constantly operate with urgency, pragmatism, and a high bar for quality, and they are someone who takes clear ownership, translates strategy into actionable plans and drives initiatives forward.<br><br> Their mastery of senior stakeholders has been a real asset, helping protect delivery timelines and outcomes. Peers describe them as "collaborative, pragmatic, and having a clear desire to build great products", and as someone who creates an environment where the team feels "empowered, trusted, and encouraged to take responsibility".</p>
+      <div class="testimonial-author">
+        <!-- Replace src with your image path, e.g. "./images/testimonial-avatar.jpg" -->
+        <img
+          class="testimonial-avatar"
+          src="./images/Katelyn.webp"
+          alt="Katie Hegarty"
+        />
+        <div class="testimonial-meta">
+          <span class="testimonial-name">Katie Hegarty</span>
+          <span class="testimonial-role">Managing Director · Trilitech</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Case Studies</h2>
+    <div class="case-grid">
+      <a class="case-preview" href="./ai.html" style="--case-bg:#A2978C; --case-text:#3a1622;">
+        <div class="case-preview-image">
+          <img src="./images/Productbot.png" alt="Product Bot" />
+        </div>
+        <div class="case-preview-content">
+          <h3>Driving Engineering Velocity: Automation and AI-Native Workflows</h3>
+        </div>
+      </a>
+      <a class="case-preview" href="./superapp.html" style="--case-bg:#FFE6E8; --case-text:#522420;">
+        <div class="case-preview-image">
+          <img src="./images/Blockchain.png" alt="Blockchain Logo" />
+        </div>
+        <div class="case-preview-content">
+          <h3>Modernising a Global Crypto App: 10 Years of Debt to Zero-Loss Migration</h3>
+        </div>
+      </a>
+      <a class="case-preview" href="./tokenisation.html" style="--case-bg:#B4A1D5; --case-text:#3c1a40;">
+        <div class="case-preview-image">
+          <img src="./images/U308.png" alt="xU308 Tokens" />
+        </div>
+        <div class="case-preview-content">
+          <h3>RWA Tokenisation: Bringing Commodities On-Chain</h3>
+        </div>
+      </a>
+      <a class="case-preview" href="./agentic.html" style="--case-bg:#f8f3eb; --case-text:#40391a;">
+        <div class="case-preview-image">
+          <img src="./images/x402.png" alt="x402" />
+        </div>
+        <div class="case-preview-content">
+          <h3>Agentic Payments: Designing the Strategy for Autonomous Value</h3>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Services</h2>
+    <div class="services-grid">
+      <div class="services-cards">
+        <div class="service-card">
+          <div class="title-row">
+            <h3>Fractional Product Leadership</h3>
+            <span class="pill-tag">Open</span>
+          </div>
+          <p>Ongoing roadmap oversight, weekly sprint leadership, and direct founder advisory embedded into your team on a part-time retainer basis. Ideal for venture-backed start-ups to scale engineering pipelines without the overhead of a full-time executive hire. Limited concurrent client slots.</p>
+        </div>
+        <div class="service-card">
+          <div class="title-row">
+            <h3>Product Audits & Health Checks</h3>
+          </div>
+          <p>A clinical, objective diagnostic of your current product operations, backlog mechanics, and cross-functional pipelines. I dive deep into your architecture to pinpoint exact technical friction points and deliver a prioritised 30-60-90 day remediation playbook.</p>
+        </div>
+        <div class="service-card">
+          <div class="title-row">
+            <h3>PM Mentoring & Team Upskilling</h3>
+          </div>
+          <p>Direct 1-on-1 coaching designed to scale your existing product managers. I embed framework discipline, technical scoping execution, and "bilingual" developer communication strategies directly into your team's daily workflows to level up your internal talent.</p>
+        </div>
+      </div>
+      <div class="services-image">
+        <img src="https://images.unsplash.com/photo-1511376979163-f804dff7ad7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session" />
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <h2>Velocity without<br>compromise.</h2>
+  </section>
+
+  <footer>
+    <span><b>© 2026 ❤︎⁠ Franklyn</b></span>
+  </footer>
+
+</div>
+
+<script>
+  // Theme was already applied in <head> (from localStorage, or system
+  // preference if nothing's saved yet) — just grab the root here.
+  const root = document.documentElement;
+
+  // Theme toggle
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  });
+
+  // Parallax for the hero photos — they scroll slower than the rest
+  // of the page, so they drift "behind" the content beneath them.
+  // Each photo writes to its own --parallax-y variable rather than the
+  // transform directly, so it doesn't collide with the tilt effect below
+  // (which animates the inner layer's transform on its own transition).
+  const heroPhotos = document.querySelectorAll('.hero-photo');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (heroPhotos.length && !prefersReducedMotion) {
+    let ticking = false;
+
+    function applyParallax() {
+      const scrolled = window.scrollY;
+      heroPhotos.forEach((photo) => {
+        const speed = parseFloat(photo.dataset.speed) || 0.15;
+        photo.style.setProperty('--parallax-y', `${scrolled * speed}px`);
+      });
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(applyParallax);
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
+  // Tilt-card effect for each hero photo. We use a document-level mousemove
+  // and hit-test each card's bounding rect manually, rather than relying on
+  // mouseenter/mousemove on the card itself. This means the effect fires
+  // correctly even for cards that sit underneath the fixed nav bar
+  // (e.g. hero-photo-2 at top:-124px), which would otherwise swallow all
+  // pointer events and prevent the card from ever receiving them.
+  if (!prefersReducedMotion) {
+    const maxTilt = 10; // degrees
+
+    // Track which cards are currently "hovered" so we can fire leave cleanly.
+    const hoveredCards = new Set();
+
+    document.addEventListener('mousemove', (e) => {
+      heroPhotos.forEach((card) => {
+        const inner = card.querySelector('.hero-photo-inner');
+        if (!inner) return;
+
+        const rect = card.getBoundingClientRect();
+        const isOver =
+          e.clientX >= rect.left && e.clientX <= rect.right &&
+          e.clientY >= rect.top  && e.clientY <= rect.bottom;
+
+        if (isOver) {
+          if (!hoveredCards.has(card)) {
+            hoveredCards.add(card);
+            inner.classList.add('tilting');
+          }
+          const relX = (e.clientX - rect.left) / rect.width;
+          const relY = (e.clientY - rect.top)  / rect.height;
+          const tiltX = (0.5 - relY) * maxTilt * 2;
+          const tiltY = (relX - 0.5) * maxTilt * 2;
+          card.style.setProperty('--tilt-x', `${tiltX.toFixed(2)}deg`);
+          card.style.setProperty('--tilt-y', `${tiltY.toFixed(2)}deg`);
+          card.style.setProperty('--tilt-scale', 1.04);
+          card.style.setProperty('--glow-x', `${(relX * 100).toFixed(1)}%`);
+          card.style.setProperty('--glow-y', `${(relY * 100).toFixed(1)}%`);
+          card.style.setProperty('--glow-opacity', 1);
+        } else if (hoveredCards.has(card)) {
+          hoveredCards.delete(card);
+          inner.classList.remove('tilting');
+          card.style.setProperty('--tilt-x', '0deg');
+          card.style.setProperty('--tilt-y', '0deg');
+          card.style.setProperty('--tilt-scale', 1);
+          card.style.setProperty('--glow-opacity', 0);
+        }
+      });
+    }, { passive: true });
+  }
+
+</script>
+
+
+<!-- CURSOR TRAIL -->
+<div id="cursor-trail-container"></div>
+<script>
+(function () {
+  // Skip on touch/mobile devices
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // ── Placeholder images ────────────────────────────────────────────────────
+  // Replace these src values with your own photo paths/URLs.
+  // They cycle in order as the cursor moves. Aim for portrait-ish images
+  // (the trail cards are 110 × 148 px, aspect ≈ 3:4).
+  const SRCS = [
+    "./images/cursor/Ethereum.png",
+    "./images/cursor/USD.png",
+    "./images/cursor/Bitcoin.png",
+    "./images/cursor/Solana.png",
+    "./images/cursor/DOGE.png",
+    "./images/cursor/Hyperliquid.png",
+    "./images/cursor/AAVE.png",
+    "./images/cursor/GBP.png",
+    "./images/cursor/Litecoin.png",
+    "./images/cursor/Tezos.png",
+  ];
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  const POOL_SIZE    = 10;   // how many trail nodes exist at once
+  const SPAWN_DIST   = 100;   // px of cursor travel before spawning a new image
+  const LIFETIME     = 700;  // ms before the image starts fading out
+  const FADE_OUT_DUR = 450;  // ms for the fade-out animation
+
+  // ── Build pool ────────────────────────────────────────────────────────────
+  const container = document.getElementById('cursor-trail-container');
+  const pool = Array.from({ length: POOL_SIZE }, () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'trail-img';
+    const img = document.createElement('img');
+    img.draggable = false;
+    wrap.appendChild(img);
+    container.appendChild(wrap);
+    return { wrap, img, killTimer: null };
+  });
+
+  let poolIndex   = 0;
+  let lastX       = -9999;
+  let lastY       = -9999;
+  let prevX       = -9999;
+  let prevY       = -9999;
+  let imgIndex    = 0;
+
+  // ── Mouse handler ─────────────────────────────────────────────────────────
+  document.addEventListener('mousemove', (e) => {
+    const cx = e.clientX;
+    const cy = e.clientY;
+
+    // Distance since last spawn
+    const dx = cx - lastX;
+    const dy = cy - lastY;
+    if (Math.hypot(dx, dy) < SPAWN_DIST) {
+      prevX = cx; prevY = cy;
+      return;
+    }
+
+    lastX = cx;
+    lastY = cy;
+
+    // Velocity direction → rotation (the image leans in the direction of travel)
+    const vx = cx - prevX;
+    const vy = cy - prevY;
+    prevX = cx;
+    prevY = cy;
+    const velocityAngle = Math.atan2(vy, vx) * (180 / Math.PI);
+    // Lean amount: ±18°, centred on 0°  (pure right-movement → 0° lean)
+    const lean = velocityAngle * 0.18;
+    // Small random jitter so repeated spawns don't stack perfectly
+    const jitter = (Math.random() - 0.5) * 10;
+    const rotation = lean + jitter;
+
+    // Grab next node from pool
+    const node = pool[poolIndex % POOL_SIZE];
+    poolIndex++;
+    clearTimeout(node.killTimer);
+
+    // Set image src (cycle through SRCS)
+    node.img.src = SRCS[imgIndex % SRCS.length];
+    imgIndex++;
+
+    // Position centred on cursor
+    const w = 70, h = 94;
+    node.wrap.style.left   = (cx - w / 2) + 'px';
+    node.wrap.style.top    = (cy - h / 2) + 'px';
+
+    // Reset — snap to start state with no transition
+    node.wrap.style.transition = 'none';
+    node.wrap.style.opacity    = '0';
+    node.wrap.style.filter     = 'blur(6px)';
+    node.wrap.style.transform  = `rotate(${rotation}deg) scale(0.72)`;
+
+    // Force reflow so the browser registers the reset before the animation
+    node.wrap.getBoundingClientRect();
+
+    // Animate in
+    node.wrap.style.transition = [
+      'opacity 0.22s ease',
+      'filter 0.28s ease',
+      'transform 0.55s cubic-bezier(0.22,1,0.36,1)',
+    ].join(', ');
+    node.wrap.style.opacity   = '1';
+    node.wrap.style.filter    = 'blur(0px)';
+    node.wrap.style.transform = `rotate(${rotation}deg) scale(1)`;
+
+    // Animate out after LIFETIME
+    node.killTimer = setTimeout(() => {
+      node.wrap.style.transition = [
+        `opacity ${FADE_OUT_DUR}ms ease`,
+        `filter ${FADE_OUT_DUR}ms ease`,
+        `transform ${FADE_OUT_DUR}ms ease`,
+      ].join(', ');
+      node.wrap.style.opacity   = '0';
+      node.wrap.style.filter    = 'blur(3px)';
+      node.wrap.style.transform = `rotate(${rotation}deg) scale(0.88)`;
+    }, LIFETIME);
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>
