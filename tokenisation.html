@@ -239,7 +239,7 @@
   .code-block{
     background: var(--card);
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.7;
     padding: 24px 28px;
     border-radius: var(--radius-md);
@@ -342,7 +342,7 @@
         </div>
       </div>
 
-    <p>In response to global macroeconomic energy shocks and accelerating AI-driven power demands, Uranium.io launched as an industry-first MVP to prove market demand for tokenised Uranium on-chain. The project unlocked retail access to a traditionally high-barrier asset class while serving as a high-velocity user acquisition funnel for Etherlink (a Tezos EVM Layer 2 rollup).<br>Following a successful proof-of-concept, the infrastructure scaled horizontally into Metals.io, expanding the platform's footprint across a broad suite of macro-narrative commodities, including Gold, Cobalt, Nickel, Palladium, and a specialised Rare Earth basket.</p>
+    <p>In response to global macroeconomic energy shocks and accelerating AI-driven power demands, Uranium.io launched as an industry-first MVP to prove market demand for tokenised Uranium on-chain. The project unlocked retail access to a traditionally high-barrier asset class while serving as a high-velocity user acquisition funnel for Etherlink (a Tezos EVM Layer 2 rollup).<br>Following a successful proof-of-concept, the infrastructure scaled horizontally into Metals.io. This expanded the platform's footprint across a broad suite of macro-narrative commodities, featuring xCo (Tokenized Cobalt) and xNi (Tokenized Nickel), alongside native tokenized Gold (VNXAU) and a specialized Rare Earth basket (RARE).</p>
 
     <h1>Problem Statement</h1>
     <p>Historically, there was no simple way to speculate on uranium pricing within the crypto ecosystem. Traditional commodity trading is plagued by prohibitive frictions: physical uranium trading requires a strict minimum lot size of 50,000 pounds, demanding an investment of approximately $4.2 million per position ($84/lb at time of writing). This multi-million dollar capital gate, combined with complex, opaque OTC onboarding structures, made the asset fairly hostile to retail investors and mid-market allocators alike.</p>
@@ -395,13 +395,36 @@
     <p> The ERC-20 token contract based on OpenZepplin's ERC1967Proxy.sol contract was deployed on Etherlink. This contract for the xU308 toekn represented beneficial ownership / fractional shares of the pre-held physical inventory.</p>
 
     <h1>The Spot Price Oracle</h1>
-    <p>Uranium does not trade on an open real-time centralised order book, prices rely on periodic, static prints from price reporting agencies like Numerco. To facilitate trading and borrowing, a proprietary model-derived price feed oracle was created:</p>
-    <ul>
-      <li><b>Data Sources:</b> The oracle ingested intraday spot data from Numerco and combined it with correlated market proxies (including uranium mining equities, energy ETFs, and indirectly correlated commodities such as natural gas and crude)</li>
-      <li><b>On-Chain:</b> The oracle published a fair-value estimate of the xU308 spot benchmark between official prints, refreshing every 60 seconds on-chain to provide a continuous price reference.</li>
-    </ul>
+    <p>Because spot uranium U308 does not trade on continuous, hyper-liquid public order books, the on-chain feed is structurally vulnerable to artificial price spikes, illiquid wash trading, and front-running. To protect secondary money markets (like Oku) from bad debt and malicious liquidations when utilising xU308 as collateral, the platform utilises a hybrid oracle model powered by Redstone, integrated off-chain volatility filters, and a API fallback.</p>
+     <pre class="code-block">[ DATA SOURCES ] ──────────────────────► [ OFF-CHAIN PACKAGING ] ────────────► [ USER TRANSACTION ]
+ ├── Numerco Static Index                 ├── Median Filter Aggregator          ├── User attaches data
+ ├── Mining Equities Proxy                ├── 30-Min Rolling TWAP               └── Transmits to Etherlink L2
+ └── Energy ETFs Proxy                    └── CBOR Compact Encryption
+                                                                                     │
+                                                                                     ▼
+[ SMART CONTRACT EXECUTION FLOW ] ───────────────────────────────────────────────────┘
+ ├── Unpacks Redstone Payload 
+ └── Staleness Check (Timestamp > 15 Mins?)
+        ├── [ NO ]  ──► Verify Cryptographic Signatures ──► Execute Swap/Borrow (Normal Path)
+        └── [ YES ] ──► Trigger Circuit Breaker ──────────► Query Oracle Fallback API (Backup Path)</pre>
 
     <img src="./images/Uranium-oracle.png" alt="x402 whitepaper">
+
+    <h1>Volatility Dampening & Circuit Breakers</h1>
+    <p>To prevent flash crashes or short-term pricing anomalies from forcing erroneous liquidations, uranium pricing is processed through a three-stage filter before it ever hits the blockchain:</p>
+    <ul>
+      <li><b>Multi-Proxy Median Aggregator:</b> The off-chain engine ingests periodic static prints from price reporting agencies like Numerco and combines them with real-time proxy data (including uranium mining equities, energy ETFs, and natural gas/crude) to calculate a continuous fair-value estimate.</li>
+      <li><b>Time-Weighted Average Price (TWAP):</b> Short-term spot market anomalies are smoothed using a rolling 30-minute TWAP window computed off-chain by the oracle nodes. This removes momentary transaction noise while mirroring macro-structural trends.</li>
+      <li><b>On-Chain Circuit Breakers:</b> The consuming smart contracts enforce hard boundary caps. If an incoming price packet deviates by more than 5% within a single block compared to the previous state, the contract instantly triggers a cooldown window or routes execution directly to the Oracle Fallback API.</li>
+    </ul>
+
+    <h1>Fallback API</h1>
+    <p>If RedStone data delivery fails, nodes become unresponsive, or the returned data fails timestamp validation (i.e., the data is older than 15 minutes), the smart contract activates a circuit breaker and switches execution tracks:</p>
+    <ul>
+      <li><b>Automated Redirection:</b> The contract automatically rejects the stale payload and redirects execution calls to a secondary, dedicated oracle fallback architecture.</li>
+      <li><b>NAV-Implied Data Sourcing:</b> This fallback is anchored by a model-derived spot estimator based on the Sprott Physical Uranium Trust (TSX: U.UN / OTC: SRUUF). Because the trust holds physical $U_3O_8$ reserves, the system programmatically derives a daily implied spot price by cross-referencing Sprott's unit market price, reported Net Asset Value (NAV), and physical holdings per unit.</li>
+      <li><b>Systemic Protection:</b> his mathematical proxy ensures that even during total external price reporting network outages, user positions cannot be liquidated based on broken data, and trading pools remain operational with hard-anchored pricing.</li>
+    </ul>
     
     <h1>Decentralised Trading & KYC</h1>
     <p>To maximise trading and lower the barrier to entry, the platform decoupled speculative trading from physical asset interaction:</p>
@@ -423,11 +446,12 @@
     <p>To attract external capital without fragmenting the underlying asset across other chains, we partnered with Li.Fi for the liquidity pools and cross chain trading. By embedding EVM-to-EVM cross-chain routing users could swap USDC from external networks seamlessly into the native Etherlink xU3O8 pools. Additionally, in co-ordination with BD teams the project worked directly with centralised exchanges to get xU3O8 listed for active trading.</p>
 
     <h1>Business Outcomes</h1>
+    <p></p>
     <ul>
       <li><b>The First Uranium Oracle:</b> We launched launch the world's first live, model-derived on-chain oracle for U308 spot pricing.</li>
       <li><b>Ecosystem Velocity:</b> Delivered an operational growth funnel for Etherlink, capturing cross-chain EVM liquidity via bridge integrations and keeping the asset anchored to the home chain to drive TVL.</li>
-      <li><b>Unlocking Capital Efficiency:</b> Integrated the token primitives into secondary DeFi money markets on Etherlink, allowing users to utilise xU3O8 as an on-chain collateral asset to borrow USDC via protocols like Oku, unlocking liquidity without forcing a taxable sale of the underlying asset exposure.</li>
-      <li><b>Modular Infrastructure Reusability:</b> Scaled horizontally from a single-asset MVP (Uranium.io) to a multi-asset commodity platform (Metals.io). When market narratives shifted, the platform rapidly deployed supported pools for Gold, Cobalt, Nickel, Palladium, and a specialised Rare Earth metal basket without rewriting the core compliance or tokenisation engines.</li>
+      <li><b>Unlocking Capital Efficiency:</b> Integrated the token primitives into secondary DeFi money markets on Etherlink. This allows users to utilize xU3O8 as an on-chain collateral asset to borrow USDC via Morpho Blue's isolated lending vaults (accessed via the Oku frontend). By leveraging Morpho’s isolated risk parameters (1 collateral, 1 borrow asset), the protocol unlocks deep liquidity for holders without exposing lenders to shared-pool contagion or forcing a taxable sale of the underlying asset.</li>
+      <li><b>Modular Infrastructure Reusability:</b> Scaled horizontally from a single-asset MVP (Uranium.io) to a multi-asset commodity platform (Metals.io). When market narratives shifted, the platform rapidly deployed supported asset primitives like xCo and xNi without rewriting the core compliance, registry, or tokenization smart contracts.</li>
       <li><b>TradFi Capital:</b> In a strategic move to capture mainstream institutional capital and expand beyond crypto-native rails, registration filings were filed with the SEC for a Metals.io Uranium ETF. This ongoing regulatory initialisation represents a major pivot toward wrapping on-chain commodity supply chains into legacy TradFi exchange vehicles.</li>
     </ul>
 
