@@ -4,14 +4,21 @@
 <script>
   // Apply the saved theme immediately, before the page renders, so it
   // carries over between pages and there's no flash of the wrong theme.
+  // Also syncs the theme-color meta tag so the mobile browser chrome
+  // (address bar, etc.) matches the page background.
   (function () {
     var stored = localStorage.getItem('theme');
     var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
+    document.addEventListener('DOMContentLoaded', function () {
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+    });
   })();
 </script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#ffffff" />
 <title>RWA Tokenisation: Bringing Commodities On-Chain — Case Study | The Crypto PM</title>
 <meta name="description" content="Taking physical commodities on-chain — market validation, spot price oracles, volatility dampening, and the path from issuance to physical redemption." />
 <meta property="og:type" content="article" />

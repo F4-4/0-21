@@ -4,14 +4,21 @@
 <script>
   // Apply the saved theme immediately, before the page renders, so it
   // carries over between pages and there's no flash of the wrong theme.
+  // Also syncs the theme-color meta tag so the mobile browser chrome
+  // (address bar, etc.) matches the page background.
   (function () {
     var stored = localStorage.getItem('theme');
     var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
+    document.addEventListener('DOMContentLoaded', function () {
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+    });
   })();
 </script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#ffffff" />
 <title>Driving Engineering Velocity with AI-Native Workflows — Case Study | The Crypto PM</title>
 <meta name="description" content="How no-code orchestration, conversational workflows, and a PRD-to-project pipeline drove engineering velocity and overcame adoption scepticism." />
 <meta property="og:type" content="article" />
@@ -78,7 +85,10 @@
           <div class="stat-content-detailed">
             <div class="stat-title-detailed">Reclaimed Engineering Focus</div>
             <div class="stat-desc-detailed"><b>Definition:</b> The percentage of time reclaimed each week from meetings.</div>
-            <div class="stat-formula-detailed"><b>Metric: </b> ((Avg Time meetings Post - Avg Time in team meetings Pre) / Avg Time in team meetings Pre) * 100</div>
+            <details class="stat-formula-detailed">
+              <summary>Methodology</summary>
+              <div class="formula-text"><b>Metric:</b> ((Avg Time meetings Post - Avg Time in team meetings Pre) / Avg Time in team meetings Pre) * 100</div>
+            </details>
           </div>
         </div>
         <div class="stat-card-detailed">
@@ -86,17 +96,23 @@
           <div class="stat-content-detailed">
             <div class="stat-title-detailed">Administrative Overhead</div>
             <div class="stat-desc-detailed"><b>Definition:</b> The reduction in non-development tracking tasks (manual issue creation, labelling, sizing, and updates).</div>
-            <div class="stat-formula-detailed"><b>Metric: </b> ((Avg Admin time Post - Avg Admin time Pre) / Avg Admin time Pre) * 100 </div>
+            <details class="stat-formula-detailed">
+              <summary>Methodology</summary>
+              <div class="formula-text"><b>Metric:</b> ((Avg Admin time Post - Avg Admin time Pre) / Avg Admin time Pre) * 100</div>
+            </details>
           </div>
         </div>
         <div class="stat-card-detailed">
           <div class="stat-number-detailed">£20K</div>
           <div class="stat-content-detailed">
             <div class="stat-title-detailed">Monthly Business ROI</div>
-            <div class="stat-desc-detailed"><b>Definition:</b> Cost savings of engineering time, improved hygiene and reporting vs increased cost from tokens (no additional cost incurred, include in existing plan).</div>
-            <div class="stat-formula-detailed"><b>Metric: </b> (Hours saved * Avg Engineer hourly cost (24 Engineers)) - Additional token cost </div>
+            <div class="stat-desc-detailed"><b>Definition:</b> Cost savings of engineering time, improved hygiene and reporting vs increased cost from tokens (no additional cost incurred, included in existing plan).</div>
+            <details class="stat-formula-detailed">
+              <summary>Methodology</summary>
+              <div class="formula-text"><b>Metric:</b> (Hours saved &times; Avg Engineer hourly cost, across 24 engineers) - Additional token cost</div>
+            </details>
           </div>
-        </div>        
+        </div>
       </div>
 
     <ul>

@@ -100,6 +100,18 @@ body{
   text-decoration:none;
 }
 
+/* ---------- CLOSING STATEMENT HEADLINE ----------
+   Shared by every page that has a closing statement (all 5). Pages
+   may add their own extra declarations on top — see .closing h2 in
+   css/case-study.css and css/home.css. */
+.closing h2{
+  font-size: clamp(56px, calc(33.333vw - 144px), 132px);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
 /* ---------- NEXT CASE STUDY (used on case study pages only) ---------- */
 .next-case{
   display:flex;

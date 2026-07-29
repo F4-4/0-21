@@ -4,14 +4,21 @@
 <script>
   // Apply the saved theme immediately, before the page renders, so it
   // carries over between pages and there's no flash of the wrong theme.
+  // Also syncs the theme-color meta tag so the mobile browser chrome
+  // (address bar, etc.) matches the page background.
   (function () {
     var stored = localStorage.getItem('theme');
     var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
+    document.addEventListener('DOMContentLoaded', function () {
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+    });
   })();
 </script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#ffffff" />
 <title>Modernising a Global Crypto Web App — Case Study | The Crypto PM</title>
 <meta name="description" content="Unwinding 10 years of technical debt and executing a zero-loss migration — a ground-up rewrite that delivered a 28X improvement over the market benchmark." />
 <meta property="og:type" content="article" />
@@ -84,7 +91,10 @@
           <div class="stat-content-detailed">
             <div class="stat-title-detailed">Faster App Performance</div>
             <div class="stat-desc-detailed"><b>Definition:</b> The improvement in average page load time after migration.</div>
-            <div class="stat-formula-detailed"><b>Metric:</b> (Avg Pre optimisation load times / Avg Post optimisation load times)</div>
+            <details class="stat-formula-detailed">
+              <summary>Methodology</summary>
+              <div class="formula-text"><b>Metric:</b> (Avg Pre optimisation load times / Avg Post optimisation load times)</div>
+            </details>
           </div>
         </div>
         <div class="stat-card-detailed">
@@ -92,15 +102,21 @@
           <div class="stat-content-detailed">
             <div class="stat-title-detailed">Price Indexing Costs</div>
             <div class="stat-desc-detailed"><b>Definition:</b> The reduction in monthly costs for asset data and price indexing.</div>
-            <div class="stat-formula-detailed"><b>Metric:</b> ((Infra cost Pre - Avg infra cost Post) / Avg infra cost Pre) * 100</div>
+            <details class="stat-formula-detailed">
+              <summary>Methodology</summary>
+              <div class="formula-text"><b>Metric:</b> ((Infra cost Pre - Avg infra cost Post) / Avg infra cost Pre) * 100</div>
+            </details>
           </div>
         </div>
         <div class="stat-card-detailed">
           <div class="stat-number-detailed">+7%</div>
           <div class="stat-content-detailed">
             <div class="stat-title-detailed">Trading Conversion Lift</div>
-            <div class="stat-desc-detailed"><b>Definition:</b> The increase in the share of visiting users who completed a trade.The percentage growth in the conversion rate of visiting users who completed a trade, comparing post-launch to pre-launch baselines</div>
-            <div class="stat-formula-detailed"><b>Metric:</b> ((Conversion rate Post - Conversion rate Pre) / Conversion rate Pre) * 100</div>
+            <div class="stat-desc-detailed"><b>Definition:</b> The growth in the conversion rate of visiting users who completed a trade, comparing post-launch to pre-launch baselines.</div>
+            <details class="stat-formula-detailed">
+              <summary>Methodology</summary>
+              <div class="formula-text"><b>Metric:</b> ((Conversion rate Post - Conversion rate Pre) / Conversion rate Pre) * 100</div>
+            </details>
           </div>
         </div>
         <div class="stat-card-detailed">
@@ -108,7 +124,10 @@
           <div class="stat-content-detailed">
             <div class="stat-title-detailed">Additional Quarterly Trading Volume</div>
             <div class="stat-desc-detailed"><b>Definition:</b> The increase in quarterly trading volume directly attributed to the new web features, adjusted for baseline market growth trends.</div>
-            <div class="stat-formula-detailed"><b>Metric:</b> Δ Quarterly Volume App - Δ Quarterly Volume Market Benchmark</div>
+            <details class="stat-formula-detailed">
+              <summary>Methodology</summary>
+              <div class="formula-text"><b>Metric:</b> Δ Quarterly Volume App - Δ Quarterly Volume Market Benchmark</div>
+            </details>
           </div>
         </div>
       </div>

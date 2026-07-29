@@ -99,9 +99,18 @@ header{
   line-height: 1.5;
 }
 .stat-formula-detailed{
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.5;
+  margin-top: 4px;
+}
+.stat-formula-detailed summary{
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--muted-2);
+}
+.stat-formula-detailed .formula-text{
+  margin-top: 6px;
 }
 
 /* ---------- ARTICLE BODY ---------- */
@@ -154,13 +163,6 @@ header{
 /* ---------- CLOSING STATEMENT ---------- */
 .closing{
   padding: 20px 0 90px;
-}
-.closing h2{
-  font-size: clamp(56px, calc(33.333vw - 144px), 132px);
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.02em;
-  margin: 0;
 }
 
 /* ---------- FOOTER ---------- */
