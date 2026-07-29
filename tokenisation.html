@@ -118,7 +118,7 @@
     <img src="./images/rwaxyz.png" alt="rwaxyz data" loading="lazy">
 
     <h2>Physical vs Synthetic</h2>
-    <p>During the initial design phase it was explored wether we should launch as a synthetic derivative tracking the price index (like perpetuals or synthetic pool tokens) or a 100% physically backed asset? It was eventually decided to go for a fully backed, transparently audited physical model for three structural reasons:</p>
+    <p>During the initial design phase it was explored whether we should launch as a synthetic derivative tracking the price index (like perpetuals or synthetic pool tokens) or a 100% physically backed asset? It was eventually decided to go for a fully backed, transparently audited physical model for three structural reasons:</p>
     <ul>
       <li><b>Elimination of Funding Rate Volatility:</b> Synthetics rely on continuous funding rate payments or premium/discount arbitrage pools to maintain their peg. For a highly niche, illiquid spot commodity like uranium, a synthetic model would have exposed retail users to predatory funding fees during structural market expansions.</li>
       <li><b>Capturing Institutional Allocators:</b> Mid-market funds and institutional macro allocators do not want counterparty smart-contract or liquidation risk associated with derivative pools. They demand direct, beneficial legal ownership of the underlying commodity.</li>
@@ -140,7 +140,7 @@
     <h2>Physical Storage, Logistics, & Supply Chain</h2>
     <p>As the tokenised assets were physically backed 1:1 there was no user minting process, any new tokens would only be issued by the project once new inventory was acquired and sent to be stored with our regulated partners:</p>
     <ul>
-      <li><b>Cameco & Curzon:</b> Physical uranium ore concentrate (U308 or "yellowcake") backing the xU3O8 token was physically warehoused in highly secure, heavily regulated industrial storage facilities operated by Cameco. Commodity powerhouse Curzon Uranium which has transacted over $1 billion in physical uranium since its inception acted as the OTC broker supplying the physical U308.</li>
+      <li><b>Cameco & Curzon:</b> Physical uranium ore concentrate (U₃O₈ or "yellowcake") backing the xU3O8 token was physically warehoused in highly secure, heavily regulated industrial storage facilities operated by Cameco. Commodity powerhouse Curzon Uranium which has transacted over $1 billion in physical uranium since its inception acted as the OTC broker supplying the physical U₃O₈.</li>
       <li><b>Strategic & Tech Metals Storage:</b> The physical assets backing the platform's broader mineral offerings were centralised across two separate secure European hubs: allocated gold was stored in secure, AAA-rated vaults in Liechtenstein, while strategic high-tech metals were isolated in secure logistics vaults in Frankfurt.</li>
     </ul>
 
@@ -156,7 +156,7 @@
     <p> The ERC-20 token contract based on OpenZeppelin's ERC1967Proxy.sol contract was deployed on Etherlink. This contract for the xU308 token represented beneficial ownership / fractional shares of the pre-held physical inventory.</p>
 
     <h2>The Spot Price Oracle</h2>
-    <p>Because spot uranium U308 does not trade on continuous, hyper-liquid public order books, the on-chain feed is structurally vulnerable to artificial price spikes, illiquid wash trading, and front-running. To protect secondary money markets (like Oku) from bad debt and malicious liquidations when utilising xU308 as collateral, the platform utilises a hybrid oracle model powered by Redstone, integrated off-chain volatility filters, and a API fallback.</p>
+    <p>Because spot uranium U₃O₈ does not trade on continuous, hyper-liquid public order books, the on-chain feed is structurally vulnerable to artificial price spikes, illiquid wash trading, and front-running. To protect secondary money markets (like Oku) from bad debt and malicious liquidations when utilising xU308 as collateral, the platform utilises a hybrid oracle model powered by Redstone, integrated off-chain volatility filters, and a API fallback.</p>
      <pre class="code-block">[ DATA SOURCES ] ──────────────────────► [ OFF-CHAIN PACKAGING ] ────────────► [ USER TRANSACTION ]
  ├── Numerco Static Index                 ├── Median Filter Aggregator          ├── User attaches data
  ├── Mining Equities Proxy                ├── 30-Min Rolling TWAP               └── Transmits to Etherlink L2
@@ -183,8 +183,8 @@
     <p>If RedStone data delivery fails, nodes become unresponsive, or the returned data fails timestamp validation (i.e., the data is older than 15 minutes), the smart contract activates a circuit breaker and switches execution tracks:</p>
     <ul>
       <li><b>Automated Redirection:</b> The contract automatically rejects the stale payload and redirects execution calls to a secondary, dedicated oracle fallback architecture.</li>
-      <li><b>NAV-Implied Data Sourcing:</b> This fallback is anchored by a model-derived spot estimator based on the Sprott Physical Uranium Trust (TSX: U.UN / OTC: SRUUF). Because the trust holds physical $U_3O_8$ reserves, the system programmatically derives a daily implied spot price by cross-referencing Sprott's unit market price, reported Net Asset Value (NAV), and physical holdings per unit.</li>
-      <li><b>Systemic Protection:</b> his mathematical proxy ensures that even during total external price reporting network outages, user positions cannot be liquidated based on broken data, and trading pools remain operational with hard-anchored pricing.</li>
+      <li><b>NAV-Implied Data Sourcing:</b> This fallback is anchored by a model-derived spot estimator based on the Sprott Physical Uranium Trust (TSX: U.UN / OTC: SRUUF). Because the trust holds physical U₃O₈ reserves, the system programmatically derives a daily implied spot price by cross-referencing Sprott's unit market price, reported Net Asset Value (NAV), and physical holdings per unit.</li>
+      <li><b>Systemic Protection:</b> This mathematical proxy ensures that even during total external price reporting network outages, user positions cannot be liquidated based on broken data, and trading pools remain operational with hard-anchored pricing.</li>
     </ul>
     
     <h2>Decentralised Trading & KYC</h2>
@@ -209,7 +209,7 @@
     <h2>Business Outcomes</h2>
     <p></p>
     <ul>
-      <li><b>The First Uranium Oracle:</b> We launched launch the world's first live, model-derived on-chain oracle for U308 spot pricing.</li>
+      <li><b>The First Uranium Oracle:</b> We launched launch the world's first live, model-derived on-chain oracle for U₃O₈ spot pricing.</li>
       <li><b>Ecosystem Velocity:</b> Delivered an operational growth funnel for Etherlink, capturing cross-chain EVM liquidity via bridge integrations and keeping the asset anchored to the home chain to drive TVL.</li>
       <li><b>Unlocking Capital Efficiency:</b> Integrated the token primitives into secondary DeFi money markets on Etherlink. This allows users to utilise xU3O8 as an on-chain collateral asset to borrow USDC via Morpho Blue's isolated lending vaults (accessed via the Oku frontend). By leveraging Morpho’s isolated risk parameters (1 collateral, 1 borrow asset), the protocol unlocks deep liquidity for holders without exposing lenders to shared-pool contagion or forcing a taxable sale of the underlying asset.</li>
       <li><b>Modular Infrastructure Reusability:</b> Scaled horizontally from a single-asset MVP (Uranium.io) to a multi-asset commodity platform (Metals.io). When market narratives shifted, the platform rapidly deployed supported asset primitives like xCo and xNi without rewriting the core compliance, registry, or tokenisation smart contracts.</li>
