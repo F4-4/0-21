@@ -99,3 +99,42 @@ body{
   display:inline-block;
   text-decoration:none;
 }
+
+/* ---------- NEXT CASE STUDY (used on case study pages only) ---------- */
+.next-case{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 20px;
+  padding: 28px 32px;
+  margin: 8px 0 40px;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  text-decoration:none;
+  color: var(--text);
+  transition: transform .2s ease;
+}
+.next-case:hover{ transform: translateY(-2px); }
+.next-case-text{ min-width: 0; }
+.next-case-label{
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.next-case-title{
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.next-case-arrow{
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+@media (max-width: 600px){
+  .next-case{ padding: 22px 24px; }
+  .next-case-title{ font-size: 17px; }
+}

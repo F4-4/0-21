@@ -1,0 +1,182 @@
+/*
+ * Shared layout for the four case study pages (agentic.html, ai.html,
+ * superapp.html, tokenisation.html): header, hero, article body, code
+ * blocks, closing statement, and footer. Loaded in addition to the
+ * site-wide css/styles.css.
+ *
+ * Each page still keeps its own inline <style> block for anything that
+ * isn't shared: page accent colors, the intro/stat layout it uses (see
+ * below), and any one-off sections specific to that case study.
+ */
+
+[data-theme="dark"] .code-block{ background:#111; }
+
+/* ---------- HEADER ---------- */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 28px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  padding-top: 56px;
+}
+.hero h1{
+  font-size: clamp(32px, calc(8.667vw - 20px), 58px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0;
+  max-width: none;
+}
+.article-image img{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: auto;
+  display: block;
+}
+.article-image{
+  margin-top: 40px;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border-radius: var(--radius-lg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position: relative;
+}
+@media (max-width: 900px){
+  .article-image{ aspect-ratio: 16/9; min-height: 0; }
+}
+
+/* ---------- INTRO STATS ("detailed" variant) ----------
+   Used by ai.html, superapp.html, and tokenisation.html. agentic.html
+   uses a different intro layout (.stat-grid / .stat-card, defined
+   inline on that page) and doesn't use these. */
+.stat-grid-detailed{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.stat-card-detailed{
+  background: var(--card);
+  border-radius: 22px;
+  padding: 28px 26px;
+  display:flex;
+  align-items:center;
+  gap: 20px;
+}
+.stat-number-detailed{
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.stat-content-detailed{
+  display:flex;
+  flex-direction:column;
+  gap: 4px;
+}
+.stat-title-detailed{
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.stat-desc-detailed{
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.stat-formula-detailed{
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ---------- ARTICLE BODY ---------- */
+.article-body{
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+.article-body h2{
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 56px 0 26px;
+}
+.article-body h2:first-child{ margin-top: 0; }
+.article-body p{
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+.article-body ul, .article-body ol{
+  margin: 0 0 64px;
+  padding-left: 32px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+.article-body li{ margin-bottom: 10px; }
+.article-body li b{ color: var(--text); }
+.article-body img{
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 32px auto;
+  border-radius: 14px;
+}
+
+.code-block{
+  background: var(--card);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 24px 28px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 20px 0 28px;
+  white-space: pre;
+}
+
+/* ---------- CLOSING STATEMENT ---------- */
+.closing{
+  padding: 20px 0 90px;
+}
+.closing h2{
+  font-size: clamp(56px, calc(33.333vw - 144px), 132px);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* ---------- FOOTER ---------- */
+footer{
+  padding: 28px 0 40px;
+  display:flex;
+  gap: 28px;
+  font-size: 16px;
+  color: var(--muted-2);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 600px){
+  .container{ padding: 0 20px; }
+  .closing{ padding: 90px 0 60px; }
+  footer{ flex-direction:column; gap: 6px; }
+  .code-block{ font-size: 11px; padding: 18px; }
+  .stat-card-detailed{ flex-direction:column; align-items:flex-start; gap: 14px; padding: 24px 22px; }
+}

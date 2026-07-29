@@ -12,106 +12,25 @@
 </script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Crypto PM</title>
+<title>The Crypto PM — Franklyn, Product Leader</title>
+<meta name="description" content="Portfolio of a 13+ year product leader specialising in crypto and fintech — case studies covering agentic payments, RWA tokenisation, AI-native workflows, and zero-loss platform migrations." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://f4-4.github.io/0-21/" />
+<meta property="og:title" content="The Crypto PM — Franklyn, Product Leader" />
+<meta property="og:description" content="Portfolio of a 13+ year product leader specialising in crypto and fintech — case studies covering agentic payments, RWA tokenisation, AI-native workflows, and zero-loss platform migrations." />
+<meta property="og:image" content="https://f4-4.github.io/0-21/images/hero-dark.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The Crypto PM — Franklyn, Product Leader" />
+<meta name="twitter:description" content="Portfolio of a 13+ year product leader specialising in crypto and fintech — case studies covering agentic payments, RWA tokenisation, AI-native workflows, and zero-loss platform migrations." />
+<meta name="twitter:image" content="https://f4-4.github.io/0-21/images/hero-dark.png" />
 <link rel="icon" type="image/png" href="./images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/styles.css">
 <style>
-  :root{
-    --bg: #ffffff;
-    --text: #0d0d0d;
-    --muted: #6f6f6f;
-    --muted-2: #8a8a8a;
-    --card: #efefee;
-    --black-pill: #111111;
-    --max-width: 900px;
-    --radius-lg: 28px;
-    --radius-md: 20px;
-    --radius-pill: 999px;
-  }
-
-  [data-theme="dark"]{
-    --bg: #000;
-    --text: #f3f3f1;
-    --muted: #a8a8a8;
-    --muted-2: #8c8c8c;
-    --card: #1a1a1a;
-    --black-pill: #f3f3f1;
-  }
-
-  [data-theme="dark"] .book-call{ color:#0d0d0d; }
-  [data-theme="dark"] .badge{ color:#0d0d0d; }
-  [data-theme="dark"] .theme-toggle{ background:#222; }
-  [data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
-
-  *{ box-sizing: border-box; }
-  html, body{ margin:0; padding:0; }
-  body{
-    font-family: 'Figtree', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-    transition: background .25s ease, color .25s ease;
-  }
-
-  .container{
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 32px;
-  }
-
-  .badge{
-    background: var(--black-pill);
-    color: var(--bg);
-    font-weight:700;
-    font-size: 14px;
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .header-right{
-    display:flex;
-    align-items:center;
-    gap: 12px;
-  }
-  .theme-toggle{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    border:none;
-    background:#f1f1ef;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    transition: background .2s ease;
-  }
-  .theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; }
-  .theme-toggle .icon-sun{ display:none; }
-  [data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
-  [data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
-
-  .book-call{
-    background: var(--black-pill);
-    color: var(--bg);
-    border:none;
-    font-family:inherit;
-    font-weight:600;
-    font-size: 14px;
-    padding: 13px 22px;
-    border-radius: var(--radius-pill);
-    cursor:pointer;
-    white-space:nowrap;
-    display:inline-block;
-    text-decoration:none;
-  }
-
   /* Extra theme tokens used only on this page, on top of the
-     shared ones above */
+     shared ones in css/styles.css */
   :root{
     --card-border: #e7e7e5;
     --green: #2fbf6f;
@@ -644,6 +563,7 @@
     </div>
   </header>
 
+  <main>
   <section class="hero">
     <div class="hero-photos">
       <div class="hero-photo hero-photo-1" data-speed="0.10"><div class="hero-photo-inner"><div class="hero-photo-glow"></div></div></div>
@@ -705,7 +625,7 @@
           class="testimonial-avatar"
           src="./images/Katelyn.webp"
           alt="Katie Hegarty"
-        />
+         loading="lazy" />
         <div class="testimonial-meta">
           <span class="testimonial-name">Katie Hegarty</span>
           <span class="testimonial-role">Managing Director · Trilitech</span>
@@ -719,7 +639,7 @@
     <div class="case-grid">
       <a class="case-preview" href="./ai.html" style="--case-bg:#A2978C; --case-text:#3a1622;">
         <div class="case-preview-image">
-          <img src="./images/Productbot.png" alt="Product Bot" />
+          <img src="./images/Productbot.png" alt="Product Bot"  loading="lazy" />
         </div>
         <div class="case-preview-content">
           <h3>Driving Engineering Velocity: Automation and AI-Native Workflows</h3>
@@ -727,7 +647,7 @@
       </a>
       <a class="case-preview" href="./superapp.html" style="--case-bg:#FFE6E8; --case-text:#522420;">
         <div class="case-preview-image">
-          <img src="./images/Blockchain.png" alt="Blockchain Logo" />
+          <img src="./images/Blockchain.png" alt="Blockchain Logo"  loading="lazy" />
         </div>
         <div class="case-preview-content">
           <h3>Modernising a Global Crypto App: 10 Years of Debt to Zero-Loss Migration</h3>
@@ -735,7 +655,7 @@
       </a>
       <a class="case-preview" href="./tokenisation.html" style="--case-bg:#B4A1D5; --case-text:#3c1a40;">
         <div class="case-preview-image">
-          <img src="./images/U308.png" alt="xU308 Tokens" />
+          <img src="./images/U308.png" alt="xU308 Tokens"  loading="lazy" />
         </div>
         <div class="case-preview-content">
           <h3>RWA Tokenisation: Bringing Commodities On-Chain</h3>
@@ -743,7 +663,7 @@
       </a>
       <a class="case-preview" href="./agentic.html" style="--case-bg:#f8f3eb; --case-text:#40391a;">
         <div class="case-preview-image">
-          <img src="./images/x402.png" alt="x402" />
+          <img src="./images/x402.png" alt="x402"  loading="lazy" />
         </div>
         <div class="case-preview-content">
           <h3>Agentic Payments: Designing the Strategy for Autonomous Value</h3>
@@ -777,7 +697,7 @@
         </div>
       </div>
       <div class="services-image">
-        <img src="https://images.unsplash.com/photo-1511376979163-f804dff7ad7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session" />
+        <img src="https://images.unsplash.com/photo-1511376979163-f804dff7ad7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session"  loading="lazy" />
       </div>
     </div>
   </section>
@@ -786,26 +706,17 @@
     <h2>Velocity without<br>compromise.</h2>
   </section>
 
+  </main>
+
   <footer>
     <span><b>© 2026 ❤︎⁠ Franklyn</b></span>
   </footer>
 
 </div>
 
+<script src="./js/theme-toggle.js" defer></script>
+
 <script>
-  // Theme was already applied in <head> (from localStorage, or system
-  // preference if nothing's saved yet) — just grab the root here.
-  const root = document.documentElement;
-
-  // Theme toggle
-  const toggle = document.getElementById('themeToggle');
-  toggle.addEventListener('click', () => {
-    const isDark = root.getAttribute('data-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-    root.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-  });
-
   // Parallax for the hero photos — they scroll slower than the rest
   // of the page, so they drift "behind" the content beneath them.
   // Each photo writes to its own --parallax-y variable rather than the
@@ -924,6 +835,7 @@
     wrap.className = 'trail-img';
     const img = document.createElement('img');
     img.draggable = false;
+    img.alt = '';
     wrap.appendChild(img);
     container.appendChild(wrap);
     return { wrap, img, killTimer: null };
