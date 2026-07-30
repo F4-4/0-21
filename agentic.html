@@ -107,55 +107,31 @@ shared ones in css/styles.css */
 </ul>
 <h2>Technical Payment Flow</h2>
 <p>The runtime interaction requires no interactive wallet pop-ups, executing purely via programmatic HTTP handshakes:</p>
-<pre class="code-block">
-
-[ Client ] [ Store Server ] [ Facilitator ]
-
-│ │ │
-
-│ 1. GET /api/... │ │
-
-├────────────────────────────────────────────────>│ │
-
-│ │ │
-
-│ 2. HTTP 402 Payment Required │ │
-
-│ (Payment-Required requirements JSON) │ │
-
-│<────────────────────────────────────────────────┤ │
-
-│ │ │
-
-│ 3. Sign PermitWitnessTransferFrom off-chain │ │
-
-│ │ │
-
-│ 4. GET /api/... │ │
-
-│ (with Payment-Signature header) │ │
-
-├────────────────────────────────────────────────>│ │
-
-│ │ │
-
-│ │ 5. Relay to Facilitator │
-
-│ ├───────────────────────────────────────>│
-
-│ │ │
-
-│ │ 6. Submit settle() to Proxy Contract │
-
-│ │ (Facilitator pays gas) │
-
-│ │<───────────────────────────────────────┤
-
-│ │ │
-
-│ 7. HTTP 200 OK + X-Payment-Response │ │
-
-│<────────────────────────────────────────────────┤</pre>
+    <pre class="code-block">
+[ Client ]                                     [ Store Server ]                         [ Facilitator ]
+    │                                                 │                                        │
+    │ 1. GET /api/...                                 │                                        │
+    ├────────────────────────────────────────────────>│                                        │
+    │                                                 │                                        │
+    │ 2. HTTP 402 Payment Required                    │                                        │
+    │    (Payment-Required requirements JSON)         │                                        │
+    │<────────────────────────────────────────────────┤                                        │
+    │                                                 │                                        │
+    │ 3. Sign PermitWitnessTransferFrom off-chain     │                                        │
+    │                                                 │                                        │
+    │ 4. GET /api/...                                 │                                        │
+    │    (with Payment-Signature header)              │                                        │
+    ├────────────────────────────────────────────────>│                                        │
+    │                                                 │                                        │
+    │                                                 │ 5. Relay to Facilitator                │
+    │                                                 ├───────────────────────────────────────>│
+    │                                                 │                                        │
+    │                                                 │ 6. Submit settle() to Proxy Contract   │
+    │                                                 │    (Facilitator pays gas)              │
+    │                                                 │<───────────────────────────────────────┤
+    │                                                 │                                        │
+    │ 7. HTTP 200 OK + X-Payment-Response             │                                        │
+    │<────────────────────────────────────────────────┤</pre>
 <ul>
 <li><b>Initial Request:</b> The client calls an asset-gated route (e.g., GET /api/weather).</li>
 <li><b>The Paywall Challenge:</b> The store returns an HTTP 402 Payment Required status. The response body and headers deliver a JSON envelope containing the asset address, price, and target chain ID (Etherlink: 42793).</li>
@@ -177,21 +153,15 @@ shared ones in css/styles.css */
 </ul>
 <h2>Decision Framework</h2>
 <p>This initiative is structured around staged validation gates. Resources are committed incrementally based on signal quality at each checkpoint.</p>
-<pre class="code-block">Now ────────────────────────────────────► 3 Months
-
-│ │
-
-▼ ▼
-
-Assessment Decision (MVP release)
-
-(current phase) (commit or walk away)
-
-Permit2 research Dedicated squad OR
-
-security validation reassign to revenue
-
-Merchant pilots assessed priorities</pre>
+     <pre class="code-block">Now ────────────────────────────────────► 3 Months
+│                                            │
+▼                                            ▼
+Assessment                          Decision (MVP release)
+(current phase)                     (commit or walk away)
+                        
+Permit2 research                    Dedicated squad OR
+security validation                 reassign to revenue
+Merchant pilots assessed            priorities</pre>
 <h2>Conclusion</h2>
 <p>The x402 protocol on Etherlink represents a genuine asymmetric opportunity. The technical architecture is sound, the security model addresses the primary attack vectors, and the unified facilitator approach ensures forward-compatibility as the ecosystem matures. The resource commitment to validate this thesis is bounded and reversible. The primary risk is whether demand for AI-agent commerce on Etherlink materialises quickly enough to justify deeper investment. The decision framework above provides clear escalation and exit criteria to ensure that judgement, not inertia, governs continued commitment.</p>
 <h2>Reflections</h2>

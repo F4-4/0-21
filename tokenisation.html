@@ -117,25 +117,16 @@ shared ones in css/styles.css */
 <li><b>Solvency & Audit Anchoring:</b> By choosing a 100% physically backed token mapped to physical inventory held in trusted vaults (e.g., Cameco), the platform eliminated delta risk and anchored user trust in verified, audited real-world reserves.</li>
 </ul>
 <h2>Architecture & Operations</h2>
-<pre class="code-block">[ TOKENS TRADED ON-CHAIN ] ──► Etherlink L2 EVM Rollup (xU3O8, VNXAU, RARE)
-
-│
-
-▼
-
+    <pre class="code-block">[ TOKENS TRADED ON-CHAIN ] ──► Etherlink L2 EVM Rollup (xU3O8, VNXAU, RARE)
+                                     │
+                                     ▼
 [ COMPLIANCE / LEGAL ENGINE ] ──► Issuers: VNX (Gold) | Noemon Tech (Rare Earths)
-
-│
-
-▼
-
+                                     │
+                                     ▼
 [ REAL-WORLD VALUE ANCHOR ] ──► Independent Vaulting & Tier-1 Custody Hubs:
-
-├── Gold: AAA Vaults (Liechtenstein) [Insured]
-
-├── Uranium: Cameco Facilities [Insured]
-
-└── Strategic Metals: Logistics Vaults (Frankfurt) [Insured]</pre>
+                                ├── Gold: AAA Vaults (Liechtenstein) [Insured]
+                                ├── Uranium: Cameco Facilities [Insured]
+                                └── Strategic Metals: Logistics Vaults (Frankfurt) [Insured]</pre>
 <h2>Physical Storage, Logistics, & Supply Chain</h2>
 <p>As the tokenised assets were physically backed 1:1 there was no user minting process, any new tokens would only be issued by the project once new inventory was acquired and sent to be stored with regulated partners:</p>
 <ul>
@@ -153,27 +144,17 @@ shared ones in css/styles.css */
 <p>The ERC-20 token contract based on OpenZeppelin's ERC1967Proxy.sol contract was deployed on Etherlink. This contract for the xU308 token represented beneficial ownership / fractional shares of the pre-held physical inventory.</p>
 <h2>The Spot Price Oracle</h2>
 <p>Because spot uranium U₃O₈ does not trade on continuous, hyper-liquid public order books, the on-chain feed is structurally vulnerable to artificial price spikes, illiquid wash trading, and front-running. To protect secondary money markets (like Oku) from bad debt and malicious liquidations when utilising xU308 as collateral, the platform utilises a hybrid oracle model powered by Redstone, integrated off-chain volatility filters, and a API fallback.</p>
-<pre class="code-block">[ DATA SOURCES ] ──────────────────────► [ OFF-CHAIN PACKAGING ] ────────────► [ USER TRANSACTION ]
-
-├── Numerco Static Index ├── Median Filter Aggregator ├── User attaches data
-
-├── Mining Equities Proxy ├── 30-Min Rolling TWAP └── Transmits to Etherlink L2
-
-└── Energy ETFs Proxy └── CBOR Compact Encryption
-
-│
-
-▼
-
+     <pre class="code-block">[ DATA SOURCES ] ──────────────────────► [ OFF-CHAIN PACKAGING ] ────────────► [ USER TRANSACTION ]
+ ├── Numerco Static Index                 ├── Median Filter Aggregator          ├── User attaches data
+ ├── Mining Equities Proxy                ├── 30-Min Rolling TWAP               └── Transmits to Etherlink L2
+ └── Energy ETFs Proxy                    └── CBOR Compact Encryption
+                                                                                     │
+                                                                                     ▼
 [ SMART CONTRACT EXECUTION FLOW ] ───────────────────────────────────────────────────┘
-
-├── Unpacks Redstone Payload
-
-└── Staleness Check (Timestamp > 15 Mins?)
-
-├── [ NO ] ──► Verify Cryptographic Signatures ──► Execute Swap/Borrow (Normal Path)
-
-└── [ YES ] ──► Trigger Circuit Breaker ──────────► Query Oracle Fallback API (Backup Path)</pre>
+ ├── Unpacks Redstone Payload 
+ └── Staleness Check (Timestamp > 15 Mins?)
+        ├── [ NO ]  ──► Verify Cryptographic Signatures ──► Execute Swap/Borrow (Normal Path)
+        └── [ YES ] ──► Trigger Circuit Breaker ──────────► Query Oracle Fallback API (Backup Path)</pre>
 <img src="./images/Uranium-oracle.png" alt="Uranium spot price oracle architecture diagram" loading="lazy">
 <h2>Volatility Dampening & Circuit Breakers</h2>
 <p>To prevent flash crashes or short-term pricing anomalies from forcing erroneous liquidations, uranium pricing is processed through a three-stage filter before it ever hits the blockchain:</p>
