@@ -113,6 +113,27 @@ header{
   margin-top: 6px;
 }
 
+/* ---------- LINK STYLES ---------- */
+/* Base link styles for light mode */
+a {
+  color: #000; /* Replace with your preferred light mode link color */
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #caa960; /* Color when hovering over a link */
+}
+
+/* Link styles for dark mode */
+[data-theme="dark"] a {
+  color: #fff; /* Replace with your preferred dark mode link color */
+}
+
+[data-theme="dark"] a:hover {
+  color: #caa960;
+}
+
 /* ---------- ARTICLE BODY ---------- */
 .article-body{
   padding-top: 32px;

@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
 <script>
-  // Apply the saved theme immediately, before the page renders, so it
-  // carries over between pages and there's no flash of the wrong theme.
-  // Also syncs the theme-color meta tag so the mobile browser chrome
-  // (address bar, etc.) matches the page background.
-  (function () {
-    var stored = localStorage.getItem('theme');
-    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-    document.addEventListener('DOMContentLoaded', function () {
-      var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
-    });
-  })();
+// Apply the saved theme immediately, before the page renders, so it
+// carries over between pages and there's no flash of the wrong theme.
+// Also syncs the theme-color meta tag so the mobile browser chrome
+// (address bar, etc.) matches the page background.
+(function () {
+var stored = localStorage.getItem('theme');
+var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+document.documentElement.setAttribute('data-theme', theme);
+document.addEventListener('DOMContentLoaded', function () {
+var meta = document.querySelector('meta[name="theme-color"]');
+if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+});
+})();
 </script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,214 +37,203 @@
 <link rel="stylesheet" href="./css/styles.css">
 <link rel="stylesheet" href="./css/case-study.css">
 <style>
-  /* Extra theme tokens used only on this page, on top of the
-     shared ones in css/styles.css */
-  [data-theme="dark"] .article-image{ background: #B4A1D5; }
-  .article-image{ background: #B4A1D5; }</style>
+/* Extra theme tokens used only on this page, on top of the
+shared ones in css/styles.css */
+[data-theme="dark"] .article-image{ background: #B4A1D5; }
+.article-image{ background: #B4A1D5; }</style>
 </head>
 <body>
-
 <div class="container">
-
-  <header>
-    <a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
-    <div class="header-right">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="4"></circle>
-          <line x1="12" y1="2" x2="12" y2="4"></line>
-          <line x1="12" y1="20" x2="12" y2="22"></line>
-          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
-          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
-          <line x1="2" y1="12" x2="4" y2="12"></line>
-          <line x1="20" y1="12" x2="22" y2="12"></line>
-          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
-          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
-        </svg>
-      </button>
-      <a class="book-call" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
-    </div>
-  </header>
-
-  <main>
-  <section class="hero">
-    <h1>RWA Tokenisation: Bringing Commodities On-Chain</h1>
-    <div class="article-image">
-      <img src="./images/U308.png" alt="Uranium tokenisation case study" />
-    </div>
-  </section>
-
-  <section class="article-body">
-    <h2>Executive Summary</h2>
-    <div class="stat-grid-detailed">
-        <div class="stat-card-detailed">
-          <div class="stat-number-detailed">$14M</div>
-          <div class="stat-content-detailed">
-            <div class="stat-title-detailed">Total-Value-Locked (TVL)</div>
-            <div class="stat-desc-detailed"><b>Definition:</b> Total-Value-Locked (TVL) accumulated across the tokenised commodity pools (xU3O8, VNXAU, RARE) on Etherlink.</div>
-          </div>
-        </div>
-        <div class="stat-card-detailed">
-          <div class="stat-number-detailed">75K+</div>
-          <div class="stat-content-detailed">
-            <div class="stat-title-detailed">Onchain Transfers</div>
-            <div class="stat-desc-detailed"><b>Definition:</b> On-Chain Transfers recorded across the asset suite.</div>
-          </div>
-        </div>
-        <div class="stat-card-detailed">
-          <div class="stat-number-detailed">3.1K+</div>
-          <div class="stat-content-detailed">
-            <div class="stat-title-detailed">Active Holders</div>
-            <div class="stat-desc-detailed"><b>Definition:</b> Active Holders across unique wallet addresses</div>
-          </div>
-        </div>
-      </div>
-
-    <p>In response to global macroeconomic energy shocks and accelerating AI-driven power demands, Uranium.io launched as an industry-first MVP to prove market demand for tokenised Uranium on-chain. The project unlocked retail access to a traditionally high-barrier asset class while serving as a high-velocity user acquisition funnel for Etherlink (a Tezos EVM Layer 2 rollup).<br>Following a successful proof-of-concept, the infrastructure scaled horizontally into Metals.io. This expanded the platform's footprint across a broad suite of macro-narrative commodities, featuring xCo (Tokenised Cobalt) and xNi (Tokenised Nickel), alongside native tokenised Gold (VNXAU) and a specialised Rare Earth basket (RARE).</p>
-
-    <h2>Problem Statement</h2>
-    <p>Historically, there was no simple way to speculate on uranium pricing within the crypto ecosystem. Traditional commodity trading is plagued by prohibitive frictions: physical uranium trading requires a strict minimum lot size of 50,000 pounds, demanding an investment of approximately $4.2 million per position ($84/lb at time of writing). This multi-million dollar capital gate, combined with complex, opaque OTC onboarding structures, made the asset fairly hostile to retail investors and mid-market allocators alike.</p>
-
-    <h2>Market Discovery and Validation</h2>
-    <p>Rather than relying on traditional consumer user testing or localised interviews, product validation was driven by an aggressive macroeconomic thesis. Real-World Assets (RWAs) in crypto were expanding exponentially, and our evaluation focused strictly on tracking macroscopic capital demand signals. The strategic bet was simple: marrying an outperforming macro asset with fractionalised on-chain infrastructure would instantly unlock a high-conviction pipeline of digital asset allocators seeking direct commodity exposure without traditional operational or capital friction. Uranium was intentionally selected to anchor the MVP based on two converging market factors:</p>
-    <ul>
-      <li><b>Macroeconomic Outperformance:</b> Driven by global energy supply constraints and surging AI data centre power requirements, spot uranium was aggressively outperforming the S&P 500 index.</li>
-      <li><b>Asymmetric Access Barriers:</b> Despite high market demand, traditional market access was locked behind a strict $4.2M OTC minimum lot size.</li>
-    </ul>
-
-    <img src="./images/rwaxyz.png" alt="rwaxyz data" loading="lazy">
-
-    <h2>Physical vs Synthetic</h2>
-    <p>During the initial design phase it was explored whether we should launch as a synthetic derivative tracking the price index (like perpetuals or synthetic pool tokens) or a 100% physically backed asset? It was eventually decided to go for a fully backed, transparently audited physical model for three structural reasons:</p>
-    <ul>
-      <li><b>Elimination of Funding Rate Volatility:</b> Synthetics rely on continuous funding rate payments or premium/discount arbitrage pools to maintain their peg. For a highly niche, illiquid spot commodity like uranium, a synthetic model would have exposed retail users to predatory funding fees during structural market expansions.</li>
-      <li><b>Capturing Institutional Allocators:</b> Mid-market funds and institutional macro allocators do not want counterparty smart-contract or liquidation risk associated with derivative pools. They demand direct, beneficial legal ownership of the underlying commodity.</li>
-      <li><b>Solvency & Audit Anchoring:</b> By choosing a 100% physically backed token mapped to physical inventory held in trusted vaults (e.g., Cameco), we eliminated delta risk for the platform and anchored user trust in verified, audited real-world reserves.</li>
-    </ul>
-
-    <h2>Architecture & Operations</h2> 
-    <pre class="code-block">[ TOKENS TRADED ON-CHAIN ] ──► Etherlink L2 EVM Rollup (xU3O8, VNXAU, RARE)
-                                     │
-                                     ▼
-[ COMPLIANCE / LEGAL ENGINE ] ──► Issuers: VNX (Gold) | Noemon Tech (Rare Earths)
-                                     │
-                                     ▼
-[ REAL-WORLD VALUE ANCHOR ] ──► Independent Vaulting & Tier-1 Custody Hubs:
-                                ├── Gold: AAA Vaults (Liechtenstein) [Insured]
-                                ├── Uranium: Cameco Facilities [Insured]
-                                └── Strategic Metals: Logistics Vaults (Frankfurt) [Insured]</pre>
-
-    <h2>Physical Storage, Logistics, & Supply Chain</h2>
-    <p>As the tokenised assets were physically backed 1:1 there was no user minting process, any new tokens would only be issued by the project once new inventory was acquired and sent to be stored with our regulated partners:</p>
-    <ul>
-      <li><b>Cameco & Curzon:</b> Physical uranium ore concentrate (U₃O₈ or "yellowcake") backing the xU3O8 token was physically warehoused in highly secure, heavily regulated industrial storage facilities operated by Cameco. Commodity powerhouse Curzon Uranium which has transacted over $1 billion in physical uranium since its inception acted as the OTC broker supplying the physical U₃O₈.</li>
-      <li><b>Strategic & Tech Metals Storage:</b> The physical assets backing the platform's broader mineral offerings were centralised across two separate secure European hubs: allocated gold was stored in secure, AAA-rated vaults in Liechtenstein, while strategic high-tech metals were isolated in secure logistics vaults in Frankfurt.</li>
-    </ul>
-
-    <h2>Issuance & Tokenisation</h2>
-    <p>Because the platform acts strictly as an infrastructure layer, the underlying physical assets were not exposed to platform operational risk. Insurance and risk safeguarding were tied directly to the specific legal jurisdictions and institutional partners holding the physical raw materials.</p>
-    <ul>
-      <li><b>VNX (Gold Issuance):</b> A European digital asset platform that acted as the legal issuer for the gold portion of the platform (VNXAU). VNX guaranteed that each token corresponded directly to a specific, allocated physical gold bar under strict regulatory standards.</li>
-      <li><b>Noemon Tech (Structured Baskets):</b> An asset manager that structured and issued the platform's proprietary RARE token. Noemon handled the complex index-weighting and compliance architecture for the strategic metals basket, managing financial exposure to critical high-tech elements like hafnium, rhenium, indium, and neodymium oxide.</li>
-      <li><b>Archax (Institutional Custody Wrapper):</b> An FCA-regulated digital asset exchange and broker that Responsible for tokenisation, trustee account setup, and RWA administration and custody via Cameco as U3O8 custodian.</li>
-    </ul>
-
-    <h2>Contract Deployment</h2>
-    <p> The ERC-20 token contract based on OpenZeppelin's ERC1967Proxy.sol contract was deployed on Etherlink. This contract for the xU308 token represented beneficial ownership / fractional shares of the pre-held physical inventory.</p>
-
-    <h2>The Spot Price Oracle</h2>
-    <p>Because spot uranium U₃O₈ does not trade on continuous, hyper-liquid public order books, the on-chain feed is structurally vulnerable to artificial price spikes, illiquid wash trading, and front-running. To protect secondary money markets (like Oku) from bad debt and malicious liquidations when utilising xU308 as collateral, the platform utilises a hybrid oracle model powered by Redstone, integrated off-chain volatility filters, and a API fallback.</p>
-     <pre class="code-block">[ DATA SOURCES ] ──────────────────────► [ OFF-CHAIN PACKAGING ] ────────────► [ USER TRANSACTION ]
- ├── Numerco Static Index                 ├── Median Filter Aggregator          ├── User attaches data
- ├── Mining Equities Proxy                ├── 30-Min Rolling TWAP               └── Transmits to Etherlink L2
- └── Energy ETFs Proxy                    └── CBOR Compact Encryption
-                                                                                     │
-                                                                                     ▼
-[ SMART CONTRACT EXECUTION FLOW ] ───────────────────────────────────────────────────┘
- ├── Unpacks Redstone Payload 
- └── Staleness Check (Timestamp > 15 Mins?)
-        ├── [ NO ]  ──► Verify Cryptographic Signatures ──► Execute Swap/Borrow (Normal Path)
-        └── [ YES ] ──► Trigger Circuit Breaker ──────────► Query Oracle Fallback API (Backup Path)</pre>
-
-    <img src="./images/Uranium-oracle.png" alt="Uranium spot price oracle architecture diagram" loading="lazy">
-
-    <h2>Volatility Dampening & Circuit Breakers</h2>
-    <p>To prevent flash crashes or short-term pricing anomalies from forcing erroneous liquidations, uranium pricing is processed through a three-stage filter before it ever hits the blockchain:</p>
-    <ul>
-      <li><b>Multi-Proxy Median Aggregator:</b> The off-chain engine ingests periodic static prints from price reporting agencies like Numerco and combines them with real-time proxy data (including uranium mining equities, energy ETFs, and natural gas/crude) to calculate a continuous fair-value estimate.</li>
-      <li><b>Time-Weighted Average Price (TWAP):</b> Short-term spot market anomalies are smoothed using a rolling 30-minute TWAP window computed off-chain by the oracle nodes. This removes momentary transaction noise while mirroring macro-structural trends.</li>
-      <li><b>On-Chain Circuit Breakers:</b> The consuming smart contracts enforce hard boundary caps. If an incoming price packet deviates by more than 5% within a single block compared to the previous state, the contract instantly triggers a cooldown window or routes execution directly to the Oracle Fallback API.</li>
-    </ul>
-
-    <h2>Fallback API</h2>
-    <p>If RedStone data delivery fails, nodes become unresponsive, or the returned data fails timestamp validation (i.e., the data is older than 15 minutes), the smart contract activates a circuit breaker and switches execution tracks:</p>
-    <ul>
-      <li><b>Automated Redirection:</b> The contract automatically rejects the stale payload and redirects execution calls to a secondary, dedicated oracle fallback architecture.</li>
-      <li><b>NAV-Implied Data Sourcing:</b> This fallback is anchored by a model-derived spot estimator based on the Sprott Physical Uranium Trust (TSX: U.UN / OTC: SRUUF). Because the trust holds physical U₃O₈ reserves, the system programmatically derives a daily implied spot price by cross-referencing Sprott's unit market price, reported Net Asset Value (NAV), and physical holdings per unit.</li>
-      <li><b>Systemic Protection:</b> This mathematical proxy ensures that even during total external price reporting network outages, user positions cannot be liquidated based on broken data, and trading pools remain operational with hard-anchored pricing.</li>
-    </ul>
-    
-    <h2>Decentralised Trading & KYC</h2>
-    <p>To maximise trading and lower the barrier to entry, the platform decoupled speculative trading from physical asset interaction:</p>
-    <ul>
-      <li><b>Permissionless Speculation:</b> Retail and institutional users looking purely to trade, hedge, or speculate on the price of assets did not require KYC/AML onboarding. They only needed to connect an EVM-compatible wallet (such as MetaMask) supporting the Etherlink network to interact with our front end trading UI or any other protocol with access to a supported Liquidity Pool.</li>
-      <li><b>Issuance and Redemption:</b> Full identity verification, corporate onboarding and KYC/AML checks were enforced only for users seeking to deposit physical assets onto the platform to be tokenised, or those initiating physical settlement.</li>
-    </ul>
-
-    <h2>Physical Redemption</h2>
-    <p>While financial exposure remained entirely permissionless on-chain, physical redemption was restricted to a manual, highly gated out-of-band request. To satisfy this request and adhere with strict international nuclear asset regulations, an applicant had to satisfy rigorous prerequisites:</p>
-    <ul>
-      <li><b>Compliance:</b> Successful completion of the localised KYC/AML, corporate onboarding, and financial appropriateness checks.</li>
-      <li><b>Regulatory Eligibility:</b> The applicant must be a licensed industrial end-user, utility, or approved commodity trader with valid regulatory authorisation to handle nuclear materials.</li>
-      <li><b>Vault Infrastructure:</b> The applicant must hold an active, verified account at an approved, licensed conversion or warehousing facility (e.g., Cameco) capable of receiving hazardous material transfers.</li>
-      <li><b>Commercial Minimums:</b> Deliveries were subject to commercial minimum delivery sizes (multi-ton lots), ensuring that fractional retail positions could only exit by selling their tokens.</li>
-    </ul>
-
-    <h2>Exchanges & Liquidity</h2>
-    <p>To attract external capital without fragmenting the underlying asset across other chains, we partnered with Li.Fi for the liquidity pools and cross chain trading. By embedding EVM-to-EVM cross-chain routing users could swap USDC from external networks seamlessly into the native Etherlink xU3O8 pools. Additionally, in co-ordination with BD teams the project worked directly with centralised exchanges to get xU3O8 listed for active trading.</p>
-
-    <h2>Business Outcomes</h2>
-    <p></p>
-    <ul>
-      <li><b>The First Uranium Oracle:</b> We launched launch the world's first live, model-derived on-chain oracle for U₃O₈ spot pricing.</li>
-      <li><b>Ecosystem Velocity:</b> Delivered an operational growth funnel for Etherlink, capturing cross-chain EVM liquidity via bridge integrations and keeping the asset anchored to the home chain to drive TVL.</li>
-      <li><b>Unlocking Capital Efficiency:</b> Integrated the token primitives into secondary DeFi money markets on Etherlink. This allows users to utilise xU3O8 as an on-chain collateral asset to borrow USDC via Morpho Blue's isolated lending vaults (accessed via the Oku frontend). By leveraging Morpho’s isolated risk parameters (1 collateral, 1 borrow asset), the protocol unlocks deep liquidity for holders without exposing lenders to shared-pool contagion or forcing a taxable sale of the underlying asset.</li>
-      <li><b>Modular Infrastructure Reusability:</b> Scaled horizontally from a single-asset MVP (Uranium.io) to a multi-asset commodity platform (Metals.io). When market narratives shifted, the platform rapidly deployed supported asset primitives like xCo and xNi without rewriting the core compliance, registry, or tokenisation smart contracts.</li>
-      <li><b>TradFi Capital:</b> In a strategic move to capture mainstream institutional capital and expand beyond crypto-native rails, registration filings were filed with the SEC for a Metals.io Uranium ETF. This ongoing regulatory initialisation represents a major pivot toward wrapping on-chain commodity supply chains into legacy TradFi exchange vehicles.</li>
-    </ul>
-
-    <h2>Key Takeaways</h2>
-    <ul>
-      <li><b>The Liquidity-Exclusivity Trap:</b> Keeping these commodity assets exclusive to Etherlink effectively served the ecosystem goal of driving native L2 TVL, but it capped the absolute growth ceiling of the product. In hindsight cross-chain issuance could have tapped into deeper user numbers and liquidity on Ethereum, potentially 5x-ing absolute TVL, though at the expense of Etherlink exclusivity.</li>
-      <li><b>Modular Scalability:</b> Designing compliance, onboarding, and custody rails as independent, modular components allows a Web3 platform to switch or add underlying asset classes (from uranium to rare earth metals) seamlessly in response to shifting macroeconomic trends.</li>
-    </ul>
-
-  </section>
-
-  <section class="closing">
-    <h2>Velocity without<br>compromise.</h2>
-  </section>
-
-  <a class="next-case" href="./agentic.html">
-    <div class="next-case-text">
-      <div class="next-case-label">Next case study</div>
-      <div class="next-case-title">Agentic Payments: Designing the Strategy for Autonomous Value</div>
-    </div>
-    <div class="next-case-arrow">&rarr;</div>
-  </a>
-
-  </main>
-
-  <footer>
-    <span><b>2026</b></span>
-  </footer>
-
+<header>
+<a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
+<div class="header-right">
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+</svg>
+<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="4"></circle>
+<line x1="12" y1="2" x2="12" y2="4"></line>
+<line x1="12" y1="20" x2="12" y2="22"></line>
+<line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+<line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+<line x1="2" y1="12" x2="4" y2="12"></line>
+<line x1="20" y1="12" x2="22" y2="12"></line>
+<line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+<line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+</svg>
+</button>
+<a class="book-call" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
 </div>
+</header>
+<main>
+<section class="hero">
+<h1>RWA Tokenisation: Bringing Commodities On-Chain</h1>
+<div class="article-image">
+<img src="./images/U308.png" alt="Uranium tokenisation case study" />
+</div>
+</section>
+<section class="article-body">
+<h2>Executive Summary</h2>
+<div class="stat-grid-detailed">
+<div class="stat-card-detailed">
+<div class="stat-number-detailed">$14M</div>
+<div class="stat-content-detailed">
+<div class="stat-title-detailed">Total-Value-Locked (TVL)</div>
+<div class="stat-desc-detailed"><b>Definition:</b> Total-Value-Locked (TVL) accumulated across the tokenised commodity pools (xU3O8, VNXAU, RARE) on Etherlink.</div>
+</div>
+</div>
+<div class="stat-card-detailed">
+<div class="stat-number-detailed">75K+</div>
+<div class="stat-content-detailed">
+<div class="stat-title-detailed">Onchain Transfers</div>
+<div class="stat-desc-detailed"><b>Definition:</b> On-Chain Transfers recorded across the asset suite.</div>
+</div>
+</div>
+<div class="stat-card-detailed">
+<div class="stat-number-detailed">3.1K+</div>
+<div class="stat-content-detailed">
+<div class="stat-title-detailed">Active Holders</div>
+<div class="stat-desc-detailed"><b>Definition:</b> Active Holders across unique wallet addresses</div>
+</div>
+</div>
+</div>
+<p><b>Company:</b> Metals.io / Trilitech</p>
+<p>In response to global macroeconomic energy shocks and accelerating AI-driven power demands, Uranium.io launched as an industry-first MVP to prove market demand for tokenised Uranium on-chain. The project unlocked retail access to a traditionally high-barrier asset class while serving as a high-velocity user acquisition funnel for Etherlink (a Tezos EVM Layer 2 rollup).<br>Following a successful proof-of-concept, the infrastructure scaled horizontally into Metals.io. This expanded the platform's footprint across a broad suite of macro-narrative commodities, featuring xCo (Tokenised Cobalt) and xNi (Tokenised Nickel), alongside native tokenised Gold (VNXAU) and a specialised Rare Earth basket (RARE).</p>
+<h2>Problem Statement</h2>
+<p>Historically, there was no simple way to speculate on uranium pricing within the crypto ecosystem. Traditional commodity trading is plagued by prohibitive frictions: physical uranium trading requires a strict minimum lot size of 50,000 pounds, demanding an investment of approximately $4.2 million per position ($84/lb at time of writing). This multi-million dollar capital gate, combined with complex, opaque OTC onboarding structures, made the asset fairly hostile to retail investors and mid-market allocators alike.</p>
+<h2>Market Discovery and Validation</h2>
+<p>Rather than relying on traditional consumer user testing or localised interviews, product validation was driven by an aggressive macroeconomic thesis. Real-World Assets (RWAs) in crypto were expanding exponentially, and evaluation focused strictly on tracking macroscopic capital demand signals. The strategic bet was simple: marrying an outperforming macro asset with fractionalised on-chain infrastructure would instantly unlock a high-conviction pipeline of digital asset allocators seeking direct commodity exposure without traditional operational or capital friction. Uranium was intentionally selected to anchor the MVP based on two converging market factors:</p>
+<ul>
+<li><b>Macroeconomic Outperformance:</b> Driven by global energy supply constraints and surging AI data centre power requirements, spot uranium was aggressively outperforming the S&P 500 index.</li>
+<li><b>Asymmetric Access Barriers:</b> Despite high market demand, traditional market access was locked behind a strict $4.2M OTC minimum lot size.</li>
+</ul>
+<img src="./images/rwaxyz.png" alt="rwaxyz data" loading="lazy">
+<h2>Physical vs Synthetic</h2>
+<p>During the initial design phase it was explored whether the platform should launch as a synthetic derivative tracking the price index (like perpetuals or synthetic pool tokens) or a 100% physically backed asset. It was eventually decided to go for a fully backed, transparently audited physical model for three structural reasons:</p>
+<ul>
+<li><b>Elimination of Funding Rate Volatility:</b> Synthetics rely on continuous funding rate payments or premium/discount arbitrage pools to maintain their peg. For a highly niche, illiquid spot commodity like uranium, a synthetic model would have exposed retail users to predatory funding fees during structural market expansions.</li>
+<li><b>Capturing Institutional Allocators:</b> Mid-market funds and institutional macro allocators do not want counterparty smart-contract or liquidation risk associated with derivative pools. They demand direct, beneficial legal ownership of the underlying commodity.</li>
+<li><b>Solvency & Audit Anchoring:</b> By choosing a 100% physically backed token mapped to physical inventory held in trusted vaults (e.g., Cameco), the platform eliminated delta risk and anchored user trust in verified, audited real-world reserves.</li>
+</ul>
+<h2>Architecture & Operations</h2>
+<pre class="code-block">[ TOKENS TRADED ON-CHAIN ] ──► Etherlink L2 EVM Rollup (xU3O8, VNXAU, RARE)
 
+│
+
+▼
+
+[ COMPLIANCE / LEGAL ENGINE ] ──► Issuers: VNX (Gold) | Noemon Tech (Rare Earths)
+
+│
+
+▼
+
+[ REAL-WORLD VALUE ANCHOR ] ──► Independent Vaulting & Tier-1 Custody Hubs:
+
+├── Gold: AAA Vaults (Liechtenstein) [Insured]
+
+├── Uranium: Cameco Facilities [Insured]
+
+└── Strategic Metals: Logistics Vaults (Frankfurt) [Insured]</pre>
+<h2>Physical Storage, Logistics, & Supply Chain</h2>
+<p>As the tokenised assets were physically backed 1:1 there was no user minting process, any new tokens would only be issued by the project once new inventory was acquired and sent to be stored with regulated partners:</p>
+<ul>
+<li><b>Cameco & Curzon:</b> Physical uranium ore concentrate (U₃O₈ or "yellowcake") backing the xU3O8 token was physically warehoused in highly secure, heavily regulated industrial storage facilities operated by Cameco. Commodity powerhouse Curzon Uranium which has transacted over $1 billion in physical uranium since its inception acted as the OTC broker supplying the physical U₃O₈.</li>
+<li><b>Strategic & Tech Metals Storage:</b> The physical assets backing the platform's broader mineral offerings were centralised across two separate secure European hubs: allocated gold was stored in secure, AAA-rated vaults in Liechtenstein, while strategic high-tech metals were isolated in secure logistics vaults in Frankfurt.</li>
+</ul>
+<h2>Issuance & Tokenisation</h2>
+<p>Because the platform acts strictly as an infrastructure layer, the underlying physical assets were not exposed to platform operational risk. Insurance and risk safeguarding were tied directly to the specific legal jurisdictions and institutional partners holding the physical raw materials.</p>
+<ul>
+<li><b>VNX (Gold Issuance):</b> A European digital asset platform that acted as the legal issuer for the gold portion of the platform (VNXAU). VNX guaranteed that each token corresponded directly to a specific, allocated physical gold bar under strict regulatory standards.</li>
+<li><b>Noemon Tech (Structured Baskets):</b> An asset manager that structured and issued the platform's proprietary RARE token. Noemon handled the complex index-weighting and compliance architecture for the strategic metals basket, managing financial exposure to critical high-tech elements like hafnium, rhenium, indium, and neodymium oxide.</li>
+<li><b>Archax (Institutional Custody Wrapper):</b> An FCA-regulated digital asset exchange and broker responsible for tokenisation, trustee account setup, and RWA administration and custody via Cameco as U3O8 custodian.</li>
+</ul>
+<h2>Contract Deployment</h2>
+<p>The ERC-20 token contract based on OpenZeppelin's ERC1967Proxy.sol contract was deployed on Etherlink. This contract for the xU308 token represented beneficial ownership / fractional shares of the pre-held physical inventory.</p>
+<h2>The Spot Price Oracle</h2>
+<p>Because spot uranium U₃O₈ does not trade on continuous, hyper-liquid public order books, the on-chain feed is structurally vulnerable to artificial price spikes, illiquid wash trading, and front-running. To protect secondary money markets (like Oku) from bad debt and malicious liquidations when utilising xU308 as collateral, the platform utilises a hybrid oracle model powered by Redstone, integrated off-chain volatility filters, and a API fallback.</p>
+<pre class="code-block">[ DATA SOURCES ] ──────────────────────► [ OFF-CHAIN PACKAGING ] ────────────► [ USER TRANSACTION ]
+
+├── Numerco Static Index ├── Median Filter Aggregator ├── User attaches data
+
+├── Mining Equities Proxy ├── 30-Min Rolling TWAP └── Transmits to Etherlink L2
+
+└── Energy ETFs Proxy └── CBOR Compact Encryption
+
+│
+
+▼
+
+[ SMART CONTRACT EXECUTION FLOW ] ───────────────────────────────────────────────────┘
+
+├── Unpacks Redstone Payload
+
+└── Staleness Check (Timestamp > 15 Mins?)
+
+├── [ NO ] ──► Verify Cryptographic Signatures ──► Execute Swap/Borrow (Normal Path)
+
+└── [ YES ] ──► Trigger Circuit Breaker ──────────► Query Oracle Fallback API (Backup Path)</pre>
+<img src="./images/Uranium-oracle.png" alt="Uranium spot price oracle architecture diagram" loading="lazy">
+<h2>Volatility Dampening & Circuit Breakers</h2>
+<p>To prevent flash crashes or short-term pricing anomalies from forcing erroneous liquidations, uranium pricing is processed through a three-stage filter before it ever hits the blockchain:</p>
+<ul>
+<li><b>Multi-Proxy Median Aggregator:</b> The off-chain engine ingests periodic static prints from price reporting agencies like Numerco and combines them with real-time proxy data (including uranium mining equities, energy ETFs, and natural gas/crude) to calculate a continuous fair-value estimate.</li>
+<li><b>Time-Weighted Average Price (TWAP):</b> Short-term spot market anomalies are smoothed using a rolling 30-minute TWAP window computed off-chain by the oracle nodes. This removes momentary transaction noise while mirroring macro-structural trends.</li>
+<li><b>On-Chain Circuit Breakers:</b> The consuming smart contracts enforce hard boundary caps. If an incoming price packet deviates by more than 5% within a single block compared to the previous state, the contract instantly triggers a cooldown window or routes execution directly to the Oracle Fallback API.</li>
+</ul>
+<h2>Fallback API</h2>
+<p>If RedStone data delivery fails, nodes become unresponsive, or the returned data fails timestamp validation (i.e., the data is older than 15 minutes), the smart contract activates a circuit breaker and switches execution tracks:</p>
+<ul>
+<li><b>Automated Redirection:</b> The contract automatically rejects the stale payload and redirects execution calls to a secondary, dedicated oracle fallback architecture.</li>
+<li><b>NAV-Implied Data Sourcing:</b> This fallback is anchored by a model-derived spot estimator based on the Sprott Physical Uranium Trust (TSX: U.UN / OTC: SRUUF). Because the trust holds physical U₃O₈ reserves, the system programmatically derives a daily implied spot price by cross-referencing Sprott's unit market price, reported Net Asset Value (NAV), and physical holdings per unit.</li>
+<li><b>Systemic Protection:</b> This mathematical proxy ensures that even during total external price reporting network outages, user positions cannot be liquidated based on broken data, and trading pools remain operational with hard-anchored pricing.</li>
+</ul>
+<h2>Decentralised Trading & KYC</h2>
+<p>To maximise trading and lower the barrier to entry, the platform decoupled speculative trading from physical asset interaction:</p>
+<ul>
+<li><b>Permissionless Speculation:</b> Retail and institutional users looking purely to trade, hedge, or speculate on the price of assets did not require KYC/AML onboarding. They only needed to connect an EVM-compatible wallet (such as MetaMask) supporting the Etherlink network to interact with the front end trading UI or any other protocol with access to a supported Liquidity Pool.</li>
+<li><b>Issuance and Redemption:</b> Full identity verification, corporate onboarding and KYC/AML checks were enforced only for users seeking to deposit physical assets onto the platform to be tokenised, or those initiating physical settlement.</li>
+</ul>
+<h2>Physical Redemption</h2>
+<p>While financial exposure remained entirely permissionless on-chain, physical redemption was restricted to a manual, highly gated out-of-band request. To satisfy this request and adhere with strict international nuclear asset regulations, an applicant had to satisfy rigorous prerequisites:</p>
+<ul>
+<li><b>Compliance:</b> Successful completion of the localised KYC/AML, corporate onboarding, and financial appropriateness checks.</li>
+<li><b>Regulatory Eligibility:</b> The applicant must be a licensed industrial end-user, utility, or approved commodity trader with valid regulatory authorisation to handle nuclear materials.</li>
+<li><b>Vault Infrastructure:</b> The applicant must hold an active, verified account at an approved, licensed conversion or warehousing facility (e.g., Cameco) capable of receiving hazardous material transfers.</li>
+<li><b>Commercial Minimums:</b> Deliveries were subject to commercial minimum delivery sizes (multi-ton lots), ensuring that fractional retail positions could only exit by selling their tokens.</li>
+</ul>
+<h2>Exchanges & Liquidity</h2>
+<p>To attract external capital without fragmenting the underlying asset across other chains, the platform partnered with Li.Fi for the liquidity pools and cross chain trading. By embedding EVM-to-EVM cross-chain routing users could swap USDC from external networks seamlessly into the native Etherlink xU3O8 pools. Additionally, in co-ordination with BD teams the project worked directly with centralised exchanges to get xU3O8 listed for active trading.</p>
+<h2>Business Outcomes</h2>
+<ul>
+<li><b>The First Uranium Oracle:</b> The team launched the world's first live, model-derived on-chain oracle for U₃O₈ spot pricing.</li>
+<li><b>Ecosystem Velocity:</b> Delivered an operational growth funnel for Etherlink, capturing cross-chain EVM liquidity via bridge integrations and keeping the asset anchored to the home chain to drive TVL.</li>
+<li><b>Unlocking Capital Efficiency:</b> Integrated the token primitives into secondary DeFi money markets on Etherlink. This allows users to utilise xU3O8 as an on-chain collateral asset to borrow USDC via Morpho Blue's isolated lending vaults (accessed via the Oku frontend). By leveraging Morpho's isolated risk parameters (1 collateral, 1 borrow asset), the protocol unlocks deep liquidity for holders without exposing lenders to shared-pool contagion or forcing a taxable sale of the underlying asset.</li>
+<li><b>Modular Infrastructure Reusability:</b> Scaled horizontally from a single-asset MVP (Uranium.io) to a multi-asset commodity platform (Metals.io). When market narratives shifted, the platform rapidly deployed supported asset primitives like xCo and xNi without rewriting the core compliance, registry, or tokenisation smart contracts.</li>
+<li><b>TradFi Capital:</b> In a strategic move to capture mainstream institutional capital and expand beyond crypto-native rails, registration filings were filed with the SEC for a Metals.io Uranium ETF (<a href="https://www.streetinsider.com/SEC+Filings/Form+485BXT+Listed+Funds+Trust/26752530.html" target="_blank" rel="noopener noreferrer">Form 485BXT, Listed Funds Trust</a>). This ongoing regulatory initialisation represents a major pivot toward wrapping on-chain commodity supply chains into legacy TradFi exchange vehicles.</li>
+</ul>
+<h2>Key Takeaways</h2>
+<ul>
+<li><b>The Liquidity-Exclusivity Trap:</b> Keeping these commodity assets exclusive to Etherlink effectively served the ecosystem goal of driving native L2 TVL, but it capped the absolute growth ceiling of the product. In hindsight cross-chain issuance could have tapped into deeper user numbers and liquidity on Ethereum, potentially 5x-ing absolute TVL, though at the expense of Etherlink exclusivity.</li>
+<li><b>Modular Scalability:</b> Designing compliance, onboarding, and custody rails as independent, modular components allows a Web3 platform to switch or add underlying asset classes (from uranium to rare earth metals) seamlessly in response to shifting macroeconomic trends.</li>
+</ul>
+</section>
+<section class="closing">
+<h2>Velocity without<br>compromise.</h2>
+</section>
+<a class="next-case" href="./agentic.html">
+<div class="next-case-text">
+<div class="next-case-label">Next case study</div>
+<div class="next-case-title">Agentic Payments: Designing the Strategy for Autonomous Value</div>
+</div>
+<div class="next-case-arrow">&rarr;</div>
+</a>
+</main>
+<footer>
+<span><b>2026</b></span>
+</footer>
+</div>
 <script src="./js/theme-toggle.js" defer></script>
-
 </body>
 </html>
