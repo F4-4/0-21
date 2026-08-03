@@ -34,6 +34,51 @@
 [data-theme="dark"] .theme-toggle{ background:#222; }
 [data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
 
+/* ---------- BROWSER CHROME THEMING ----------
+   Tells the browser to use dark-mode native UI (scrollbars, form
+   controls) when we're in dark mode, same idea as the theme-color
+   meta tag but for in-page chrome instead of the address bar. */
+:root{ color-scheme: light dark; }
+[data-theme="dark"]{ color-scheme: dark; }
+[data-theme="light"]{ color-scheme: light; }
+
+/* Webkit (Chrome/Safari/Edge) scrollbar styling on top of color-scheme
+   so the thumb/track match our palette exactly instead of just the
+   browser's generic dark-mode gray. */
+::-webkit-scrollbar{ width: 12px; height: 12px; }
+::-webkit-scrollbar-track{ background: var(--bg); }
+::-webkit-scrollbar-thumb{
+  background: var(--muted-2);
+  border-radius: 999px;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover{ background: var(--muted); }
+
+/* Firefox */
+*{ scrollbar-color: var(--muted-2) var(--bg); }
+
+/* ---------- SELECTION & FOCUS ---------- */
+::selection{ background: var(--black-pill); color: var(--bg); }
+
+:focus-visible{
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- REDUCED MOTION ----------
+   Respect the OS-level setting for anyone sensitive to motion —
+   applies globally to any transition/animation on the site
+   (card easing, cursor trail, theme fade, etc). */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 *{ box-sizing: border-box; }
 html, body{ margin:0; padding:0; }
 body{

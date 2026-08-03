@@ -9,4 +9,10 @@ toggle.addEventListener('click', () => {
   const newTheme = isDark ? 'light' : 'dark';
   root.setAttribute('data-theme', newTheme);
   localStorage.setItem('theme', newTheme);
+
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', newTheme === 'dark' ? '#000000' : '#ffffff');
+
+  const favicon = document.querySelector('link[rel="icon"]');
+  if (favicon) favicon.setAttribute('href', newTheme === 'dark' ? './images/favicon-dark.png' : './images/favicon.png');
 });

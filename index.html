@@ -13,6 +13,8 @@
     document.addEventListener('DOMContentLoaded', function () {
       var meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+      var favicon = document.querySelector('link[rel="icon"]');
+      if (favicon) favicon.setAttribute('href', theme === 'dark' ? './images/favicon-dark.png' : './images/favicon.png');
     });
   })();
 </script>
@@ -329,6 +331,12 @@
   const SPAWN_DIST   = 100;   // px of cursor travel before spawning a new image
   const LIFETIME     = 700;  // ms before the image starts fading out
   const FADE_OUT_DUR = 450;  // ms for the fade-out animation
+
+  // ── Preload ───────────────────────────────────────────────────────────────
+  // Warm the browser cache for all trail images up front so the first
+  // spawn(s) don't pop in late on a cold cache — without this, the image
+  // starts its fade-in/blur transition before the file has even loaded.
+  SRCS.forEach((src) => { const img = new Image(); img.src = src; });
 
   // ── Build pool ────────────────────────────────────────────────────────────
   const container = document.getElementById('cursor-trail-container');

@@ -13,6 +13,8 @@ document.documentElement.setAttribute('data-theme', theme);
 document.addEventListener('DOMContentLoaded', function () {
 var meta = document.querySelector('meta[name="theme-color"]');
 if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+var favicon = document.querySelector('link[rel="icon"]');
+if (favicon) favicon.setAttribute('href', theme === 'dark' ? './images/favicon-dark.png' : './images/favicon.png');
 });
 })();
 </script>
