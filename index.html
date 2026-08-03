@@ -1,23 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-  // Apply the saved theme immediately, before the page renders, so it
-  // carries over between pages and there's no flash of the wrong theme.
-  // Also syncs the theme-color meta tag so the mobile browser chrome
-  // (address bar, etc.) matches the page background.
-  (function () {
-    var stored = localStorage.getItem('theme');
-    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-    document.addEventListener('DOMContentLoaded', function () {
-      var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
-      var favicon = document.querySelector('link[rel="icon"]');
-      if (favicon) favicon.setAttribute('href', theme === 'dark' ? './images/favicon-dark.png' : './images/favicon.png');
-    });
-  })();
-</script>
+<script src="./js/theme-init.js"></script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#ffffff" />
@@ -167,7 +151,7 @@
       </a>
       <a class="case-preview" href="./agentic.html" style="--case-bg:#f8f3eb; --case-text:#40391a;">
         <div class="case-preview-image">
-          <img src="./images/x402.png" alt="x402"  loading="lazy" />
+          <img src="./images/x402.webp" alt="x402"  loading="lazy" />
         </div>
         <div class="case-preview-content">
           <h3>Agentic Payments: Building and Enabling Autonomous Value</h3>

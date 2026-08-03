@@ -113,25 +113,18 @@ header{
   margin-top: 6px;
 }
 
-/* ---------- LINK STYLES ---------- */
-/* Base link styles for light mode */
+/* ---------- LINK STYLES ----------
+   Colors come from the shared --text/--accent tokens in styles.css,
+   so links follow theme changes automatically instead of needing a
+   separate light/dark override for each state. */
 a {
-  color: #000; /* Replace with your preferred light mode link color */
+  color: var(--text);
   text-decoration: underline;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #caa960; /* Color when hovering over a link */
-}
-
-/* Link styles for dark mode */
-[data-theme="dark"] a {
-  color: #fff; /* Replace with your preferred dark mode link color */
-}
-
-[data-theme="dark"] a:hover {
-  color: #caa960;
+  color: var(--accent);
 }
 
 /* ---------- ARTICLE BODY ---------- */

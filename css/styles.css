@@ -14,6 +14,7 @@
   --muted-2: #8a8a8a;
   --card: #efefee;
   --black-pill: #111111;
+  --accent: #caa960;
   --max-width: 900px;
   --radius-lg: 28px;
   --radius-md: 20px;
@@ -27,6 +28,7 @@
   --muted-2: #8c8c8c;
   --card: #1a1a1a;
   --black-pill: #f3f3f1;
+  --accent: #caa960;
 }
 
 [data-theme="dark"] .book-call{ color:#0d0d0d; }
@@ -37,25 +39,20 @@
 /* ---------- BROWSER CHROME THEMING ----------
    Tells the browser to use dark-mode native UI (scrollbars, form
    controls) when we're in dark mode, same idea as the theme-color
-   meta tag but for in-page chrome instead of the address bar. */
+   meta tag but for in-page chrome instead of the address bar.
+
+   Note: we deliberately don't add any custom ::-webkit-scrollbar or
+   scrollbar-color/scrollbar-width rules on top of this. Any custom
+   scrollbar styling makes Chrome drop its native up/down arrow
+   buttons (no CSS property brings them back once you opt in), and
+   makes Firefox drop whatever native/overlay scrollbar behavior the
+   visitor's OS would otherwise show. Leaving scrollbars alone here
+   means both browsers render their true default, and color-scheme
+   is enough on its own to make that default match light/dark mode. */
 :root{ color-scheme: light dark; }
 [data-theme="dark"]{ color-scheme: dark; }
 [data-theme="light"]{ color-scheme: light; }
 
-/* Webkit (Chrome/Safari/Edge) scrollbar styling on top of color-scheme
-   so the thumb/track match our palette exactly instead of just the
-   browser's generic dark-mode gray. */
-::-webkit-scrollbar{ width: 12px; height: 12px; }
-::-webkit-scrollbar-track{ background: var(--bg); }
-::-webkit-scrollbar-thumb{
-  background: var(--muted-2);
-  border-radius: 999px;
-  border: 3px solid var(--bg);
-}
-::-webkit-scrollbar-thumb:hover{ background: var(--muted); }
-
-/* Firefox */
-*{ scrollbar-color: var(--muted-2) var(--bg); }
 
 /* ---------- SELECTION & FOCUS ---------- */
 ::selection{ background: var(--black-pill); color: var(--bg); }
