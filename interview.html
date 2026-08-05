@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<script>
+(function () {
+var stored = localStorage.getItem('theme');
+var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+document.documentElement.setAttribute('data-theme', theme);
+document.addEventListener('DOMContentLoaded', function () {
+var meta = document.querySelector('meta[name="theme-color"]');
+if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+});
+})();
+</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="#ffffff" name="theme-color"/>
+<meta content="noindex, nofollow" name="robots"/>
+<title>Interview Prep — Private</title>
+<link href="./images/favicon.png" rel="icon" type="image/png"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="./css/styles.css" rel="stylesheet"/>
+<link href="./css/case-study.css" rel="stylesheet"/>
+<link href="./css/home.css" rel="stylesheet"/>
+<style>
+/* Extra, page-specific rules layered on top of the shared css/styles.css,
+   css/case-study.css, and css/home.css — reusing existing components
+   (.service-card for each question, .why-grid/.why-card for the scoring
+   grid) rather than a separate set of one-off classes. */
+.service-card{ margin: 0 0 28px; }
+.service-card h2{ margin: 0 0 10px; }
+.service-card .code-block{ background: rgba(128,128,128,0.08); }
+
+/* home.css is only needed here for .why-grid/.why-card/.service-card,
+   but it also redefines header/.hero/.closing/footer/.container for the
+   homepage's fixed-header, full-bleed layout, and — since it loads after
+   case-study.css — those override the plain case-study versions this
+   page actually wants. Restore them. */
+.container{ padding-top: 0; }
+header{
+  position: sticky;
+  top: 0;
+  left: auto;
+  width: auto;
+  z-index: 100;
+}
+.hero{
+  position: static;
+  width: auto;
+  margin-left: 0;
+  min-height: 0;
+  display: block;
+  padding: 56px 0 0;
+}
+.closing{
+  position: static;
+  padding: 20px 0 90px;
+}
+footer{
+  position: static;
+  font-size: 16px;
+}
+
+/* Card expand/collapse toggle */
+.service-card{ position: relative; }
+.service-card h2{ padding-right: 44px; }
+.view-toggle-btn{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--muted-2, #999);
+  background: transparent;
+  color: var(--muted-2, #999);
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+.view-toggle-btn:hover{ opacity: 1; background: rgba(128,128,128,0.1); }
+.view-toggle-btn .chevron-icon{
+  font-size: 16px;
+  line-height: 1;
+  display: inline-block;
+}
+.service-card.short-mode .view-toggle-btn{
+  background: rgba(230,150,60,0.14);
+  border-color: rgba(230,150,60,0.5);
+  color: inherit;
+  opacity: 1;
+}
+.service-card.short-mode .view-toggle-btn .chevron-icon{ transform: rotate(180deg); }
+.service-card.short-mode .full-view{ display: none; }
+.short-view{ margin: 0 0 4px; }
+.short-keywords{
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  opacity: 0.85;
+  background: rgba(128,128,128,0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+/* Global cram-mode controls */
+.cram-controls{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 18px 0 8px;
+  flex-wrap: wrap;
+}
+.cram-controls button{
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--muted-2, #999);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.cram-controls button:hover{ background: rgba(128,128,128,0.1); }
+.cram-controls span{ font-size: 13px; opacity: 0.6; }
+
+/* ---------------------------------------------------------------
+   Flashcard cram mode — click-to-flip revision cards, grouped by
+   theme. Self-contained styling (doesn't depend on external css)
+   so it renders correctly even without styles.css/case-study.css/
+   home.css loaded. Dark, near-black fronts + warm dark backs, amber
+   accent to match the existing .short-keywords / short-mode look.
+   --------------------------------------------------------------- */
+.fc-section{ margin: 0 0 8px; }
+.fc-controls{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 18px 0 26px;
+  flex-wrap: wrap;
+}
+.fc-controls button{
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--muted-2, #999);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.fc-controls button:hover{ background: rgba(128,128,128,0.1); }
+.fc-controls span{ font-size: 13px; opacity: 0.6; }
+
+.fc-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 22px;
+  position: relative;
+  z-index: 0;
+}
+.flip-card{
+  perspective: 1600px;
+  position: relative;
+  z-index: 0;
+}
+.flip-card-inner{
+  display: grid;
+  width: 100%;
+  transition: transform 0.55s cubic-bezier(.4,.15,.2,1);
+  transform-style: preserve-3d;
+  cursor: pointer;
+  outline: none;
+}
+.flip-card-inner:focus-visible{
+  box-shadow: 0 0 0 3px rgba(230,150,60,0.55);
+  border-radius: 20px;
+}
+.flip-card.flipped .flip-card-inner{ transform: rotateY(180deg); }
+
+.flip-card-front, .flip-card-back{
+  grid-row: 1;
+  grid-column: 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 20px;
+  padding: 26px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.flip-card-front::-webkit-scrollbar, .flip-card-back::-webkit-scrollbar{ width: 5px; }
+.flip-card-front::-webkit-scrollbar-thumb, .flip-card-back::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,0.15); border-radius: 4px;
+}
+
+.flip-card-front{
+  background: #0a0a0a;
+  color: #f5f5f5;
+}
+.flip-card-back{
+  background: #1c120f;
+  color: #f5f5f5;
+  transform: rotateY(180deg);
+}
+
+.fc-front-title{
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.12;
+  margin: 4px 28px 0 0;
+}
+.fc-front-questions{
+  list-style: none;
+  margin: auto 0 2px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.fc-front-questions li{
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.38;
+  margin: 0;
+}
+.fc-front-questions li::before{ content: "\201C"; }
+.fc-front-questions li::after{ content: "\201D"; }
+
+.fc-back-title{
+  font-size: 21px;
+  font-weight: 800;
+  margin: 4px 0 18px;
+}
+.fc-back-themes{
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.fc-back-themes li{ font-size: 14px; line-height: 1.5; opacity: 0.92; }
+.fc-back-themes b{ font-weight: 700; }
+.fc-back-pills{
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding-top: 6px;
+}
+.fc-pill{
+  border: 1px solid rgba(230,150,60,0.55);
+  color: #e9a94b;
+  background: rgba(230,150,60,0.09);
+  padding: 6px 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px){
+  .fc-front-title{ font-size: 23px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
+<div class="header-right">
+<button aria-label="Toggle theme" class="theme-toggle" id="themeToggle">
+<svg class="icon-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+</svg>
+<svg class="icon-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="4"></circle>
+<line x1="12" x2="12" y1="2" y2="4"></line>
+<line x1="12" x2="12" y1="20" y2="22"></line>
+<line x1="4.93" x2="6.34" y1="4.93" y2="6.34"></line>
+<line x1="17.66" x2="19.07" y1="17.66" y2="19.07"></line>
+<line x1="2" x2="4" y1="12" y2="12"></line>
+<line x1="20" x2="22" y1="12" y2="12"></line>
+<line x1="4.93" x2="6.34" y1="19.07" y2="17.66"></line>
+<line x1="17.66" x2="19.07" y1="6.34" y2="4.93"></line>
+</svg>
+</button>
+</div>
+</header>
+<main>
+<section class="hero">
+<h1>Interview Prep — Senior / Principal PM</h1>
+<p style="opacity:0.65;max-width:560px;margin-top:12px;">Private reference page. Not linked anywhere on the public site — reread before interviews, don't recite word for word. Each answer is a skeleton: say it in your own voice.</p>
+</section>
+<section class="article-body fc-section">
+<h2>Flashcard cram mode</h2>
+<p style="opacity:0.65; max-width:640px; margin:0 0 4px;">Grouped by theme, not question. Click a card to flip it: front is the theme + the questions that trigger it, back is what's being scored and which stories to reach for.</p>
+<div class="fc-controls">
+<button type="button" onclick="fcFlipAll(true)">Flip all to back</button>
+<button type="button" onclick="fcFlipAll(false)">Flip all to front</button>
+<button type="button" onclick="fcShuffle()">Shuffle order</button>
+<span>Click any single card to flip it.</span>
+</div>
+
+<div class="fc-grid" id="fcGrid">
+
+<div class="flip-card" data-theme="Influencing">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Influencing" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Influencing</h3>
+<ul class="fc-front-questions">
+<li>How do you influence without authority?</li>
+<li>Tell me about a time you disagreed with an exec and how you handled it</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Timing</b> — knowing when to push back vs. comply, and reading whether it's the right moment.</li>
+<li><b>Evidence</b> — leading with data, not opinion, to make the case.</li>
+<li><b>Relationship</b> — protecting trust with the person you disagreed with, win or lose.</li>
+<li><b>Outcome</b> — did the pushback actually change what happened.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Wallet Rollout Rollback</span>
+<span class="fc-pill">SafeSend Escrow (Tezos)</span>
+<span class="fc-pill">EM Scope Disagreement</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Discovery &amp; Research">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery &amp; Research" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Discovery &amp; Research</h3>
+<ul class="fc-front-questions">
+<li>What is benchmarking?</li>
+<li>How do you approach decisions when A/B testing is impossible or sample sizes are too small?</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Method fit</b> — choosing quant vs. qual for the actual question being asked, not by default.</li>
+<li><b>Proxy signal</b> — what stood in for missing data, and why it was strong enough to act on.</li>
+<li><b>Honest baseline</b> — benchmarked against something real, not a vanity number.</li>
+<li><b>Risk containment</b> — how the blast radius of being wrong was limited.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Uranium.io</span>
+<span class="fc-pill">Bitcoin Ordinals Explorer MVP</span>
+<span class="fc-pill">ProductBot ROI</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Lifecycle &amp; Frameworks">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Lifecycle &amp; Frameworks" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Lifecycle &amp; Frameworks</h3>
+<ul class="fc-front-questions">
+<li>How do you prioritise?</li>
+<li>What makes a good PRD?</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Critical path first</b> — protecting the non-negotiable before anything else.</li>
+<li><b>Decision gates</b> — kill/scale criteria set before starting, not improvised later.</li>
+<li><b>Removing ambiguity</b> — could someone build the wrong thing correctly from what you wrote.</li>
+<li><b>The "no" list</b> — cutting scope as deliberate strategy, not a fallback.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Wallet Scope Cut</span>
+<span class="fc-pill">PRD Skill</span>
+<span class="fc-pill">x402 Staged Framework</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Strategy &amp; Vision">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Strategy &amp; Vision" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Strategy &amp; Vision</h3>
+<ul class="fc-front-questions">
+<li>Tell me about a product strategy you built from scratch</li>
+<li>How do you evaluate whether to build, buy, or partner?</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Thesis</b> — the core bet, stated plainly, and the evidence behind it.</li>
+<li><b>Trade-off</b> — what was deliberately given up for what it bought.</li>
+<li><b>Modularity</b> — building so the strategy survives a shifting landscape.</li>
+<li><b>Business tie-in</b> — connecting the bet to revenue, not just user value.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Uranium.io → Metals.io</span>
+<span class="fc-pill">Wallet M&amp;A (Build vs Buy)</span>
+<span class="fc-pill">Tokenisation Platform</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Metrics &amp; Impact">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Metrics &amp; Impact" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Metrics &amp; Impact</h3>
+<ul class="fc-front-questions">
+<li>How do you define product success?</li>
+<li>A metric you own goes down — walk me through your response</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Causal link</b> — connecting a user outcome to a business outcome, not reporting either alone.</li>
+<li><b>Detect &amp; contain</b> — what signal triggered action, how fast, and how exposure was limited.</li>
+<li><b>Plain-English methodology</b> — could you explain the number in one sentence.</li>
+<li><b>Full picture</b> — upfront about what the metric doesn't capture.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Wallet Conversion (+7%, £1.2M/qtr)</span>
+<span class="fc-pill">ProductBot ROI (-76% overhead)</span>
+<span class="fc-pill">Metric Drop Framework</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Execution Under Pressure">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Execution Under Pressure" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Execution Under Pressure</h3>
+<ul class="fc-front-questions">
+<li>Explain a time you had to ship with limited resources</li>
+<li>Walk me through handling a critical production incident / post-mortem</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Scope discipline</b> — cutting to the non-negotiable core instead of doing everything worse.</li>
+<li><b>Detect → contain → root cause → guardrail</b> — the incident-response shape of a good answer.</li>
+<li><b>Decision point</b> — the specific moment a call had to be made anyway, with incomplete information.</li>
+<li><b>Result</b> — did the constraint or crisis produce a sharper outcome, not just a survived one.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Wallet Rewrite (4-person team)</span>
+<span class="fc-pill">Wallet Rollout Rollback</span>
+<span class="fc-pill">Security Vulnerability Framework</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Behavioral &amp; Leadership">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Behavioral &amp; Leadership" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Behavioral &amp; Leadership</h3>
+<ul class="fc-front-questions">
+<li>Tell me about a product that failed, and what you learned</li>
+<li>How do you mentor or raise the bar for other PMs?</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Ownership</b> — naming your own miss without deflecting.</li>
+<li><b>Operating change</b> — what actually changed in how you work afterward.</li>
+<li><b>Scale beyond yourself</b> — codifying what works so others can use it too.</li>
+<li><b>Concrete example</b> — a real instance, not a general claim about your style.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Wallet Rollout Rollback</span>
+<span class="fc-pill">Etherlink Exclusivity</span>
+<span class="fc-pill">PRD Skill Rollout</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Technical Fluency &amp; Fit">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Technical Fluency &amp; Fit" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">Technical Fluency &amp; Fit</h3>
+<ul class="fc-front-questions">
+<li>How do you explain complex technical architecture or on-chain risks to non-technical stakeholders?</li>
+<li>Why this company / why this role?</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Themes</h3>
+<ul class="fc-back-themes">
+<li><b>Lead with the guarantee</b> — the risk protected against, not the mechanism, unless asked.</li>
+<li><b>Translation</b> — technical accuracy without losing a non-technical audience.</li>
+<li><b>Research</b> — proof you know this company or market specifically.</li>
+<li><b>Forward-looking</b> — what you want to do here that you haven't done yet.</li>
+</ul>
+<div class="fc-back-pills">
+<span class="fc-pill">Oracle Fallback Design</span>
+<span class="fc-pill">Crypto/Fintech Domain Fit</span>
+<span class="fc-pill">Your own story — fill in</span>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<section class="article-body">
+<h2>What the interviewer is actually scoring</h2>
+<p style="opacity:0.65; max-width:640px; margin:0 0 4px;">Every answer here is being judged on the same handful of things, regardless of which question triggers it.</p>
+<div class="cram-controls">
+<button type="button" onclick="setAllCards('short')">Collapse all to short</button>
+<button type="button" onclick="setAllCards('full')">Expand all to full</button>
+<span>Toggle any single card with its own button.</span>
+</div>
+
+<div class="why-grid">
+<div class="why-card"><h3>Structure</h3><p>Can you organise an answer (STAR or otherwise) instead of rambling chronologically through everything that happened.</p></div>
+<div class="why-card"><h3>Ownership &amp; Impact</h3><p>Did you drive the outcome, and can you quantify it — not just describe your role.</p></div>
+<div class="why-card"><h3>Judgment Under Ambiguity</h3><p>How you made a call with incomplete information, and why that call was defensible.</p></div>
+<div class="why-card"><h3>Leadership &amp; Influence</h3><p>How you moved people who didn't report to you, especially under disagreement.</p></div>
+<div class="why-card"><h3>Self-Awareness</h3><p>What you'd do differently — failure/judgment questions are scored on the reflection, not the mistake itself.</p></div>
+</div>
+<h2 style="margin-top:56px;">Subjective — Judgment, Behavioural &amp; Strategy</h2>
+<div class="service-card">
+<h2>Explain a time you had to ship with limited resources</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">4-person team, 10yr legacy debt • cut to Send/Receive/Buy/Sell only • invisible background migration pipeline • staged rollout 5%→10%→20% w/ downgrade path • 28X faster load, +7% conversion, ~£1.2M/qtr, legacy fully deprecated</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">The blockchain.com web wallet rewrite — 4 people, 10 years of debt, zero room for lost user funds.</p>
+<p><b>Situation:</b> A decade-old web wallet was riddled with technical debt, running 20s+ load times, and structurally blocked from new revenue. It couldn't just be shut down — a large, self-custodial user segment relied on it, so any downtime risked locking people out of their own funds.</p>
+<p><b>Task:</b> Rebuild it from vanilla JS to React/TypeScript, migrate every user's account safely, with a core team of four — me, one EM, one Staff Engineer, one Mid-level Engineer. No room to hire our way out of the constraint.</p>
+<p><b>Action:</b> I made resourcing the forcing function for scope, not an excuse for slower delivery. We cut to the non-negotiable path — Send, Receive, Buy, Sell — and deferred everything else until that was safely live. We shipped a background, invisible account-migration pipeline so users never had to take action, and used a staged rollout (5% → 10% → 20%) with an explicit downgrade path so risk was capped at every stage, not just at the end.</p>
+<p><b>Result:</b> 28X faster load times, +7% trading conversion, ~£1.2M in additional quarterly volume, and full deprecation of the legacy system — delivered by a team a fraction of the size a project like this would normally get.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Why this lands for senior/principal: it shows you treat constraints as a design input, not a blocker — and that "limited resources" forced sharper prioritisation rather than lower quality.</p>
+</div></div>
+<div class="service-card">
+<h2>Why did you want to be involved in product?</h2>
+<p style="font-weight:700;margin:0 0 14px;">[This is the one answer only you can give authentically — use the structure below, fill in your real motivation]</p>
+<p>Structure that tends to land well for senior/principal roles: pick a genuine origin point (a specific moment/frustration/project — not "I like tech and people"), connect it to what you learned you were good at (translating between technical and business, or driving ambiguous 0→1 problems, or owning outcomes rather than just tasks), and end with what you still find genuinely energising about it today. Keep it under 60 seconds — this question is a scene-setter, not the main event.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Draft a real version of this one yourself and I'll help sharpen it — it needs your actual story, not a template.</p>
+</div>
+<div class="service-card">
+<h2>How do you reflect?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Wallet: exec pushed 10%→20% before feedback actioned → ticket spike → rollback → 'moving fast without guardrails is false speed.' Tokenisation: Etherlink-exclusive capped TVL ceiling, cross-chain could've been 5x — surface it yourself before someone else finds it.</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">I look for the decision that could have gone differently, not just the outcome — wins included.</p>
+<p>The clearest example: during the wallet rollout, executive pressure pushed us from 10% to 20% traffic before we'd fully actioned early user feedback, and support tickets spiked. I rolled back to 10%, fixed the root cause, and only then resumed. The reflection wasn't "we made a mistake" — it was "moving fast without guardrails is false speed," and that's stuck with me as an operating principle since.</p>
+<p>Same instinct on tokenisation: after the fact, I was honest that keeping the assets Etherlink-exclusive capped our TVL ceiling — cross-chain issuance could plausibly have grown it 5x. I'd rather surface that trade-off myself than have someone else find it.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Pattern to keep hitting in interviews: name the pressure that pushed toward the wrong call, name what you did about it, name what changed in how you operate after.</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a product strategy you built from scratch</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Uranium.io: no on-chain market existed • $4.2M physical lot size locked out retail/mid-market • uranium outperforming S&amp;P 500 • validated via macro capital-demand signal, not user research • chose physically-backed over synthetic (trust &gt; speed) • $14M TVL, 75K+ transfers → scaled into Metals.io</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Uranium.io — anchoring an MVP on a pure macro-capital thesis, with no traditional user research, because the market signal made it redundant.</p>
+<p><b>Situation:</b> No on-chain market existed for uranium exposure. Physical uranium trading required a ~$4.2M minimum lot size, locking retail and mid-market allocators out entirely — while spot uranium was aggressively outperforming the S&amp;P 500 on the back of energy shocks and AI power demand.</p>
+<p><b>Task:</b> Decide whether and how to bring a genuinely novel asset class on-chain, with no playbook to copy.</p>
+<p><b>Action:</b> Instead of consumer interviews, I validated against macro capital-demand signals — the asymmetry between outperformance and access barriers was the evidence. I then made the highest-leverage strategic call early: physically-backed instead of synthetic, trading short-term complexity for institutional trust and audit-anchored solvency, specifically to capture allocators who wouldn't touch derivative counterparty risk.</p>
+<p><b>Result:</b> $14M TVL, 75K+ on-chain transfers, and a validated thesis that justified scaling horizontally into a multi-asset platform (Metals.io).</p>
+</div></div>
+<div class="service-card">
+<h2>How do you evaluate whether to build, buy, or partner?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Considered acquiring a wallet product for its user base • modelled real cost-per-reactivatable-user, not headline valuation • too expensive vs mostly-dormant base • recommended no — twice, a year apart, same answer both times • partner examples: Bakkt, Li.Fi, VNX/Noemon (regulatory/custody risk, no differentiation upside) vs built Permit2 in-house (real gap, no off-shelf option)</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">M&amp;A evaluation of acquiring a crypto wallet product for its user base — said no twice, a year apart, once the real cost-per-reactivatable-user was modelled against valuation.</p>
+<p><b>Situation:</b> The business considered acquiring another crypto wallet product, primarily to inherit its existing user base rather than build audience from zero — we recognised organic growth has its own real challenges and cost.</p>
+<p><b>Task:</b> I worked with M&amp;A on the investigation, writing up a summary document covering valuation and the outcomes needed to justify the deal going ahead.</p>
+<p><b>Action:</b> Rather than evaluating against headline valuation alone, I modelled the realistic cost per user we'd actually be able to reactivate — the majority of the target's user base was unlikely to come back. That made the true acquisition cost per usable user far higher than the deal price implied.</p>
+<p><b>Result:</b> Recommended against it — too expensive relative to a mostly-dormant user base. The target came back a year later at a lower valuation, but by then we'd already built out our own product further and more of their user base had dropped off, so the economics were still unfavourable. Remained a no both times.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Broader framework I use for build/buy/partner: is this core to our differentiation or commodity infrastructure? What's the real economics (not headline cost)? What's the speed-to-market vs control trade-off? On the infra side specifically: partnered with Bakkt for execution in states we couldn't operate in directly, Li.Fi for cross-chain liquidity routing, and VNX/Noemon Tech as regulated issuers for gold and rare earths — all partner calls where building in-house would have meant taking on regulatory or custody risk with no differentiation upside. Conversely, built the Permit2 payment facilitator in-house on x402 because no off-the-shelf stack supported non-EIP-3009 tokens — that gap was exactly where owning the build mattered.</p>
+</div></div>
+<div class="service-card">
+<h2>How do you influence without authority?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Engineers sceptical of ProductBot, passive resistance • made it my own default workflow instead of mandating it • one engineer tried it, got value, became organic advocate • adoption spread org-wide • -76% admin overhead, +27% reclaimed eng focus time</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">ProductBot — I didn't mandate adoption. I made it my own default way of working until one engineer became an organic advocate, and adoption spread from there.</p>
+<p><b>Situation:</b> Engineers were sceptical of a new Slack/Linear automation workflow — passive resistance, not open pushback, which is harder to overcome with a top-down mandate.</p>
+<p><b>Task:</b> Get genuine adoption without the authority to force it, and without damaging trust by pushing too hard.</p>
+<p><b>Action:</b> I used it myself as my primary way of working so people could see it functioning in practice rather than being told to trust it. One developer tried it, got value, and became an internal advocate — which did more to shift sentiment than anything I could have said directly.</p>
+<p><b>Result:</b> ProductBot became an everyday workspace tool, cutting admin overhead 76% and reclaiming 27% of engineering focus time.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">This also directly answers "how do you drive adoption of something people are sceptical of" if it comes up phrased differently.</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a time you disagreed with an exec and how you handled it</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Exec pressure to go 10%→20% mid-migration before feedback resolved • pushed back with support-ticket data, led rollback to 10% • fixed root cause, only then resumed • reinforced staged-rollout guardrails aren't bureaucracy</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Holding the line on rolling back the wallet migration from 20% to 10% traffic, despite pressure to keep scaling.</p>
+<p><b>Situation:</b> Mid-migration, with strong early data, executive pressure pushed to accelerate the rollout to 20% traffic before user feedback from the initial cohort had been fully actioned.</p>
+<p><b>Task:</b> Balance the push for speed against the real risk of scaling an unresolved issue to more users of a non-custodial financial product.</p>
+<p><b>Action:</b> I didn't just comply — I made the case with the support-ticket data we already had, then led the rollback to 10% once the spike confirmed the risk, fixed the root cause, and only then resumed scaling.</p>
+<p><b>Result:</b> The rollback avoided compounding a known issue at a larger user scale, and reinforced with leadership that our staged-rollout guardrails weren't bureaucracy — they were the thing preventing a worse outcome.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Framing note: keep this one about the disagreement and the data-backed pushback, not just "I made a mistake and fixed it" (that's the "how do you reflect" answer using the same underlying story — fine to reuse, just land a different point).</p>
+</div></div>
+<div class="service-card">
+<h2>A strong disagreement with an Engineering Lead on approach vs. timeline</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Two pushbacks on same EM: (1) ambitious scope commit → argued for realistic external commitment + buffer, spare capacity to bonus features if unused (2) ship-on-cadence despite obvious unresolved perf issues → pushed to delay rather than ship with 'fix coming soon' • both calls accepted by stakeholders, avoided overcommit miss + under-polished release</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Two separate disagreements with my EM on the Trilitech wallet — ambitious scope commitments vs realistic buffer, and holding a release for polish vs keeping cadence.</p>
+<p><b>Situation:</b> My EM was ambitious in two ways I didn't fully agree with: he wanted to commit to an ambitious feature scope for an upcoming cycle, and separately wanted to ship a scheduled release on cadence despite obvious, unresolved performance issues in the app.</p>
+<p><b>Task:</b> Push back on both without undermining the EM or losing the team's delivery credibility — balancing his instinct for ambition and consistency against my own experience of what happens when either backfires.</p>
+<p><b>Action:</b> On scope, I argued for communicating a more realistic commitment externally, intentionally leaving room for bugs, with any spare capacity going toward bonus features if the buffer wasn't needed — rather than committing the ambitious version and hoping nothing broke. On the release, I pushed to delay rather than ship on schedule: the performance issues were obvious, and I'd rather hold the release than put it in front of users with a "fix coming soon" promise attached. I communicated both calls directly to stakeholders with the reasoning, rather than letting the EM's original plan run and hoping it worked out.</p>
+<p><b>Result:</b> Stakeholders accepted both calls — reasonable, while still maintaining real pressure to deliver. We avoided both an overcommitment miss and shipping a visibly under-polished release.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">This is a good complement to the exec-disagreement story specifically because it's peer-level, not up-the-chain — shows you'll hold a line with someone you work with daily, not just in front of leadership.</p>
+</div></div>
+<div class="service-card">
+<h2>Walk me through handling a critical production incident / post-mortem</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Detect: ticket spike at 20% cohort = trigger to investigate immediately. Contain: rolled back 20%→10% to cap blast radius. Root cause: unresolved issue from earlier cohort's feedback, scaled past too soon. Fix &amp; resume: only scaled again once actually resolved. Process: gates now tied to 'root cause resolved,' not 'cohort looks stable.'</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">The wallet migration rollback, reframed around incident structure: detect, contain, root-cause, update the guardrail.</p>
+<p><b>Detect:</b> A spike in support tickets at the 20% rollout cohort was the signal — I treated an unusual pattern in real user-facing data as the trigger to investigate immediately, not something to monitor passively.</p>
+<p><b>Contain:</b> Rather than trying to patch forward while more users were exposed, I led an immediate rollback from 20% back to 10% to cap the blast radius while the actual cause was investigated.</p>
+<p><b>Root cause:</b> Identified the specific unresolved issue from the earlier cohort's feedback that had been prematurely scaled past before it was fully actioned.</p>
+<p><b>Fix &amp; resume:</b> Fixed the root cause, then only resumed scaling once it was actually resolved — not once time had simply passed.</p>
+<p><b>Process update:</b> This experience directly shaped how I ran every subsequent rollout stage on that project — scaling gates were tied to "root cause resolved," not just "cohort looks stable," so the same failure mode couldn't recur silently.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">If asked for a formal post-mortem structure specifically: I'd always want a blameless writeup covering timeline, detection method, impact/blast radius, root cause, immediate fix, and the specific guardrail or process change that prevents recurrence — not just the fix itself.</p>
+</div></div>
+<div class="service-card">
+<h2>How do you mentor or raise the bar for other PMs?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Turned own PRD discipline into a standardised, shared 'PRD skill' used function-wide • structured enough that PMs' PRDs feed directly into automated project scoping/tickets</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Turned my own PRD discipline into a shared "PRD skill" used across the product function, not just my own projects.</p>
+<p>Rather than just writing good PRDs myself, I standardised the structure and prompting into a reusable "skill" that other PMs across the function could use to produce PRDs precise enough to feed directly into automated project scoping. That's the kind of raising-the-bar I believe in — codify what works so it scales past you, rather than being the sole source of quality.</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a time you had to say no to a senior stakeholder</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">CEO revisits stalled Bitcoin Ordinals bet 7 months late, after competitors (Leather, Ordinals Wallet) built out marketplaces/minting and grew user bases • pulled competitor revenue data myself (Dune Analytics), modelled realistic revenue vs eng cost + roadmap opportunity cost • recommended against it directly to the CEO • team stayed on higher-value priority instead of chasing a closed market window</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Bitcoin Ordinals — the CEO wanted to revisit a stalled experiment 7 months late; I said no, backed by competitor revenue benchmarks I pulled myself.</p>
+<p><b>Situation:</b> I'd earlier launched an early experiment showcasing Bitcoin Ordinals, but the business appetite to allocate real resources never materialised at the time. Seven months later, competitors — notably Leather and Ordinals Wallet — had built out marketplaces, minting tools, and dedicated in-wallet Ordinals sections, and had grown sizeable user bases doing it. The CEO asked whether we should now invest.</p>
+<p><b>Task:</b> Give an honest, evidence-based recommendation rather than a reflexive yes to a CEO-level request — especially since the instinct in the room was "our competitors are winning here, we should move."</p>
+<p><b>Action:</b> I pulled competitor data from Dune Analytics and built out benchmarks on competitor revenue based on their trading volume and fee structures, then modelled what realistic revenue would look like for us entering that late, against the engineering cost and the delay it would cause to our current roadmap priority — which our own internal data showed was higher value to the company.</p>
+<p><b>Result:</b> I recommended against it and said so directly to the CEO. The data made the opportunity cost explicit rather than abstract, and the team stayed focused on the higher-value initiative instead of chasing a market window that had already closed.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Good corroborating detail if pressed on whether this was a real initiative and not a minor side project: the CEO (Peter Smith) had personally tweeted about it at the time — he inscribed the company logo as an Ordinal, which is a memorable, verifiable-sounding detail that shows this had real visibility, not just a side experiment nobody noticed.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">This one also doubles as a strong "benchmarking" example if that question comes up separately — same underlying story, different emphasis (here: the courage to say no; there: the rigour of the benchmark itself).</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a time leadership added a non-negotiable priority mid-project</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">SoFi exits crypto (licensing) → hard legal-deadline user migration lands mid-wallet-rewrite, already lean 4-person team • said yes (constraint was real, non-negotiable), restructured: EM+me ran SoFi directly, Staff Eng kept rewrite moving • my scope: Legal/BD/Back Office coordination, PRD, Design UX + migration emails, Data Science tracking dashboard, Bakkt partner coordination, full QA before real users • hit legal deadline, migration succeeded; rewrite timeline pushed but stakeholders understood why</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">The blockchain.com / SoFi crypto user migration — a business acquisition with a hard legal deadline, landing mid-way through the already resource-stretched wallet rewrite.</p>
+<p><b>Situation:</b> Mid-way through the wallet rewrite — already running lean with a 4-person team — the business reached an agreement to take on SoFi's crypto users after SoFi hit licensing issues that forced them to exit the crypto business entirely. There was a strict, legally-driven deadline to complete the migration.</p>
+<p><b>Task:</b> Deliver a fully compliant, working migration path for a large external user base on a hard deadline, without stopping the wallet rewrite outright or quietly starving it of attention.</p>
+<p><b>Action:</b> I said yes because the constraint was real, not negotiable — then structured the response so both projects could survive it. The EM and I worked the SoFi migration directly, while I kept oversight of the other two (including the Staff Engineer, who was strong enough to keep the wallet rewrite moving with less day-to-day input from me). The real cost wasn't my time, it was losing the EM's hands-on coding capacity for the duration. My own scope on SoFi was broad: I handled cross-functional communication with Legal, BD, and Back Office (who owned the customer data being transferred); wrote the PRD; worked with Design on the onboarding UX/UI and the marketing emails guiding SoFi users through migration; partnered with Data Science to build a stakeholder-facing dashboard tracking funds and user migration in real time; and coordinated with Bakkt, our partner handling users in states where we couldn't operate directly. I ran QA on the full flow with the SoFi team before any real users touched it, to de-risk fund transfers ahead of launch.</p>
+<p><b>Result:</b> Everything was built and tested ahead of the legal deadline, and the migration succeeded. It did push out parts of the wallet rewrite timeline, but because the SoFi deadline was clearly non-negotiable and communicated as such, stakeholders were understanding rather than frustrated. Not every user migrated proactively, so I kept working with Marketing afterward on reminder campaigns warning users their funds would be liquidated on SoFi by a set date if they didn't act.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Good detail if asked to go deeper: this is a strong example of running two workstreams with the same core team by being explicit about what got deprioritised (my own bandwidth and the EM's coding time) rather than pretending both projects could get full attention. Also a clean example of end-to-end PM scope — legal/compliance, cross-functional delivery, UX, data, and post-launch lifecycle marketing, all on one initiative.</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a decision you made without complete data</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Uranium.io: no consumer base existed to interview — product category didn't exist yet → anchored on macro proxy (asset outperformance vs locked-out addressable market) instead of waiting for data that couldn't exist. [Bitcoin Ordinals Explorer: zero user data, 2-day/1-engineer timeboxed MVP to test demand fast, low-risk framework got leadership buy-in, paused when traction didn't hit threshold.]</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Uranium.io — no traditional user research existed for a market that didn't exist yet, so I validated against macro signal instead.</p>
+<p>When I was leading the Explorer product at Blockchain.com, Bitcoin Ordinals emerged as a new novelty. We had zero user data or market certainty, but I recognized a high-upside first-mover advantage if we acted fast.
+The challenge was balancing this experiment against our committed sprint goals. Rather than making a massive, risky bet, I scoped a lean MVP and aligned with my Engineering Manager to time-box it to just 2 days with one engineer.
+With a concrete plan and clear trade-offs, I brought it to our VP of Product and senior leadership. They were initially skeptical, but the low-risk framework convinced them to approve it. We shipped fast, measured the real user demand, and when initial traction didn't hit our threshold, we intentionally paused further resource investment.
+It showed the leadership team that I move fast on opportunities, quantify risk upfront, and have the discipline to follow the data—even when that means pausing an experiment.</p>
+<p>There was no consumer base to interview about wanting tokenised uranium exposure — the product category didn't exist. Rather than wait for data that couldn't exist yet, I anchored the decision on the clearest available proxy: the outperformance of the underlying asset against a locked-out addressable market. It's a judgment call about which incomplete data is still strong enough evidence to act on, versus which gaps are actually disqualifying.</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a product that failed, and what you learned</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Honest position: no real product failure — near-misses caught early by deliberate tight scoping, not luck • closest example: wallet rollback (pushed 20% under pressure before feedback resolved, real support-ticket spike) — a contained judgment failure, not a failed product</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Honest position: my strongest example is a near-miss caught early, not a genuine failure — and I'd rather say that directly than manufacture one.</p>
+<p>If asked this directly: "The calls I've made that didn't land, I've generally caught early enough through tight scoping that they didn't compound into real damage — that's actually deliberate on my part, not luck. The closest real example of something going wrong and sticking for a while is the wallet migration rollback: we pushed rollout to 20% under pressure before fully resolving early feedback, and it caused a real support-ticket spike before I rolled it back and fixed the root cause. It wasn't a failed product, but it was a real, if contained, failure of judgment in the moment — accelerating without finishing the guardrail work first."</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Why this beats forcing a bigger story: interviewers can usually tell when a "failure" has been sanded down to have no real teeth. Answering honestly about scope here, then pivoting to your strongest real example of things going wrong, reads as self-aware rather than evasive — as long as you don't over-apologise for not having a bigger disaster to offer.</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a bet that didn't work out</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Bets scoped tight from the outset: clear time-box, kill criteria, limited resourcing upfront • x402/agentic payments = 3-month assessment gate before any bigger commitment • when a bet doesn't pay off, cost is contained by design, folds into how I scope the next one</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Different from a failure story — a call made in good faith, scoped tightly, that simply didn't pay off.</p>
+<p>I've made calls — feature bets, resourcing decisions, timing calls — that didn't end up generating the return I expected. What's kept those from turning into real failures is that I scope experimental or uncertain bets tightly from the outset: clear time-box, clear kill criteria, limited resourcing committed up front (the x402 agentic payments work is a good example of this discipline applied deliberately — a 3-month assessment gate before any larger commitment). When a bet like that doesn't pay off, the cost is contained by design, and the lesson folds into how I scope the next uncertain bet, rather than becoming a scar.</p>
+</div></div>
+<div class="service-card">
+<h2>Tell me about a time a project went off track due to a capability gap</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Mobile app team had no crypto/scalable-consumer-app background → EM's client-side-only architecture (no backend data layer) broke at 5 concurrent test users • design also new to mobile, compounded gap • recognised: not a coaching problem, a genuine capability gap → pushed for full rewrite + backed hiring a specialist to lead technical direction rather than upskilling under deadline</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">An engineering and design team with no crypto or scalable-consumer-app background made architecture assumptions that broke under real load — I had to recognise it wasn't fixable through coaching, and push to bring in someone who could actually close the gap.</p>
+<p><b>Situation:</b> On a mobile app build, the engineering team had no prior crypto background and no experience with scalable consumer applications. The EM's architecture assumed everything could be front-loaded on the client side, with no backend layer to handle data loading — a reasonable-looking call that turned out to be structurally wrong. The app slowed drastically with as few as 5 concurrent test users, because every pricing/asset data request was hitting the client directly with nothing absorbing the load. In parallel, the design team had only ever built for web and was designing for mobile for the first time, which compounded the gap.</p>
+<p><b>Task:</b> Recognise that this wasn't a bug to fix or a coaching problem to solve incrementally — it was a fundamental capability gap that would keep producing the same class of mistake — and figure out the right response before more time was sunk into the wrong architecture.</p>
+<p><b>Action:</b> Once the performance ceiling made the root cause undeniable, I pushed for the honest conclusion rather than papering over it: the app needed a genuine rewrite with proper backend-handled data loading, and the team needed someone with real experience in scalable consumer/crypto apps to lead that, not just more time. I backed hiring someone new specifically to fill that knowledge gap and take over the technical direction, rather than trying to upskill under a live deadline.</p>
+<p><b>Result:</b> The rewrite addressed the root architectural flaw instead of patching symptoms, and closing the experience gap directly (via hiring) fixed the recurring pattern rather than just the immediate performance issue.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">The sharpest point to make if asked a follow-up: the mistake wasn't the EM's original assumption — inexperienced teams misjudge architecture, that's normal. The judgment call was recognising early that this needed a structural fix (new capability) rather than a series of patches, and being willing to say so before it cost more time.</p>
+</div></div>
+<div class="service-card">
+<h2>How technical do you need to be as a PM?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Own technical decisions where the trade-off is fundamentally a product one, don't write production code • tokenisation: physical-vs-synthetic backing + oracle fallback design (Redstone→TWAP→circuit breaker→Sprott NAV fallback) • PRD-to-agent pipeline: understand how the agent reasons, not just desired output</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Technical enough to make the right architecture trade-off calls yourself, without needing to be the one who codes it.</p>
+<p>I don't write production code, but I own technical decisions where the trade-off is fundamentally a product one. On the tokenisation platform, the physical-vs-synthetic backing decision and the oracle fallback design (Redstone → TWAP → circuit breaker → Sprott NAV-implied fallback) were product calls with deep technical dependencies — I needed to understand the mechanics well enough to weigh funding-rate risk against institutional trust, not just defer to engineering. Same with the PRD-to-agent pipeline — designing workplace guidance rules (sizing, routing, escalation logic) required understanding how the agent actually reasoned through tickets, not just what output I wanted.</p>
+</div></div>
+<div class="service-card">
+<h2>What kind of PM do you not want to be?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Not the PM who only reports wins and lets guardrails erode — I flag my own misses (Etherlink TVL ceiling, wallet rollback) • not the PM who treats tooling adoption as a compliance exercise — ProductBot = redesign the system, don't mandate behaviour</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">The PM who only reports wins and lets guardrails erode under pressure to look fast.</p>
+<p>I've deliberately built self-critique into how I talk about my own work — flagging that Etherlink-exclusivity capped tokenisation's TVL ceiling, or that accelerating the wallet rollout under pressure caused a support spike I had to roll back from. I don't want to be the PM whose retro is just a highlight reel, because that's how the same mistake gets repeated by someone else on the team next time. I also don't want to be a PM who treats project management tooling as a compliance exercise for engineers — ProductBot exists because I'd rather redesign the system than mandate behaviour change that fights how people actually work.</p>
+</div></div>
+<div class="service-card">
+<h2>Why this company / why this role?</h2>
+<p style="font-weight:700;margin:0 0 14px;">[Must be specific to each employer — generic answers here are the most common way senior candidates lose the room]</p>
+<p>Structure: one sentence on what specifically excites you about their product/market position (shows you did real homework, not just "I love your mission"), one sentence connecting it to a concrete piece of your own experience (e.g. if it's a crypto-adjacent fintech, your RWA/tokenisation or wallet-scale work is directly relevant — say why), and one sentence on what you specifically want to do there that you haven't done yet. Avoid anything that could be copy-pasted into an answer for a competitor — if your answer would work for three other companies, it's too generic.</p>
+</div>
+<div class="service-card">
+<h2>Building a smart contract escrow with a borrowed engineer</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">CEO wants on-chain escrow shipped in one sprint, zero in-house Michelson (Tezos) expertise • named the gap immediately, negotiated borrowing an engineer from another team, wrote a zero-ambiguity PRD • ran build + security audit (Cossack Labs) + UX in parallel, not sequential • shipped on time, audited, within original sprint</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">SafeSend escrow on Tezos — the CEO wanted it shipped in a sprint, but no one on my team could write Michelson. I borrowed someone who could and ran build, audit, and UX in parallel to still hit the deadline.</p>
+<p><b>Situation:</b> The CEO flagged an on-chain escrow feature for SafeSend as compelling and wanted it shipped within a single sprint. My team had no Michelson (Tezos smart contract language) expertise — a hard capability gap, not a prioritisation problem.</p>
+<p><b>Task:</b> Deliver a secure, audited escrow contract and a working wallet UX for it, on an aggressive timeline, without the in-house skillset to build it.</p>
+<p><b>Action:</b> I named the gap immediately instead of letting the team quietly struggle with it, and went directly to the Head of Engineering to negotiate temporarily borrowing a Michelson-literate engineer from another team. I wrote the PRD defining scope and outcomes so the borrowed engineer could ramp in with zero ambiguity about what "done" meant. To protect the sprint timeline, I ran three workstreams in parallel rather than sequentially: contract build with the borrowed engineer, a security audit with Cossack Labs running alongside development rather than after it, and UX/UI for how escrow funds would surface in the wallet with my own design and engineering team.</p>
+<p><b>Result:</b> Shipped on time, audited, within the original sprint — despite starting with zero in-house capability for the core technical requirement.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Strong answer for "influence without authority" (borrowing headcount you don't manage) or "resourcefulness under constraint" if either comes up — the parallel-workstream structure (build / audit / UX simultaneously, not sequentially) is the sharpest detail to lead with if time is short.</p>
+</div></div>
+<div class="service-card" style="background: rgba(230,150,60,0.06);">
+<h2>Walk me through a product you love, and what you'd improve about it</h2>
+<p style="font-weight:700;margin:0 0 14px;">[One of the most common openers in PM interviews — not currently covered here.]</p>
+<p><i>Pick something in or near your domain (crypto/fintech/consumer app) rather than a generic favourite — it doubles as a demonstration of product taste relevant to the role. Explain what you love using a specific mechanism or UX decision, not a vibe ("the onboarding does X, which removes Y friction most competitors don't solve"). Then name one specific, defensible improvement tied to a real trade-off the product made — not a vague complaint like "the UI could be cleaner."</i></p>
+</div>
+<div class="service-card" style="background: rgba(230,150,60,0.06);">
+<h2>Tell me about a time you hired someone, or managed an underperforming team member</h2>
+<p style="font-weight:700;margin:0 0 14px;">[Only needed if this role has people-management scope — worth having ready regardless.]</p>
+<p><b>Situation:</b> <i>[fill in — the gap on the team or the performance issue you noticed]</i></p>
+<p><b>Task:</b> <i>[what you needed to resolve, and the constraint — e.g. no HR support, tight timeline, team morale at stake]</i></p>
+<p><b>Action:</b> <i>[the specific conversation, plan, or process you ran — be concrete about what you actually said/did, not just "I gave feedback"]</i></p>
+<p><b>Result:</b> <i>[the outcome — improved performance, a role change, or a hire who worked out, ideally with a number or timeframe]</i></p>
+</div>
+<div class="service-card" style="background: rgba(230,150,60,0.06);">
+<h2>Tell me about a time you disagreed with Design, Sales/BD, or Legal</h2>
+<p style="font-weight:700;margin:0 0 14px;">[Every conflict story on this page so far is with an EM or an exec — worth having one that isn't engineering.]</p>
+<p><i>Good candidates: the FinProm/Legal review on the wallet rewrite, or the Design team's first mobile build during the capability-gap story — both are mentioned elsewhere but not told from a "we disagreed and I had to resolve it" angle. Pick whichever has the sharpest actual disagreement, not just cross-functional collaboration.</i></p>
+</div>
+<div class="service-card" style="background: rgba(230,150,60,0.06);">
+<h2>Tell me about feedback you disagreed with, or your biggest weakness</h2>
+<p style="font-weight:700;margin:0 0 14px;">[Tests self-awareness about your own working style, distinct from the failure/judgment stories — those are about project outcomes, this is about you.]</p>
+<p><i>Pick something real and specific rather than a disguised strength ("I work too hard"). A strong shape: name the feedback plainly, name why your instinct disagreed with it at the time, then say what you actually did about it — either you changed the behaviour, or you still disagree but now handle the trade-off consciously. The second half (what changed) is what's actually being scored here, not the confession itself.</i></p>
+</div>
+<h2 style="margin-top:56px;">Objective — Frameworks, Definitions &amp; Technical</h2>
+<div class="service-card">
+<h2>How do you handle product lifecycle management?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Validate → build smallest defensible version → controlled staged rollout → measure vs baseline → scale/iterate/sunset • kill/scale criteria set BEFORE starting, each time • examples: x402 (3-month validate gate), wallet (5→10→20% staged rollout), Uranium→Metals.io (scale), legacy V3 (sunset)</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Validate → build the smallest defensible version → control the rollout → measure against a baseline → decide: scale, iterate, or sunset.</p>
+<p>I treat lifecycle stages as decision gates, not a checklist. At each stage I want a clear kill/scale criterion defined <i>before</i> I start, so the decision to continue is a judgement call against evidence, not inertia.</p>
+<ul>
+<li><b>Validate:</b> On x402/agentic payments, I ran this as an explicit 3-month assessment phase with a stated exit: commit a dedicated squad, or reassign the resource to revenue priorities. That's lifecycle thinking applied to a zero-to-one bet.</li>
+<li><b>Build &amp; roll out safely:</b> On the wallet rewrite, rollout was staged and monitored (5% → 10% → 20%), with an explicit rollback path built in from day one, not bolted on after an incident.</li>
+<li><b>Scale:</b> Uranium.io was deliberately built as a single-asset MVP to validate demand before scaling horizontally into Metals.io's multi-asset platform — proving the thesis before investing in breadth.</li>
+<li><b>Sunset / deprecate:</b> once the new wallet architecture was proven, we fully deprecated the legacy V3 stack rather than letting it linger as unmanaged parallel infrastructure.</li>
+</ul>
+</div></div>
+<div class="service-card">
+<h2>What makes a good PRD?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">PRD = structured contract, not narrative — removes ambiguity for a human or an agent • answers: what problem, for whom, why now, what's done, what's out of scope • built a standardised 'PRD skill' at Trilitech so PRDs feed directly into automated Linear project scoping • test: could someone build the wrong thing correctly from this document?</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">A structured contract that removes ambiguity — not a narrative, a spec someone (or something) else can execute without asking you follow-up questions.</p>
+<p>A good PRD answers: what problem, for whom, why now, what does done look like, and what's explicitly out of scope. I hold PRDs to a stricter bar than most: they should be structured enough that both an engineer and, increasingly, an AI agent can parse them directly into an execution plan.</p>
+<p>At Trilitech I built a "PRD skill" — a standardised template/prompt — specifically so PRDs across the product function were consistent enough for an agent to ingest them and auto-generate a scoped project structure (milestones, sized tickets, dependencies) in Linear. That only works if the PRD itself is unambiguous: clear functional requirements, explicit UX flows, technical acceptance criteria, and priority. Vague PRDs produce vague tickets — garbage in, garbage out, whether the reader is human or an agent.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">Good follow-up line if pushed: "the test I use is — could someone build the wrong thing correctly from this document? If yes, it's not tight enough."</p>
+</div></div>
+<div class="service-card">
+<h2>How do you define product success?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Success = user outcome tied to business outcome, benchmarked against a real baseline — never a vanity number alone • ex: 28X speed → tied to +7% conversion → ~£1.2M/qtr (benchmarked vs market growth, not claimed in isolation) • tokenisation: TVL validated against macro thesis + honest about the Etherlink-exclusivity growth ceiling</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">A metric that ties a user outcome to a business outcome, benchmarked against a real baseline — not a vanity number in isolation.</p>
+<p>I distrust single-metric success stories. On the wallet rewrite, I didn't just report "28X faster" — I connected it to what that speed unlocked: +7% trading conversion, and ~£1.2M in additional quarterly volume, benchmarked against market growth so we weren't just claiming credit for a bull market. On the tokenisation platform, success wasn't just "TVL went up" — it was validated against a clear macro thesis before we scaled, and we were honest afterward about the growth ceiling our own design choices created (the Etherlink-exclusivity trade-off).</p>
+<p>So: success = a defined baseline, a causal link between the product change and the outcome, and honesty about what it cost to get there.</p>
+</div></div>
+<div class="service-card">
+<h2>What is the role of product?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Product = turning ambiguity into aligned, sequenced action — deciding what NOT to do as much as what to do • sits at intersection of user need / business viability / technical reality • ProductBot: the real 'product' work was diagnosing ticket-data quality as the actual problem, not the automation tooling itself</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Turning ambiguity into aligned, sequenced action — deciding what NOT to do as much as what to do.</p>
+<p>Product sits at the intersection of user need, business viability, and technical reality, and the job is to resolve tension between those three faster and more cheaply than the org would otherwise. Concretely that means: setting a defensible priority order, writing specs precise enough that execution doesn't require guessing, and owning outcomes — not just shipping features and hoping. The ProductBot workflow automation is a good example: the "product" work wasn't the automation itself, it was diagnosing that the real problem was ticket-data quality, not tooling, and designing around how engineers actually behave rather than mandating a process change.</p>
+</div></div>
+<div class="service-card">
+<h2>How do you prioritise?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Protect the critical path first, everything else behind explicit decision gates • wallet: cut to Send/Receive/Buy/Sell, deferred rest under 4-person constraint • x402: staged framework — pilot now, hard commit/walk decision at 3-month mark • logic: impact &amp; risk first, effort second; always ask what happens if we do nothing</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Protect the critical path first, stage everything else behind explicit decision gates.</p>
+<p>Two real examples of how I actually do this, not just the theory:</p>
+<ul>
+<li><b>Ruthless critical-path cutting:</b> on the wallet rewrite, with a 4-person team, I cut scope to the transactional core (Send/Receive/Buy/Sell) and explicitly deferred everything else until that was live and stable — resourcing constraint dictated sequencing, not ambition.</li>
+<li><b>Staged, reversible bets:</b> on x402, instead of a binary go/no-go, I built a staged decision framework — research and merchant pilots now, a hard commit/walk-away decision at the 3-month mark. This lets you prioritise speculative bets without either starving them of attention or overcommitting before there's signal.</li>
+</ul>
+<p>Underlying logic: impact and risk first, effort second — and I always ask what happens if we do nothing, since that's usually the fastest way to find the real priority.</p>
+</div></div>
+<div class="service-card">
+<h2>What is the difference between a PM and a PO?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">PM = owns the why, roadmap, strategy, validation, outcomes — longer horizon, multiple stakeholders. PO = Scrum-specific, owns/orders backlog, writes user stories, day-to-day sprint decisions for one delivery team • smaller orgs/startups often collapse both into one person (most of my own experience)</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">PM owns the why and the roadmap across the product's life; PO owns translating that into an executable backlog for a delivery team.</p>
+<p>A Product Manager is typically responsible for strategy, prioritisation across the roadmap, market/user validation, and outcomes — operating across multiple stakeholders and a longer time horizon. A Product Owner (a Scrum-specific role) is more tactical: owns and orders the backlog, writes/refines user stories, and is the day-to-day decision-maker for a single delivery team inside a sprint. In smaller orgs or startups the roles often collapse into one person — which is most of my own experience — where you're doing PM-level strategy work in the morning and PO-level backlog grooming in the afternoon.</p>
+</div></div>
+<div class="service-card">
+<h2>Where does compliance fit into your work?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Design constraint from day one, not an end-stage legal gate • wallet: mapped every UK FinProm requirement against UI changes with Legal before development • tokenisation: KYC/AML + regulatory eligibility built into redemption flows from the start • rule: compliance is a discovery-stage stakeholder, same as engineering</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">As a design constraint from day one, not a legal gate at the end.</p>
+<p>Two real examples: on the wallet rewrite, I partnered with Legal and Marketing early to map every UK Financial Promotions (FinProm) requirement against the proposed UI changes, before development — so we weren't redesigning post-review. On the tokenisation platform, physical redemption flows were built around KYC/AML and regulatory eligibility requirements from the start (licensed end-users, vault infrastructure, commercial minimums), because retrofitting compliance onto an already-live financial product is far more expensive than designing for it upfront.</p>
+<p>My rule: compliance and legal are a stakeholder group I bring in during discovery, same as engineering — not a checkpoint I hope to pass at the end.</p>
+</div></div>
+<div class="service-card">
+<h2>What is benchmarking?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Comparing a metric against a defined, honest baseline (historical/internal/competitive) so a number means something alone • £1.2M benchmarked vs market growth, not just our own pre-launch number • before/after uses the same measurement method — apples-to-apples, not cherry-picked</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Comparing a metric against a defined baseline — historical, internal, or competitive — so a number means something instead of standing alone.</p>
+<p>Benchmarking is only useful if the baseline is honest. On the wallet rewrite, the £1.2M additional quarterly trading volume was explicitly benchmarked against market growth trends, not just against our own pre-launch number — otherwise we'd have been claiming credit for a rising market. Internally, I also benchmark before/after on operational metrics (load times, admin overhead) using the same measurement method pre- and post-change, so the comparison is apples-to-apples rather than cherry-picked.</p>
+</div></div>
+<div class="service-card">
+<h2>How do you decide what NOT to build?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">The 'no' list is as deliberate as the roadmap — cutting scope is the strategy, not a fallback • wallet: only Send/Receive/Buy/Sell live first, everything else (earning products, discovery depth, edge cases) sequenced deliberately behind that gate • test: if this feature disappeared, would the core journey still work? If yes → 'later,' not 'now'</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">The "no" list is as deliberate as the roadmap — cutting scope isn't a fallback, it's the strategy.</p>
+<p>On the wallet rewrite, with a 4-person team and a decade of legacy scope to replicate, I explicitly deferred everything except the non-negotiable transactional core (Send, Receive, Buy, Sell) until that was live and stable behind a monitored rollout. Everything else — earning products, asset discovery depth, edge-case flows — was sequenced deliberately behind that gate, not dropped by accident under time pressure. The test I use: if this feature disappeared entirely, would the core user journey still work? If yes, it's a "later," not a "now."</p>
+</div></div>
+<div class="service-card">
+<h2>How do you set product vision when the regulatory or technical landscape is constantly shifting?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Anchor vision on the durable user need (self-custody, asset exposure, fast/cheap transfer) — treat compliance/infra underneath as modular and expected to change • wallet: UI adapts to shifting UK FinProm rules without redesign • tokenisation: modular compliance/onboarding/custody let the platform swap asset classes or jurisdictions without rebuilding the core — same modularity enabled the SEC ETF filing</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Anchor the vision on the durable user need, treat the compliance/infrastructure layer underneath as modular and expected to change.</p>
+<p>The core user need (self-custody, exposure to an asset class, fast/cheap value transfer) is far more stable than the regulatory or technical environment around it. On the wallet rewrite, I partnered with Legal early so the UI could adapt to shifting UK Financial Promotion rules without a redesign each time regulation moved. On the tokenisation platform, compliance, onboarding, and custody were deliberately built as independent, modular components specifically so the platform could add or swap asset classes (uranium to rare earths) or jurisdictions without rebuilding the core — and that same modularity is what let the business pursue the SEC ETF filing as a new regulatory wrapper without re-architecting the underlying product.</p>
+</div></div>
+<div class="service-card">
+<h2>Walk me through a dashboard/metric you'd build for this product</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Every headline stat ships with (1) a plain-English definition and (2) an explicit methodology — formula, comparison window, what's excluded • pattern taken from instrumenting ProductBot's ROI • start from the decision the metric needs to drive, not what's easy to pull</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Every metric ships with a definition and a methodology — if I can't explain how a number was calculated in one sentence, I don't trust it in the room.</p>
+<p>My baseline pattern, taken from how I actually instrumented ProductBot's ROI: for every headline stat, pair it with (1) a plain-English definition anyone non-technical could read, and (2) an explicit methodology — the formula, the comparison window, and what's excluded (e.g. "no additional infra cost incurred, included in existing plan"). That discipline is what lets a stat survive a skeptical panel interview, and it's the same discipline I'd apply to any new dashboard — start from what decision the metric needs to drive, not from what's easy to pull.</p>
+</div></div>
+<div class="service-card">
+<h2>How do you approach decisions when A/B testing is impossible or sample sizes are too small?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Explorer = top-of-funnel, huge volume but long multi-touch path to the real outcome → standard A/B unreliable for attribution • lean on proxy signals (engagement, return visits, CTR to wallet), longer cohort-tracking windows, qualitative triangulation instead of waiting for statistical certainty the funnel position can't give cleanly</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Blockchain.com's Explorer — top-of-funnel, high-volume but far removed from the conversion event, so clean attribution via standard A/B testing wasn't reliable.</p>
+<p>Explorer traffic sits at the very top of the funnel — huge volume, but a long, multi-touch path to the actual business outcome (wallet signup, trading activity), which makes standard A/B testing on individual page changes unreliable for attributing downstream impact. In that situation I lean on proxy signals closer to the change itself (engagement, return-visit behaviour, click-through to wallet CTAs), longer cohort-tracking windows instead of short test cycles, and qualitative signal (user feedback, competitive benchmarking) to triangulate direction rather than waiting for statistical certainty that the funnel position makes impossible to get cleanly.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">This is currently a framework answer built around the Explorer context rather than one specific decision — if a particular Explorer change and how you judged its impact comes to mind, send it over and I'll sharpen this into a full STAR.</p>
+</div></div>
+<div class="service-card">
+<h2>A metric you own goes down — walk me through your response</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Confirm it's real first (rule out tracking/instrumentation issue) → isolate what changed in the same window (release, seasonality, upstream dependency, market conditions) → form one single testable hypothesis → ship smallest change to test it → scale fix only once metric responds • avoid jumping straight to a fix before you're sure of the cause</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Isolate the variable before reacting — correlation-chasing under pressure is how you fix the wrong thing.</p>
+<p>My default process: confirm it's real (not a tracking/instrumentation issue first), isolate what changed in the same window (release, seasonality, upstream dependency, external market conditions), form a single testable hypothesis rather than shipping multiple simultaneous fixes, ship the smallest change that tests it, and only then scale the fix once the metric responds. The instinct to avoid is jumping straight to a fix before you're sure you know the cause — that's how you "fix" a metric that recovers on its own for unrelated reasons and learn nothing.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">This one's currently a framework answer rather than a real story — if you've got a specific metric-drop incident, send it over and I'll swap in a concrete STAR, which will land harder than the generic version.</p>
+</div></div>
+<div class="service-card">
+<h2>How do you explain complex technical architecture or on-chain risks to non-technical stakeholders?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Lead with the risk it protects against and the guarantee it provides — mechanism is backup detail, only if asked • oracle fallback ex: open with 'users can't get wrongly liquidated because of several independent backup layers,' not 'Redstone→TWAP→circuit breaker→Sprott' • same for PRD-to-agent work: business outcome first, mechanics on request</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Lead with the risk it protects against and the guarantee it provides — the mechanism is backup detail, only given if asked.</p>
+<p>Example: the tokenisation platform's oracle fallback (Redstone → 30-min TWAP → 5% deviation circuit breaker → Sprott NAV-implied fallback) is a genuinely complex multi-stage system. To a non-technical exec or partner, I don't open with the stages — I open with "if our price data ever breaks or gets manipulated, our system is built so users can't get wrongly liquidated because of it, through several independent backup layers." That's the commercial risk and the guarantee. If they want to know how, I walk through the layers; if they don't, they've got what they actually need to make a decision. Same principle with the PRD-to-agent automation work — leads with the business outcome (reclaimed engineering time, cleaner reporting), mechanics available on request, not upfront.</p>
+</div></div>
+<div class="service-card">
+<h2>Walk me through how a blockchain transaction actually gets confirmed</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Signed (private key, no key exposed) → broadcast to mempool → validators/miners check validity &amp; bundle into a candidate block → block added to chain (PoW/PoS) → 'confirmed,' though finality in practice means waiting several more blocks on top • L2s (e.g. Etherlink) batch transactions and periodically settle back to L1, inheriting its security</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Signed → broadcast → picked up by validators/miners → included in a block → confirmed as the chain builds on top of it.</p>
+<p>At a high level: a user signs a transaction with their private key, proving authenticity without revealing the key itself. It's broadcast to the network's mempool, where validators (or miners, on proof-of-work chains) pick it up, check it's valid (correct signature, sufficient balance/gas), and bundle it with other transactions into a candidate block. Once that block is added to the chain — via proof-of-work mining or proof-of-stake validation depending on the network — the transaction is technically confirmed, but "finality" in practice means waiting for several additional blocks to be built on top, so the transaction becomes computationally impractical to reverse. On L2s like Etherlink, transactions are typically batched and settled back to the L1 periodically, which is why L2 costs and speeds differ from L1 while inheriting its underlying security.</p>
+</div></div>
+<div class="service-card">
+<h2>How would you think about pricing or monetising this product?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">ID what's actually being monetised (transaction, AUM, access tier, attention/distribution) → match pricing mechanism to how value is realised (spread/fee for transactional, subscription for access/tooling, take-rate for marketplace/liquidity) • check two failure modes: does pricing fight the product's own growth loop? does it segment power vs casual users cleanly? • model a free/low-friction entry tier separately from the monetisation tier</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Anchor on value delivered and willingness to pay per segment, not cost-plus — then choose a pricing mechanism that doesn't fight the product's own growth loop.</p>
+<p>My default framework: identify what's actually being monetised (the transaction, the asset under management, an access tier, or attention/distribution), then match the pricing mechanism to how value is realised — a spread/fee model for transactional products, a subscription for access/tooling, a take-rate for marketplace/liquidity products. I check for two failure modes before committing: does the pricing model create a perverse incentive against the product's own growth loop (e.g. a fee so high it suppresses the volume the business actually needs), and does it segment cleanly so power users and casual users aren't paying the same price for very different value. I'd also always model a free/low-friction entry tier separately from the monetisation tier — acquisition and monetisation usually want different pricing logic, not one number that tries to do both jobs.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">If you have a real pricing decision from your own experience — a fee structure, a tier design, a take-rate you set — swap it in here as a concrete example; a framework answer alone is weaker than the same framework anchored to a real call you made.</p>
+</div></div>
+<div class="service-card">
+<h2>How would you think about responding to a wallet security vulnerability or exploit?</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">Contain first without tipping off an active attacker (targeted pause, not blanket shutdown) → protect user funds specifically, verify no further risk before root cause is even found → investigate with the narrowest team necessary, need-to-know → decide disclosure timing deliberately, not while still exploitable → post-incident guardrail must be structural (circuit breaker, multisig threshold, monitoring alert), not 'we'll be more careful'</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Contain first without tipping off an active attacker, get user funds safe, then investigate — public disclosure timing is a deliberate decision, not a default.</p>
+<p>My framework: first, contain — this might mean pausing the specific contract function or feature exposed (if the architecture allows a circuit breaker), rather than a blanket shutdown that signals something's wrong before you understand the blast radius. Second, protect user funds specifically — if it's a custody or key-management issue, the priority is verifying no further funds are at risk right now, even before you've found root cause. Third, investigate with the narrowest team necessary — vulnerability details are need-to-know until contained, since premature internal disclosure risks a leak that helps an active attacker. Fourth, decide disclosure timing deliberately: full transparency is the right instinct for user trust, but the sequencing matters — you don't want to publicly confirm an exploit exists while it's still exploitable. Finally, the post-incident guardrail has to be structural (a circuit breaker, a multisig threshold, a monitoring alert), not just "we'll be more careful" — same principle as any other post-mortem on this page.</p>
+<p style="color:var(--muted-2);font-size:14px;line-height:1.55;border-left:2px solid var(--muted-2);padding-left:14px;margin:14px 0 0;">If you have a real security-adjacent incident — even a near-miss, a pen-test finding, or an audit catching something pre-launch — that's stronger than the framework alone, since this is a near-certain question given your custody/wallet background.</p>
+</div></div>
+<div class="service-card">
+<h2>Crypto technical staples: rollups, L1 vs L2, MEV, and what an audit actually checks</h2><button class="view-toggle-btn" onclick="toggleCardView(this)" type="button" aria-label="Collapse answer" aria-expanded="true"><span class="chevron-icon" aria-hidden="true">⌃</span></button><div class="short-view"><p class="short-keywords">L1 vs L2: L1 = independent consensus (Ethereum, Bitcoin); L2 = off-chain processing, periodic settlement back to L1, inherits its security (Etherlink, Arbitrum, Optimism). Rollup: zk (validity proof, fast finality) vs optimistic (fraud-proof window, ~7 days). MEV: value extracted via tx ordering/front-running/sandwich attacks; mitigated by private mempools, batch auctions, slippage protection. Audit: checks known vuln classes (reentrancy, overflow, access-control, oracle manipulation) + spec match — reduces risk, doesn't eliminate it.</p></div><div class="full-view">
+<p style="font-weight:700;margin:0 0 14px;">Quick, correct definitions to have ready — these come up as rapid-fire technical checks more than deep-dive questions.</p>
+<p><b>L1 vs L2:</b> an L1 (e.g. Ethereum, Bitcoin) is a base blockchain with its own independent validator/miner set and consensus. An L2 (e.g. Etherlink, Arbitrum, Optimism) processes transactions off the L1 for speed and cost, then periodically settles a summary back to the L1 — inheriting the L1's security guarantees without needing its own independent trust set.</p>
+<p><b>Rollup:</b> a specific type of L2 that executes transactions off-chain, then posts either a validity proof (zk-rollup — cryptographically proves correctness) or the raw transaction data plus a fraud-proof window (optimistic rollup — assumes correctness unless challenged) back to the L1. The difference matters for withdrawal speed: zk-rollups can finalize fast since the proof is verified immediately; optimistic rollups need a challenge window (often ~7 days) before funds are considered final.</p>
+<p><b>MEV (Maximal Extractable Value):</b> profit a block producer (or a searcher paying them) can extract by choosing transaction order, insertion, or exclusion within a block — most visibly through front-running or sandwich attacks on DEX trades. Relevant to a wallet/product PM because MEV exposure is a real, often invisible cost to users that good product design (private mempools, batch auctions, slippage protection) can mitigate.</p>
+<p><b>Smart contract audit:</b> a manual and tool-assisted review checking for known vulnerability classes (reentrancy, integer overflow/underflow, access-control gaps, oracle manipulation, logic errors against the spec) plus a check that the contract does what the documentation claims it does. An audit reduces risk, it doesn't eliminate it — worth being able to say this plainly rather than overselling what an audit guarantees.</p>
+</div></div>
+</section>
+<section class="closing">
+<h2>Structure wins<br/>interviews.</h2>
+</section>
+</main>
+<footer>
+<span><b>Private — not for public distribution</b></span>
+</footer>
+</div>
+<script defer="" src="./js/theme-toggle.js"></script>
+<script>
+function setCardToggleButtonState(btn, expanded) {
+  btn.innerHTML = '<span class="chevron-icon" aria-hidden="true">' + (expanded ? '⌃' : '⌄') + '</span>';
+  btn.setAttribute('aria-label', expanded ? 'Collapse answer' : 'Expand answer');
+  btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+}
+document.querySelectorAll('.view-toggle-btn').forEach(function (btn) {
+  var card = btn.closest('.service-card');
+  if (!card) return;
+  setCardToggleButtonState(btn, !card.classList.contains('short-mode'));
+});
+function toggleCardView(btn) {
+  var card = btn.closest('.service-card');
+  var short = card.classList.toggle('short-mode');
+  setCardToggleButtonState(btn, !short);
+}
+function setAllCards(mode) {
+  document.querySelectorAll('.service-card').forEach(function (card) {
+    var btn = card.querySelector('.view-toggle-btn');
+    if (!btn) return; // cards with no toggle (placeholders, intro answers)
+    if (mode === 'short') {
+      card.classList.add('short-mode');
+      setCardToggleButtonState(btn, false);
+    } else {
+      card.classList.remove('short-mode');
+      setCardToggleButtonState(btn, true);
+    }
+  });
+}
+
+/* Flashcard cram mode */
+function fcToggle(inner) {
+  inner.closest('.flip-card').classList.toggle('flipped');
+}
+function fcKey(evt, inner) {
+  if (evt.key === 'Enter' || evt.key === ' ') {
+    evt.preventDefault();
+    fcToggle(inner);
+  }
+}
+function fcFlipAll(toBack) {
+  document.querySelectorAll('#fcGrid .flip-card').forEach(function (card) {
+    card.classList.toggle('flipped', toBack);
+  });
+}
+function fcShuffle() {
+  var grid = document.getElementById('fcGrid');
+  var cards = Array.prototype.slice.call(grid.children);
+  for (var i = cards.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
+  }
+  cards.forEach(function (card) {
+    card.classList.remove('flipped');
+    grid.appendChild(card);
+  });
+}
+</script>
+</body>
+</html>
