@@ -2,142 +2,28 @@
 
 <html lang="en">
 <head>
-<script>
-(function () {
-var stored = localStorage.getItem('theme');
-var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-document.documentElement.setAttribute('data-theme', theme);
-document.addEventListener('DOMContentLoaded', function () {
-var meta = document.querySelector('meta[name="theme-color"]');
-if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
-});
-})();
-</script>
+<script src="./js/theme-init.js"></script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#ffffff" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Interview Prep — Private</title>
+<title>PM Interview Notes</title>
 <link rel="icon" type="image/png" href="./images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./css/styles.css">
 <link rel="stylesheet" href="./css/case-study.css">
-<link rel="stylesheet" href="./css/home.css">
+
 <style>
-/* Extra, page-specific rules layered on top of the shared css/styles.css,
-   css/case-study.css, and css/home.css — reusing existing components
-   (.service-card for each question, .why-grid/.why-card for the scoring
-   grid) rather than a separate set of one-off classes. */
-.service-card{ margin: 0 0 28px; }
-.service-card h2{ margin: 0 0 10px; }
-.service-card .code-block{ background: rgba(128,128,128,0.08); }
-
-/* home.css is only needed here for .why-grid/.why-card/.service-card,
-   but it also redefines header/.hero/.closing/footer/.container for the
-   homepage's fixed-header, full-bleed layout, and — since it loads after
-   case-study.css — those override the plain case-study versions this
-   page actually wants. Restore them. */
-.container{ padding-top: 0; }
-header{
-  position: sticky;
-  top: 0;
-  left: auto;
-  width: auto;
-  z-index: 100;
-}
-.hero{
-  position: static;
-  width: auto;
-  margin-left: 0;
-  min-height: 0;
-  display: block;
-  padding: 56px 0 0;
-}
-.closing{
-  position: static;
-  padding: 20px 0 90px;
-}
-footer{
-  position: static;
-  font-size: 16px;
-}
-
-/* Card expand/collapse toggle */
-.service-card{ position: relative; }
-.service-card h2{ padding-right: 44px; }
-.view-toggle-btn{
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 999px;
-  border: 1px solid var(--muted-2, #999);
-  background: transparent;
-  color: var(--muted-2, #999);
-  cursor: pointer;
-  opacity: 0.75;
-  transition: opacity 0.15s, background 0.15s, color 0.15s;
-}
-.view-toggle-btn:hover{ opacity: 1; background: rgba(128,128,128,0.1); }
-.view-toggle-btn .chevron-icon{
-  font-size: 16px;
-  line-height: 1;
-  display: inline-block;
-}
-.service-card.short-mode .view-toggle-btn{
-  background: rgba(230,150,60,0.14);
-  border-color: rgba(230,150,60,0.5);
-  color: inherit;
-  opacity: 1;
-}
-.service-card.short-mode .view-toggle-btn .chevron-icon{ transform: rotate(180deg); }
-.service-card.short-mode .full-view{ display: none; }
-.short-view{ margin: 0 0 4px; }
-.short-keywords{
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.6;
-  opacity: 0.85;
-  background: rgba(128,128,128,0.08);
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-
-/* Global cram-mode controls */
-.cram-controls{
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin: 18px 0 8px;
-  flex-wrap: wrap;
-}
-.cram-controls button{
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--muted-2, #999);
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-.cram-controls button:hover{ background: rgba(128,128,128,0.1); }
-.cram-controls span{ font-size: 13px; opacity: 0.6; }
+/* Extra, page-specific rules layered on top of the shared css/styles.css
+   and css/case-study.css. */
 
 /* ---------------------------------------------------------------
    Flashcard cram mode — click-to-flip revision cards, grouped by
    theme. Self-contained styling (doesn't depend on external css)
-   so it renders correctly even without styles.css/case-study.css/
-   home.css loaded. Dark, near-black fronts + warm dark backs, amber
-   accent to match the existing .short-keywords / short-mode look.
+   so it renders correctly even without styles.css/case-study.css
+   loaded. Dark, near-black fronts + warm dark backs, amber accent.
    --------------------------------------------------------------- */
 .fc-section{ margin: 0 0 8px; }
 
@@ -244,6 +130,7 @@ footer{
 </head>
 <body>
 <div class="container">
+
 <header>
 <a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
 <div class="header-right">
@@ -263,31 +150,60 @@ footer{
 <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
 </svg>
 </button>
+<a class="book-call" href="https://calendly.com/franklyn021/30min" target="_blank" rel="noopener noreferrer">Book a call</a>
 </div>
 </header>
+
 <main>
 <section class="hero">
 <h1>PM Interview Notes</h1>
-<p>Private notes to refresh main talking points and prepare for interviews.</p>
+<p>Personal private study notes to refresh talking points and prepare for interviews.</p>
 </section>
 <section class="article-body fc-section">
 
-<H2>What an interviewer is measuring</H2>
-<ul>
-  <li><h3>Fit & Credibility</h3><p>Do you understand their specific problem(s), and can you back up your background with real verifiable depth?</p></li>
-  <li><h3>Execution & Proof</h3><p>Can you communicate clearly, drive hard metrics, and get into the weeds of product build and analytics?</p></li>
-  <li><h3>Strategy & Decision-Making</h3><p>How do you evaluate trade-offs, weigh risks, and tie product choices directly to business revenue and market positioning?</p></li>
-  <li><h3>Leadership & Adaptability</h3><p>How do you bring people with you, resolve conflict, course correct, and learn from mistakes?</p></li>
-</ul>
+<div class="services-image">
+  <img src="https://images.unsplash.com/photo-1652553234544-f17f2e26acea?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session"  loading="lazy" />
+</div>
 
-<H2>Key Themes</H2>
+<h2>Scoring</h2>
+<h3>Fit &amp; Credibility</h3>
+<p>Do you understand their specific problem(s), and can you back up your background with real verifiable depth?</p>
+<h3>Execution &amp; Proof</h3>
+<p>Can you communicate clearly, drive hard metrics, and get into the weeds of product build and analytics?</p>
+<h3>Strategy &amp; Decision-Making</h3>
+<p>How do you evaluate trade-offs, weigh risks, and tie product choices directly to business revenue and market positioning?</p>
+<h3>Leadership &amp; Adaptability</h3>      
+<p>How do you bring people with you, resolve conflict, course correct, and learn from mistakes?</p>
+
+<h2>Themes</h2>
+<p>These themes are the core building blocks for any question that comes up in an interview, recognise what theme each question is asking and respond accordingly.</p><br>
 
 <div class="fc-grid" id="fcGrid">
 
 <div class="flip-card" data-theme="Discovery">
 <div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
-<h3 class="fc-front-title">Discovery</h3>
+<h3 class="fc-front-title">1. Strategy</h3>
+<ul class="fc-front-questions">
+<li>How do you define product strategy for a new initiative, and how do you align it with overall business objectives?</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Strategy</h3>
+<ul class="fc-back-themes">
+<li><b>Market & Moat:</b> Analyze market dynamics, competitor positioning, and unique advantages.</li>
+<li><b>Define:</b> Define explicit what to do and what NOT to do trade-offs.</li>
+<li><b>Mapping:</b> Translate vision into multi-horizon outcomes (Now / Next / Later).</li>
+<li><b>Link:</b> Connect feature direction directly to monetization, retention, or growth loops.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Discovery">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">2. Discovery</h3>
 <ul class="fc-front-questions">
 <li>How do you approach discovery? Tell me about a time you validated a user problem and how you identified it?</li>
 </ul>
@@ -307,47 +223,7 @@ footer{
 <div class="flip-card" data-theme="Discovery">
 <div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
-<h3 class="fc-front-title">Diagnosing</h3>
-<ul class="fc-front-questions">
-<li>How do you diagnose what went wrong? Walk me through your step-by-step diagnostic process for a problem you faced.</li>
-</ul>
-</div>
-<div class="flip-card-back">
-<h3 class="fc-back-title">Diagnosing</h3>
-<ul class="fc-back-themes">
-<li><b>Framing:</b> Define the core user pain point and business impact before touching solutions.</li>
-<li><b>Insights:</b> Combine quant (funnels, cohort data) with qual (user interviews, support tickets).</li>
-<li><b>De-risking:</b> Test assumptions early via low-fi prototypes, landing page tests, or concierge MVPs.</li>
-<li><b>Alignment:</b> Partner with Design &amp; Eng to evaluate value, usability, feasibility, and viability.</li>
-</ul>
-</div>
-</div>
-</div>
-
-<div class="flip-card" data-theme="Discovery">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
-<div class="flip-card-front">
-<h3 class="fc-front-title">Evaluating</h3>
-<ul class="fc-front-questions">
-<li>How do you measure success? Tell me about a time you evaluated a feature's performance and what actions you took based on the results.</li>
-</ul>
-</div>
-<div class="flip-card-back">
-<h3 class="fc-back-title">Evaluating</h3>
-<ul class="fc-back-themes">
-<li><b>Success Metrics:</b> Track adoption, retention, and North Star impact against baseline goals.</li>
-<li><b>Cohort Analysis:</b> Evaluate user segment behavior over time to verify sustained value.</li>
-<li><b>Feedback Loops:</b> Gather post-launch qualitative feedback to capture unexpected edge cases.</li>
-<li><b>Iteration:</b> Decide whether to double down, pivot, or sunset based on actual ROI.</li>
-</ul>
-</div>
-</div>
-</div>
-
-<div class="flip-card" data-theme="Discovery">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
-<div class="flip-card-front">
-<h3 class="fc-front-title">Prioritising</h3>
+<h3 class="fc-front-title">3. Prioritising</h3>
 <ul class="fc-front-questions">
 <li>How do you arrange priorities? Tell me about a tradeoff you have made under pressure and roadmap planning.</li>
 </ul>
@@ -367,7 +243,7 @@ footer{
 <div class="flip-card" data-theme="Influencing">
 <div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Influencing" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
-<h3 class="fc-front-title">Influencing</h3>
+<h3 class="fc-front-title">4. Influencing</h3>
 <ul class="fc-front-questions">
 <li>How do you influence stakeholders? Tell me about a time you had to convince someone and how you handled it.</li>
 </ul>
@@ -384,31 +260,10 @@ footer{
 </div>
 </div>
 
-<div class="flip-card" data-theme="Reflect">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Reflect" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
-<div class="flip-card-front">
-<h3 class="fc-front-title">Reflecting</h3>
-<ul class="fc-front-questions">
-<li>How do you reflect on work? Tell me about a failure or mistake you learned from, and what you'd do differently looking back.</li>
-</ul>
-</div>
-<div class="flip-card-back">
-<h3 class="fc-back-title">Reflecting</h3>
-<ul class="fc-back-themes">
-<li><b>Blameless Reviews:</b> Focus on systemic causes and process fixes rather than pointing fingers.</li>
-<li><b>Data vs. Hypotheses:</b> Dissect gaps between expected outcomes and actual user behavior.</li>
-<li><b>Feedback:</b> Solicit structured feedback from eng, design, and users (e.g., retro cadences).</li>
-<li><b>Awareness:</b> Demonstrate humility, ownership, and immediate iteration.</li>
-</ul>
-</div>
-</div>
-</div>
-
-
 <div class="flip-card" data-theme="Conflict">
 <div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Conflict" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
-<h3 class="fc-front-title">Conflicts</h3>
+<h3 class="fc-front-title">5. Conflicts</h3>
 <ul class="fc-front-questions">
 <li>How do you handle conflict? Tell me about a time you had a disagreement or received pushback, and handled conflicting priorities.</li>
 </ul>
@@ -425,10 +280,70 @@ footer{
 </div>
 </div>
 
+<div class="flip-card" data-theme="Conflict">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Conflict" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">6. Metrics</h3>
+<ul class="fc-front-questions">
+<li>How do you define success metrics for a feature, and what do you do when a metric moves in the wrong direction?</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Metrics</h3>
+<ul class="fc-back-themes">
+<li><b>Metric Tree:</b> Define North Star, primary success metrics, and counter/guardrail metrics.</li>
+<li><b>Instrumentation:</b> Partner with data/engineering early to ensure clean telemetry and event tracking.</li>
+<li><b>Root Cause:</b> Use cohort segmentation and funnels to isolate drop-off drivers.</li>
+<li><b>Thresholds:</b> Define clear pre-launch thresholds for rolling out, iterating, or killing features.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Discovery">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">7. Evaluating</h3>
+<ul class="fc-front-questions">
+<li>How do you measure success? Tell me about a time you evaluated a feature's performance and what actions you took based on the results.</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Evaluating</h3>
+<ul class="fc-back-themes">
+<li><b>Success Metrics:</b> Track adoption, retention, and North Star impact against baseline goals.</li>
+<li><b>Cohort Analysis:</b> Evaluate user segment behavior over time to verify sustained value.</li>
+<li><b>Feedback Loops:</b> Gather post-launch qualitative feedback to capture unexpected edge cases.</li>
+<li><b>Iteration:</b> Decide whether to double down, pivot, or sunset based on actual ROI.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="flip-card" data-theme="Discovery">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">8. Diagnosing</h3>
+<ul class="fc-front-questions">
+<li>How do you diagnose what went wrong? Walk me through your step-by-step diagnostic process for a problem you faced.</li>
+</ul>
+</div>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Diagnosing</h3>
+<ul class="fc-back-themes">
+<li><b>Framing:</b> Define the core user pain point and business impact before touching solutions.</li>
+<li><b>Insights:</b> Combine quant (funnels, cohort data) with qual (user interviews, support tickets).</li>
+<li><b>De-risking:</b> Test assumptions early via low-fi prototypes, landing page tests, or concierge MVPs.</li>
+<li><b>Alignment:</b> Partner with Design &amp; Eng to evaluate value, usability, feasibility, and viability.</li>
+</ul>
+</div>
+</div>
+</div>
+
 <div class="flip-card" data-theme="Emergency">
 <div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Emergency" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
-<h3 class="fc-front-title">Emergency</h3>
+<h3 class="fc-front-title">9. Emergency</h3>
 <ul class="fc-front-questions">
 <li>How do you handle emergencies? Tell me about an incident you managed under pressure.</li>
 </ul>
@@ -445,8 +360,30 @@ footer{
 </div>
 </div>
 
+<div class="flip-card" data-theme="Reflect">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Reflect" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card-front">
+<h3 class="fc-front-title">10. Reflecting</h3>
+<ul class="fc-front-questions">
+<li>How do you reflect on work? Tell me about a failure or mistake you learned from, and what you'd do differently looking back.</li>
+</ul>
 </div>
-</section>
+<div class="flip-card-back">
+<h3 class="fc-back-title">Reflecting</h3>
+<ul class="fc-back-themes">
+<li><b>Blameless Reviews:</b> Focus on systemic causes and process fixes rather than pointing fingers.</li>
+<li><b>Data vs. Hypotheses:</b> Dissect gaps between expected outcomes and actual user behavior.</li>
+<li><b>Feedback:</b> Solicit structured feedback from eng, design, and users (e.g., retro cadences).</li>
+<li><b>Awareness:</b> Demonstrate humility, ownership, and immediate iteration.</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+<h2>Stories</h2>
+<p>Stories are the most effective way to communicate experience and demonstrate skills. Follow the STAR method (Situation, Task, Action, Result) to structure answers clearly and concisely.</p>
 
 </section>
 <section class="closing">
@@ -459,35 +396,6 @@ footer{
 </div>
 <script src="./js/theme-toggle.js" defer></script>
 <script>
-function setCardToggleButtonState(btn, expanded) {
-  btn.innerHTML = '<span class="chevron-icon" aria-hidden="true">' + (expanded ? '⌃' : '⌄') + '</span>';
-  btn.setAttribute('aria-label', expanded ? 'Collapse answer' : 'Expand answer');
-  btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-}
-document.querySelectorAll('.view-toggle-btn').forEach(function (btn) {
-  var card = btn.closest('.service-card');
-  if (!card) return;
-  setCardToggleButtonState(btn, !card.classList.contains('short-mode'));
-});
-function toggleCardView(btn) {
-  var card = btn.closest('.service-card');
-  var short = card.classList.toggle('short-mode');
-  setCardToggleButtonState(btn, !short);
-}
-function setAllCards(mode) {
-  document.querySelectorAll('.service-card').forEach(function (card) {
-    var btn = card.querySelector('.view-toggle-btn');
-    if (!btn) return; // cards with no toggle (placeholders, intro answers)
-    if (mode === 'short') {
-      card.classList.add('short-mode');
-      setCardToggleButtonState(btn, false);
-    } else {
-      card.classList.remove('short-mode');
-      setCardToggleButtonState(btn, true);
-    }
-  });
-}
-
 /* Flashcard cram mode */
 function fcToggle(inner) {
   inner.closest('.flip-card').classList.toggle('flipped');
