@@ -20,6 +20,19 @@
    and css/case-study.css. */
 
 /* ---------------------------------------------------------------
+   Hero → image spacing fix. The hero subtitle had no explicit
+   margin (so it fell back to the browser's default ~1em bottom
+   margin), and the photo right after it is the first child of
+   .article-body, so its margin-top (40px, from case-study.css)
+   was stacking on top of .article-body's own padding-top (32px)
+   as well. Together that left a much bigger gap under the hero
+   than under any other heading on the page. Zeroing both here
+   leaves just the section's own padding-top as the gap.
+   --------------------------------------------------------------- */
+.hero p{ margin: 14px 0 0; }
+.article-body .article-image:first-child{ margin-top: 0; }
+
+/* ---------------------------------------------------------------
    Flashcard cram mode — click-to-flip revision cards, grouped by
    theme. Self-contained styling (doesn't depend on external css)
    so it renders correctly even without styles.css/case-study.css
@@ -42,16 +55,26 @@
 .flip-card-inner{
   display: grid;
   width: 100%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-scale: 1;
+  --flip: 0deg;
+  transform: rotateX(var(--tilt-x)) rotateY(calc(var(--flip) + var(--tilt-y))) scale3d(var(--tilt-scale), var(--tilt-scale), 1);
   transition: transform 0.55s cubic-bezier(.4,.15,.2,1);
   transform-style: preserve-3d;
   cursor: pointer;
   outline: none;
 }
+/* Faster, snappier easing while the cursor is actively tracking across the
+   card — the slower cubic-bezier above is reserved for the click-to-flip
+   and for tilt resetting back to flat on mouse-leave. */
+.flip-card-inner.tilting{
+  transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+}
 .flip-card-inner:focus-visible{
   box-shadow: 0 0 0 3px rgba(230,150,60,0.55);
   border-radius: 20px;
 }
-.flip-card.flipped .flip-card-inner{ transform: rotateY(180deg); }
 
 .flip-card-front, .flip-card-back{
   grid-row: 1;
@@ -66,6 +89,8 @@
   min-height: 100%;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: box-shadow 0.3s ease;
 }
 .flip-card-front::-webkit-scrollbar, .flip-card-back::-webkit-scrollbar{ width: 5px; }
 .flip-card-front::-webkit-scrollbar-thumb, .flip-card-back::-webkit-scrollbar-thumb{
@@ -126,6 +151,103 @@
 @media (max-width: 640px){
   .fc-front-title{ font-size: 23px; }
 }
+
+/* ---------------------------------------------------------------
+   Scoring cards — the 4 scoring items laid out side by side
+   (4 columns x 1 row) at full width, wrapping to fewer columns
+   on narrower viewports.
+   --------------------------------------------------------------- */
+.scoring-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  width: 100%;
+  margin: 20px 0 28px;
+}
+.scoring-card{
+  background: var(--card);
+  color: var(--text);
+  border-radius: 16px;
+  padding: 22px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scoring-card h3{
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0;
+}
+.scoring-card p{
+  font-size: 14px;
+  line-height: 1.45;
+  opacity: 0.85;
+  margin: 0;
+}
+
+@media (max-width: 900px){
+  .scoring-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px){
+  .scoring-grid{ grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------
+   Stories — pill filter to switch between STAR stories, showing
+   one story (title + body) at a time in a card.
+   --------------------------------------------------------------- */
+.story-filter{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 18px 0 22px;
+}
+.story-filter button{
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid rgba(128,128,128,0.35);
+  border-radius: 999px;
+  padding: 8px 10px;
+  cursor: pointer;
+  opacity: 0.65;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.story-filter button:hover{ opacity: 0.9; }
+.story-filter button.active{
+  opacity: 1;
+  border-color: transparent;
+  background: var(--text);
+  color: var(--card);
+}
+
+.story-card{
+  display: none;
+  background: var(--card);
+  color: var(--text);
+  border-radius: 20px;
+  padding: 30px 28px;
+  box-sizing: border-box;
+}
+.story-card.active{ display: block; }
+.story-card h3{
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+.story-card p{
+  font-size: 15px;
+  line-height: 1.55;
+  opacity: 0.9;
+  margin: 0 0 12px;
+}
+.story-card p:last-child{ margin-bottom: 0; }
+.story-card p b{ font-weight: 700; opacity: 1; }
 </style>
 </head>
 <body>
@@ -161,27 +283,37 @@
 </section>
 <section class="article-body fc-section">
 
-<div class="services-image">
-  <img src="https://images.unsplash.com/photo-1652553234544-f17f2e26acea?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session"  loading="lazy" />
+<div class="article-image">
+  <img src="https://images.unsplash.com/photo-1652553234544-f17f2e26acea?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session" loading="lazy" />
 </div>
 
 <h2>Scoring</h2>
+<div class="scoring-grid">
+<div class="scoring-card">
 <h3>Fit &amp; Credibility</h3>
 <p>Do you understand their specific problem(s), and can you back up your background with real verifiable depth?</p>
+</div>
+<div class="scoring-card">
 <h3>Execution &amp; Proof</h3>
 <p>Can you communicate clearly, drive hard metrics, and get into the weeds of product build and analytics?</p>
+</div>
+<div class="scoring-card">
 <h3>Strategy &amp; Decision-Making</h3>
 <p>How do you evaluate trade-offs, weigh risks, and tie product choices directly to business revenue and market positioning?</p>
-<h3>Leadership &amp; Adaptability</h3>      
+</div>
+<div class="scoring-card">
+<h3>Leadership &amp; Adaptability</h3>
 <p>How do you bring people with you, resolve conflict, course correct, and learn from mistakes?</p>
+</div>
+</div>
 
 <h2>Themes</h2>
 <p>These themes are the core building blocks for any question that comes up in an interview, recognise what theme each question is asking and respond accordingly.</p><br>
 
 <div class="fc-grid" id="fcGrid">
 
-<div class="flip-card" data-theme="Discovery">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card" data-theme="Strategy">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Strategy" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
 <h3 class="fc-front-title">1. Strategy</h3>
 <ul class="fc-front-questions">
@@ -220,8 +352,8 @@
 </div>
 </div>
 
-<div class="flip-card" data-theme="Discovery">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card" data-theme="Prioritising">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Prioritising" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
 <h3 class="fc-front-title">3. Prioritising</h3>
 <ul class="fc-front-questions">
@@ -280,8 +412,8 @@
 </div>
 </div>
 
-<div class="flip-card" data-theme="Conflict">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Conflict" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card" data-theme="Metrics">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Metrics" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
 <h3 class="fc-front-title">6. Metrics</h3>
 <ul class="fc-front-questions">
@@ -300,8 +432,8 @@
 </div>
 </div>
 
-<div class="flip-card" data-theme="Discovery">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card" data-theme="Evaluating">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Evaluating" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
 <h3 class="fc-front-title">7. Evaluating</h3>
 <ul class="fc-front-questions">
@@ -320,8 +452,8 @@
 </div>
 </div>
 
-<div class="flip-card" data-theme="Discovery">
-<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Discovery" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
+<div class="flip-card" data-theme="Diagnosing">
+<div class="flip-card-inner" tabindex="0" role="button" aria-label="Flip card: Diagnosing" onclick="fcToggle(this)" onkeydown="fcKey(event,this)">
 <div class="flip-card-front">
 <h3 class="fc-front-title">8. Diagnosing</h3>
 <ul class="fc-front-questions">
@@ -385,6 +517,100 @@
 <h2>Stories</h2>
 <p>Stories are the most effective way to communicate experience and demonstrate skills. Follow the STAR method (Situation, Task, Action, Result) to structure answers clearly and concisely.</p>
 
+<div class="story-filter" id="storyFilter">
+<button type="button" class="active" data-story="strategy">Strategy</button>
+<button type="button" data-story="discovery">Discover</button>
+<button type="button" data-story="prioritising">Prioritise</button>
+<button type="button" data-story="influencing">Influence</button>
+<button type="button" data-story="conflict">Conflict</button>
+<button type="button" data-story="metric">Metric</button>
+<button type="button" data-story="evaluating">Evaluate</button>
+<button type="button" data-story="diagnosing">Diagnose</button>
+<button type="button" data-story="emergency">Emergency</button>
+<button type="button" data-story="reflecting">Reflect</button>
+
+</div>
+
+<div class="story-card active" id="story-strategy">
+<h3>Strategy</h3>
+<p><b>Situation:</b> Replace with the context — team, product, and stakes.</p>
+<p><b>Task:</b> Replace with the user problem you set out to validate.</p>
+<p><b>Action:</b> Replace with how you approached discovery and de-risked it.</p>
+<p><b>Result:</b> Replace with what you learned and what you shipped as a result.</p>
+</div>
+
+<div class="story-card" id="story-discovery">
+<h3>Discovery</h3>
+<p><b>Situation:</b> Replace with the context — team, product, and stakes.</p>
+<p><b>Task:</b> Replace with the user problem you set out to validate.</p>
+<p><b>Action:</b> Replace with how you approached discovery and de-risked it.</p>
+<p><b>Result:</b> Replace with what you learned and what you shipped as a result.</p>
+</div>
+
+<div class="story-card" id="story-prioritising">
+<h3>Prioritise</h3>
+<p><b>Situation:</b> Replace with the context — team, product, and stakes.</p>
+<p><b>Task:</b> Replace with the user problem you set out to validate.</p>
+<p><b>Action:</b> Replace with how you approached discovery and de-risked it.</p>
+<p><b>Result:</b> Replace with what you learned and what you shipped as a result.</p>
+</div>
+
+<div class="story-card" id="story-influencing">
+<h3>Influencing</h3>
+<p><b>Situation:</b> Replace with the context of who you needed to bring on board.</p>
+<p><b>Task:</b> Replace with what needed alignment or buy-in.</p>
+<p><b>Action:</b> Replace with how you built the case and influenced the outcome.</p>
+<p><b>Result:</b> Replace with the outcome and relationship impact.</p>
+</div>
+
+<div class="story-card" id="story-conflict">
+<h3>Conflict</h3>
+<p><b>Situation:</b> Replace with the context of the disagreement.</p>
+<p><b>Task:</b> Replace with what needed to be resolved.</p>
+<p><b>Action:</b> Replace with how you navigated the pushback.</p>
+<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
+</div>
+
+<div class="story-card" id="story-metric">
+<h3>Metrics</h3>
+<p><b>Situation:</b> Replace with the context of the disagreement.</p>
+<p><b>Task:</b> Replace with what needed to be resolved.</p>
+<p><b>Action:</b> Replace with how you navigated the pushback.</p>
+<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
+</div>
+
+<div class="story-card" id="story-evaluating">
+<h3>Evaluation</h3>
+<p><b>Situation:</b> Replace with the context of the disagreement.</p>
+<p><b>Task:</b> Replace with what needed to be resolved.</p>
+<p><b>Action:</b> Replace with how you navigated the pushback.</p>
+<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
+</div>
+
+<div class="story-card" id="story-diagnosing">
+<h3>Diagnosing</h3>
+<p><b>Situation:</b> Replace with the context of the disagreement.</p>
+<p><b>Task:</b> Replace with what needed to be resolved.</p>
+<p><b>Action:</b> Replace with how you navigated the pushback.</p>
+<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
+</div>
+
+<div class="story-card" id="story-emergency">
+<h3>Emergency</h3>
+<p><b>Situation:</b> Replace with the incident and its severity.</p>
+<p><b>Task:</b> Replace with what you were responsible for containing.</p>
+<p><b>Action:</b> Replace with the triage, comms, and steps you took under pressure.</p>
+<p><b>Result:</b> Replace with the resolution and the guardrails you put in place after.</p>
+</div>
+
+<div class="story-card" id="story-reflecting">
+<h3>Reflecting</h3>
+<p><b>Situation:</b> Replace with what went wrong and the stakes.</p>
+<p><b>Task:</b> Replace with what you were trying to achieve.</p>
+<p><b>Action:</b> Replace with how you responded and course-corrected.</p>
+<p><b>Result:</b> Replace with what you learned and changed going forward.</p>
+</div>
+
 </section>
 <section class="closing">
 <h2>Structure wins<br/>interviews.</h2>
@@ -398,7 +624,9 @@
 <script>
 /* Flashcard cram mode */
 function fcToggle(inner) {
-  inner.closest('.flip-card').classList.toggle('flipped');
+  const card = inner.closest('.flip-card');
+  card.classList.toggle('flipped');
+  inner.style.setProperty('--flip', card.classList.contains('flipped') ? '180deg' : '0deg');
 }
 function fcKey(evt, inner) {
   if (evt.key === 'Enter' || evt.key === ' ') {
@@ -406,6 +634,44 @@ function fcKey(evt, inner) {
     fcToggle(inner);
   }
 }
+
+/* Subtle cursor-follow tilt on hover. Writes to the --tilt-x/--tilt-y/
+   --tilt-scale custom properties rather than the transform directly, so
+   it composes with the click-to-flip rotation (--flip) instead of
+   fighting it — tilting still works whichever face is currently up. */
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!prefersReducedMotion) {
+  const maxTilt = 8; // degrees — kept small for a subtle effect
+  document.querySelectorAll('.flip-card-inner').forEach((inner) => {
+    inner.addEventListener('mousemove', (e) => {
+      const rect = inner.getBoundingClientRect();
+      const relX = (e.clientX - rect.left) / rect.width;
+      const relY = (e.clientY - rect.top) / rect.height;
+      const tiltX = (0.5 - relY) * maxTilt * 2;
+      const tiltY = (relX - 0.5) * maxTilt * 2;
+      inner.classList.add('tilting');
+      inner.style.setProperty('--tilt-x', `${tiltX.toFixed(2)}deg`);
+      inner.style.setProperty('--tilt-y', `${tiltY.toFixed(2)}deg`);
+      inner.style.setProperty('--tilt-scale', 1.02);
+    });
+    inner.addEventListener('mouseleave', () => {
+      inner.classList.remove('tilting');
+      inner.style.setProperty('--tilt-x', '0deg');
+      inner.style.setProperty('--tilt-y', '0deg');
+      inner.style.setProperty('--tilt-scale', 1);
+    });
+  });
+}
+
+/* Stories filter — switch which story card is shown */
+document.querySelectorAll('#storyFilter button').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#storyFilter button').forEach((b) => b.classList.remove('active'));
+    document.querySelectorAll('.story-card').forEach((c) => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('story-' + btn.dataset.story).classList.add('active');
+  });
+});
 </script>
 </body>
 </html>

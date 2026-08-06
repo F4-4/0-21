@@ -34,7 +34,7 @@
 [data-theme="dark"] .book-call{ color:#0d0d0d; }
 [data-theme="dark"] .badge{ color:#0d0d0d; }
 [data-theme="dark"] .theme-toggle{ background:#222; }
-[data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; }
+[data-theme="dark"] .theme-toggle svg{ stroke:#f3f3f1; stroke-width: 1.6; }
 
 /* ---------- BROWSER CHROME THEMING ----------
    Tells the browser to use dark-mode native UI (scrollbars, form
@@ -122,7 +122,7 @@ body{
   cursor:pointer;
   transition: background .2s ease;
 }
-.theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; }
+.theme-toggle svg{ width:18px; height:18px; stroke:#0d0d0d; stroke-width: 2; }
 .theme-toggle .icon-sun{ display:none; }
 [data-theme="dark"] .theme-toggle .icon-moon{ display:none; }
 [data-theme="dark"] .theme-toggle .icon-sun{ display:block; }
@@ -141,6 +141,15 @@ body{
   display:inline-block;
   text-decoration:none;
 }
+
+/* Both are <a> tags styled as buttons, not article links — keep their
+   own text color on hover instead of picking up case-study.css's
+   generic a:hover{ color: var(--accent) } rule (which otherwise wins
+   on specificity and turns them gold). */
+.badge:hover,
+.book-call:hover{ color: var(--bg); }
+[data-theme="dark"] .badge:hover,
+[data-theme="dark"] .book-call:hover{ color:#0d0d0d; }
 
 /* ---------- CLOSING STATEMENT HEADLINE ----------
    Shared by every page that has a closing statement (all 5). Pages
