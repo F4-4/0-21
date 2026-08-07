@@ -20,17 +20,23 @@
    and css/case-study.css. */
 
 /* ---------------------------------------------------------------
-   Hero → image spacing fix. The hero subtitle had no explicit
-   margin (so it fell back to the browser's default ~1em bottom
-   margin), and the photo right after it is the first child of
-   .article-body, so its margin-top (40px, from case-study.css)
-   was stacking on top of .article-body's own padding-top (32px)
-   as well. Together that left a much bigger gap under the hero
-   than under any other heading on the page. Zeroing both here
-   leaves just the section's own padding-top as the gap.
+   Hero subtitle spacing. No explicit margin otherwise, so it falls
+   back to the browser's default ~1em bottom margin.
    --------------------------------------------------------------- */
 .hero p{ margin: 14px 0 0; }
-.article-body .article-image:first-child{ margin-top: 0; }
+
+/* This page's photo isn't wide enough to fill the 2:1 box when
+   centered by height (case-study.css's default for banner images),
+   which left gaps on the sides. Override to cover the box fully
+   instead — scoped to this page only, other case-study images are
+   wide enough that the shared behaviour already fills correctly. */
+.article-image img{
+  position: static;
+  top: auto; left: auto; transform: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 /* ---------------------------------------------------------------
    Flashcard cram mode — click-to-flip revision cards, grouped by
@@ -228,11 +234,7 @@
 
 .story-card{
   display: none;
-  background: var(--card);
   color: var(--text);
-  border-radius: 20px;
-  padding: 30px 28px;
-  box-sizing: border-box;
 }
 .story-card.active{ display: block; }
 .story-card h3{
@@ -250,18 +252,19 @@
 .story-card p b{ font-weight: 700; opacity: 1; color: var(--text); }
 
 /* Theme highlight colors — used to mark which phrases in a story
-   touch on which theme(s), when a story spans more than one. */
+   touch on which theme(s), when a story spans more than one.
+   Palette sampled from Dune's x402 Analytics dashboard. */
 :root{
-  --theme-conflict: hsl(0, 75%, 48%);
-  --theme-emergency: hsl(7, 75%, 48%);
-  --theme-diagnosing: hsl(13, 75%, 48%);
-  --theme-evaluating: hsl(20, 75%, 48%);
-  --theme-metric: hsl(27, 75%, 46%);
-  --theme-discovery: hsl(33, 80%, 46%);
-  --theme-prioritising: hsl(40, 80%, 45%);
-  --theme-reflecting: hsl(47, 85%, 44%);
-  --theme-influencing: hsl(53, 85%, 42%);
-  --theme-strategy: hsl(60, 85%, 40%);
+  --theme-conflict: #D6A1DD;
+  --theme-emergency: #C3A2DE;
+  --theme-diagnosing: #DEA2C7;
+  --theme-evaluating: #B0A2DE;
+  --theme-metric: #DEA2A3;
+  --theme-discovery: #D7A3DE;
+  --theme-prioritising: #856b9b;
+  --theme-reflecting: #dd85bb;
+  --theme-influencing: #a793f1;
+  --theme-strategy: #eba0a0;
 }
 .story-legend{
   display: flex;
@@ -286,13 +289,50 @@
   display: inline-block;
 }
 .story-card mark{
-  background: color-mix(in srgb, var(--hl) 32%, transparent);
-  color: color-mix(in srgb, var(--hl) 65%, var(--text));
-  padding: 0 2px;
-  font-weight: inherit;
+  position: relative;
+  background: var(--hl);
+  color: var(--hl-text, #14100a);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+  cursor: help;
 }
+.story-card mark::after{
+  content: attr(data-theme);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, -6px);
+  background: var(--hl);
+  color: var(--hl-text, #14100a);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 4px 9px;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 5;
+}
+.story-card mark::before{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, 2px);
+  border: 5px solid transparent;
+  border-top-color: var(--hl);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 5;
+}
+.story-card mark:hover::after{ opacity: 1; transform: translate(-50%, -10px); }
+.story-card mark:hover::before{ opacity: 1; transform: translate(-50%, -2px); }
 .hl-strategy{ --hl: var(--theme-strategy); }
 .hl-discovery{ --hl: var(--theme-discovery); }
 .hl-prioritising{ --hl: var(--theme-prioritising); }
@@ -305,7 +345,7 @@
 .hl-reflecting{ --hl: var(--theme-reflecting); }
 </style>
 </head>
-<body>
+<body style="--article-accent:#efefee;">
 <div class="container">
 
 <header>
@@ -335,12 +375,11 @@
 <section class="hero">
 <h1>PM Interview Notes</h1>
 <p>Personal private study notes to refresh talking points and prepare for interviews.</p>
-</section>
-<section class="article-body fc-section">
-
 <div class="article-image">
   <img src="https://images.unsplash.com/photo-1652553234544-f17f2e26acea?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Working session" loading="lazy" />
 </div>
+</section>
+<section class="article-body fc-section">
 
 <h2>Scoring</h2>
 <div class="scoring-grid">
@@ -362,8 +401,29 @@
 </div>
 </div>
 
+<h2>Stories</h2>
+
+<div class="story-filter" id="storyFilter">
+<button type="button" class="active" data-story="passkey">Passkeys</button>
+<button type="button" data-story="escrow">Escrow</button>
+
+</div>
+
+<div class="story-card active" id="story-passkey">
+<p><b>Situation:</b> To support company goals around MAU growth, I led <mark class="hl-discovery" data-theme="Discovery">research combining competitive analysis, qualitative data, and user interviews</mark>. It pointed to one clear drop-off driver: <mark class="hl-diagnosing" data-theme="Diagnosing">high friction from traditional BIP39 seed phrases, made worse by negative sentiment around the persistent home-screen security banners</mark>. <mark class="hl-strategy" data-theme="Strategy">Competitors hadn't solved this either; they were still defaulting to BIP39 too.</mark></p>
+<p><b>Task:</b> I set out to scope and launch native Passkey authentication, both to cut that top-of-funnel drop-off and free up the home-screen UI space, all <mark class="hl-prioritising" data-theme="Prioritising">without delaying our core sprint deliverables</mark>.</p>
+<p><b>Action:</b> <mark class="hl-strategy" data-theme="Strategy">I looked at two technical paths: smart-contract wallets, which also use passkeys but are network-dependent, versus building a custom multi-network implementation. I went with the custom path so we wouldn't be tied to the protocol team's roadmap, even though it meant giving up some of the ecosystem-developer benefits smart accounts would've brought.</mark> <mark class="hl-influencing" data-theme="Influencing">To keep sprint timelines intact, I negotiated to borrow an engineer from another team.</mark> From there I wrote the PRD, <mark class="hl-influencing" data-theme="Influencing">drove async alignment across Design, Eng, and Marketing</mark> — including getting Marketing and Design aligned on reframing the security narrative itself, so removing the banners read as "Passkeys handle this for you now" rather than us just quietly deleting a warning — and managed an external security audit with Cossack Labs.</p>
+<p><b>Result:</b> Post-launch, <mark class="hl-metric" data-theme="Metric">onboarding drop-off fell 13%, and wallet creation time dropped 92%, from over two minutes down to under ten seconds, thanks to native Apple and Google cloud backups</mark>. We also eliminated the security banners entirely. Altogether that drove a <mark class="hl-metric" data-theme="Metric">roughly 4% lift in overall MAU</mark>.</p>
+</div>
+
+<div class="story-card" id="story-escrow">
+<p><b>Situation:</b> The company aimed to grow the Tezos ecosystem and alleviate user anxiety around network payments. While <mark class="hl-metric" data-theme="Metric">non-exchange volume was roughly one hundred thousand transactions per day</mark>, <mark class="hl-diagnosing" data-theme="Diagnosing">user interviews revealed stress about making test transactions to avoid losses due to incorrect details</mark>.</p>
+<p><b>Task:</b> As the Product Manager, I was accountable for the <mark class="hl-discovery" data-theme="Discovery">discovery</mark>, requirements definition, and stakeholder alignment on this bet.</p>
+<p><b>Action:</b> <mark class="hl-influencing" data-theme="Influencing">I negotiated with an adjacent team to borrow a protocol specialist</mark> and <mark class="hl-strategy" data-theme="Strategy">designed a</mark> <mark class="hl-prioritising" data-theme="Prioritising">time-boxed</mark> <mark class="hl-strategy" data-theme="Strategy">MVP, which was a Michelson contract on Tezos available as a web app to the broader network</mark>.</p>
+<p><b>Result:</b> At the time, we had <mark class="hl-metric" data-theme="Metric">fifteen hundred active users processing about three thousand transactions daily</mark>, and <mark class="hl-metric" data-theme="Metric">adoption of the escrow feature started at about ten to fifty transactions per day</mark>, though <mark class="hl-evaluating" data-theme="Evaluating">P2P transactions were the primary use case</mark>. <mark class="hl-reflecting" data-theme="Reflecting">The biggest takeaway from this experience was the value of</mark> <mark class="hl-prioritising" data-theme="Prioritising">time-boxing, allowing us to test a CEO-driven bet in a controlled way to validate demand without overwhelming our core priorities</mark>.</p>
+</div>
+
 <h2>Themes</h2>
-<p>These themes are the core building blocks for any question that comes up in an interview, recognise what theme each question is asking and respond accordingly.</p><br>
 
 <div class="fc-grid" id="fcGrid">
 
@@ -567,111 +627,6 @@
 </div>
 </div>
 
-</div>
-
-<h2>Stories</h2>
-<p>Stories are the most effective way to communicate experience and demonstrate skills. Follow the STAR method (Situation, Task, Action, Result) to structure answers clearly and concisely.</p>
-
-<div class="story-filter" id="storyFilter">
-<button type="button" class="active" data-story="passkey">Passkeys</button>
-<button type="button" data-story="discovery">Discover</button>
-<button type="button" data-story="prioritising">Prioritise</button>
-<button type="button" data-story="influencing">Influence</button>
-<button type="button" data-story="conflict">Conflict</button>
-<button type="button" data-story="metric">Metric</button>
-<button type="button" data-story="evaluating">Evaluate</button>
-<button type="button" data-story="diagnosing">Diagnose</button>
-<button type="button" data-story="emergency">Emergency</button>
-<button type="button" data-story="reflecting">Reflect</button>
-
-</div>
-
-<div class="story-card active" id="story-passkey">
-<h3>Passkeys</h3>
-<div class="story-legend">
-<span style="--dot:var(--theme-strategy)">Strategy</span>
-<span style="--dot:var(--theme-discovery)">Discovery</span>
-<span style="--dot:var(--theme-prioritising)">Prioritising</span>
-<span style="--dot:var(--theme-influencing)">Influencing</span>
-<span style="--dot:var(--theme-metric)">Metric</span>
-<span style="--dot:var(--theme-diagnosing)">Diagnosing</span>
-</div>
-<p><b>Situation:</b> To support company goals around MAU growth, I led <mark class="hl-discovery">research combining competitive analysis, qualitative data, and user interviews</mark>. It pointed to one clear drop-off driver: <mark class="hl-diagnosing">high friction from traditional BIP39 seed phrases, made worse by negative sentiment around the persistent home-screen security banners</mark>. <mark class="hl-strategy">Competitors hadn't solved this either; they were still defaulting to BIP39 too.</mark></p>
-<p><b>Task:</b> I set out to scope and launch native Passkey authentication, both to cut that top-of-funnel drop-off and free up the home-screen UI space, all <mark class="hl-prioritising">without delaying our core sprint deliverables</mark>.</p>
-<p><b>Action:</b> <mark class="hl-strategy">I looked at two technical paths: smart-contract wallets, which also use passkeys but are network-dependent, versus building a custom multi-network implementation. I went with the custom path so we wouldn't be tied to the protocol team's roadmap, even though it meant giving up some of the ecosystem-developer benefits smart accounts would've brought.</mark> <mark class="hl-influencing">To keep sprint timelines intact, I negotiated to borrow an engineer with prior Passkey experience from another team.</mark> From there I wrote the PRD, <mark class="hl-influencing">drove async alignment across Design, Eng, and Marketing</mark>, and managed an external security audit with Cossack Labs.</p>
-<p><b>Result:</b> Post-launch, <mark class="hl-metric">onboarding drop-off fell 13%, and wallet creation time dropped 92%, from over two minutes down to under ten seconds, thanks to native Apple and Google cloud backups</mark>. We also eliminated the security banners entirely. Altogether that drove a <mark class="hl-metric">roughly 4% lift in overall MAU</mark>.</p>
-</div>
-
-<div class="story-card" id="story-discovery">
-<h3>Discovery</h3>
-<p><b>Situation:</b> Replace with the context — team, product, and stakes.</p>
-<p><b>Task:</b> Replace with the user problem you set out to validate.</p>
-<p><b>Action:</b> Replace with how you approached discovery and de-risked it.</p>
-<p><b>Result:</b> Replace with what you learned and what you shipped as a result.</p>
-</div>
-
-<div class="story-card" id="story-prioritising">
-<h3>Prioritise</h3>
-<p><b>Situation:</b> Replace with the context — team, product, and stakes.</p>
-<p><b>Task:</b> Replace with the user problem you set out to validate.</p>
-<p><b>Action:</b> Replace with how you approached discovery and de-risked it.</p>
-<p><b>Result:</b> Replace with what you learned and what you shipped as a result.</p>
-</div>
-
-<div class="story-card" id="story-influencing">
-<h3>Influencing</h3>
-<p><b>Situation:</b> Replace with the context of who you needed to bring on board.</p>
-<p><b>Task:</b> Replace with what needed alignment or buy-in.</p>
-<p><b>Action:</b> Replace with how you built the case and influenced the outcome.</p>
-<p><b>Result:</b> Replace with the outcome and relationship impact.</p>
-</div>
-
-<div class="story-card" id="story-conflict">
-<h3>Conflict</h3>
-<p><b>Situation:</b> Replace with the context of the disagreement.</p>
-<p><b>Task:</b> Replace with what needed to be resolved.</p>
-<p><b>Action:</b> Replace with how you navigated the pushback.</p>
-<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
-</div>
-
-<div class="story-card" id="story-metric">
-<h3>Metrics</h3>
-<p><b>Situation:</b> Replace with the context of the disagreement.</p>
-<p><b>Task:</b> Replace with what needed to be resolved.</p>
-<p><b>Action:</b> Replace with how you navigated the pushback.</p>
-<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
-</div>
-
-<div class="story-card" id="story-evaluating">
-<h3>Evaluation</h3>
-<p><b>Situation:</b> Replace with the context of the disagreement.</p>
-<p><b>Task:</b> Replace with what needed to be resolved.</p>
-<p><b>Action:</b> Replace with how you navigated the pushback.</p>
-<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
-</div>
-
-<div class="story-card" id="story-diagnosing">
-<h3>Diagnosing</h3>
-<p><b>Situation:</b> Replace with the context of the disagreement.</p>
-<p><b>Task:</b> Replace with what needed to be resolved.</p>
-<p><b>Action:</b> Replace with how you navigated the pushback.</p>
-<p><b>Result:</b> Replace with the resolution and relationship outcome.</p>
-</div>
-
-<div class="story-card" id="story-emergency">
-<h3>Emergency</h3>
-<p><b>Situation:</b> Replace with the incident and its severity.</p>
-<p><b>Task:</b> Replace with what you were responsible for containing.</p>
-<p><b>Action:</b> Replace with the triage, comms, and steps you took under pressure.</p>
-<p><b>Result:</b> Replace with the resolution and the guardrails you put in place after.</p>
-</div>
-
-<div class="story-card" id="story-reflecting">
-<h3>Reflecting</h3>
-<p><b>Situation:</b> Replace with what went wrong and the stakes.</p>
-<p><b>Task:</b> Replace with what you were trying to achieve.</p>
-<p><b>Action:</b> Replace with how you responded and course-corrected.</p>
-<p><b>Result:</b> Replace with what you learned and changed going forward.</p>
 </div>
 
 </section>
