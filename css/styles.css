@@ -104,6 +104,10 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+  text-decoration:none; /* .badge is a <div> on index.html and an <a> back
+                            to it on every other page — set here once so
+                            case-study pages don't each need their own
+                            inline style="text-decoration:none" */
 }
 .header-right{
   display:flex;

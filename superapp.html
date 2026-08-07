@@ -23,10 +23,9 @@
 <link rel="stylesheet" href="./css/styles.css">
 <link rel="stylesheet" href="./css/case-study.css">
 <style>
-/* Extra theme tokens used only on this page, on top of the
-   shared ones in css/styles.css */
-[data-theme="dark"] .article-image{ background: #FFE6E8; }
-.article-image{ background: #FFE6E8; }
+/* Extra rule used only on this page, on top of the shared ones in
+   css/styles.css and css/case-study.css. (Accent color now set via
+   --article-accent on <body> instead of living here.) */
 .article-body h3{
 font-size: 16px;
 font-weight: 800;
@@ -34,10 +33,10 @@ margin: 32px 0 12px;
 }
 </style>
 </head>
-<body>
+<body style="--article-accent:#FFE6E8;">
 <div class="container">
 <header>
-<a class="badge" href="./index.html" style="text-decoration:none;">0-21</a>
+<a class="badge" href="./index.html">0-21</a>
 <div class="header-right">
 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

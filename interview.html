@@ -247,7 +247,62 @@
   margin: 0 0 12px;
 }
 .story-card p:last-child{ margin-bottom: 0; }
-.story-card p b{ font-weight: 700; opacity: 1; }
+.story-card p b{ font-weight: 700; opacity: 1; color: var(--text); }
+
+/* Theme highlight colors — used to mark which phrases in a story
+   touch on which theme(s), when a story spans more than one. */
+:root{
+  --theme-conflict: hsl(0, 75%, 48%);
+  --theme-emergency: hsl(7, 75%, 48%);
+  --theme-diagnosing: hsl(13, 75%, 48%);
+  --theme-evaluating: hsl(20, 75%, 48%);
+  --theme-metric: hsl(27, 75%, 46%);
+  --theme-discovery: hsl(33, 80%, 46%);
+  --theme-prioritising: hsl(40, 80%, 45%);
+  --theme-reflecting: hsl(47, 85%, 44%);
+  --theme-influencing: hsl(53, 85%, 42%);
+  --theme-strategy: hsl(60, 85%, 40%);
+}
+.story-legend{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 18px;
+}
+.story-legend span{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+.story-legend span::before{
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--dot);
+  display: inline-block;
+}
+.story-card mark{
+  background: color-mix(in srgb, var(--hl) 32%, transparent);
+  color: color-mix(in srgb, var(--hl) 65%, var(--text));
+  padding: 0 2px;
+  font-weight: inherit;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.hl-strategy{ --hl: var(--theme-strategy); }
+.hl-discovery{ --hl: var(--theme-discovery); }
+.hl-prioritising{ --hl: var(--theme-prioritising); }
+.hl-influencing{ --hl: var(--theme-influencing); }
+.hl-conflict{ --hl: var(--theme-conflict); }
+.hl-metric{ --hl: var(--theme-metric); }
+.hl-evaluating{ --hl: var(--theme-evaluating); }
+.hl-diagnosing{ --hl: var(--theme-diagnosing); }
+.hl-emergency{ --hl: var(--theme-emergency); }
+.hl-reflecting{ --hl: var(--theme-reflecting); }
 </style>
 </head>
 <body>
@@ -518,7 +573,7 @@
 <p>Stories are the most effective way to communicate experience and demonstrate skills. Follow the STAR method (Situation, Task, Action, Result) to structure answers clearly and concisely.</p>
 
 <div class="story-filter" id="storyFilter">
-<button type="button" class="active" data-story="strategy">Strategy</button>
+<button type="button" class="active" data-story="passkey">Passkeys</button>
 <button type="button" data-story="discovery">Discover</button>
 <button type="button" data-story="prioritising">Prioritise</button>
 <button type="button" data-story="influencing">Influence</button>
@@ -531,12 +586,20 @@
 
 </div>
 
-<div class="story-card active" id="story-strategy">
-<h3>Strategy</h3>
-<p><b>Situation:</b> Replace with the context — team, product, and stakes.</p>
-<p><b>Task:</b> Replace with the user problem you set out to validate.</p>
-<p><b>Action:</b> Replace with how you approached discovery and de-risked it.</p>
-<p><b>Result:</b> Replace with what you learned and what you shipped as a result.</p>
+<div class="story-card active" id="story-passkey">
+<h3>Passkeys</h3>
+<div class="story-legend">
+<span style="--dot:var(--theme-strategy)">Strategy</span>
+<span style="--dot:var(--theme-discovery)">Discovery</span>
+<span style="--dot:var(--theme-prioritising)">Prioritising</span>
+<span style="--dot:var(--theme-influencing)">Influencing</span>
+<span style="--dot:var(--theme-metric)">Metric</span>
+<span style="--dot:var(--theme-diagnosing)">Diagnosing</span>
+</div>
+<p><b>Situation:</b> To support company goals around MAU growth, I led <mark class="hl-discovery">research combining competitive analysis, qualitative data, and user interviews</mark>. It pointed to one clear drop-off driver: <mark class="hl-diagnosing">high friction from traditional BIP39 seed phrases, made worse by negative sentiment around the persistent home-screen security banners</mark>. <mark class="hl-strategy">Competitors hadn't solved this either; they were still defaulting to BIP39 too.</mark></p>
+<p><b>Task:</b> I set out to scope and launch native Passkey authentication, both to cut that top-of-funnel drop-off and free up the home-screen UI space, all <mark class="hl-prioritising">without delaying our core sprint deliverables</mark>.</p>
+<p><b>Action:</b> <mark class="hl-strategy">I looked at two technical paths: smart-contract wallets, which also use passkeys but are network-dependent, versus building a custom multi-network implementation. I went with the custom path so we wouldn't be tied to the protocol team's roadmap, even though it meant giving up some of the ecosystem-developer benefits smart accounts would've brought.</mark> <mark class="hl-influencing">To keep sprint timelines intact, I negotiated to borrow an engineer with prior Passkey experience from another team.</mark> From there I wrote the PRD, <mark class="hl-influencing">drove async alignment across Design, Eng, and Marketing</mark>, and managed an external security audit with Cossack Labs.</p>
+<p><b>Result:</b> Post-launch, <mark class="hl-metric">onboarding drop-off fell 13%, and wallet creation time dropped 92%, from over two minutes down to under ten seconds, thanks to native Apple and Google cloud backups</mark>. We also eliminated the security banners entirely. Altogether that drove a <mark class="hl-metric">roughly 4% lift in overall MAU</mark>.</p>
 </div>
 
 <div class="story-card" id="story-discovery">

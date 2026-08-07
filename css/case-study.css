@@ -53,6 +53,10 @@ header{
   justify-content:center;
   overflow:hidden;
   position: relative;
+  /* Each case-study page sets its own accent via --article-accent
+     (inline on <body>), same in both themes — falls back to --card
+     if a page doesn't set one. */
+  background: var(--article-accent, var(--card));
 }
 @media (max-width: 900px){
   .article-image{ aspect-ratio: 16/9; min-height: 0; }
